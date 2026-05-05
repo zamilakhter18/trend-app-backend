@@ -10,6 +10,7 @@ import { TrendModule } from './trend/trend.module';
 import { AiModule } from './ai/ai.module';
 import { EngagementModule } from './engagement/engagement.module';
 import { ProductModule } from './product/product.module';
+import { ScoringModule } from './scoring/scoring.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ProductModule } from './product/product.module';
     AiModule,
     EngagementModule,
     ProductModule,
+    ScoringModule,
   ],
   controllers: [AppController],
   providers: [AppService],
