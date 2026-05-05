@@ -9,6 +9,7 @@ import { FeedModule } from './feed/feed.module';
 import { TrendModule } from './trend/trend.module';
 import { AiModule } from './ai/ai.module';
 import { EngagementModule } from './engagement/engagement.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EngagementModule } from './engagement/engagement.module';
     TrendModule,
     AiModule,
     EngagementModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
