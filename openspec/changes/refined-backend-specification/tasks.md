@@ -6,7 +6,7 @@
 
 - [x] 1.1 Initialize a new NestJS project using the Nest CLI.
 - [x] 1.2 Configure global middleware (Cors, Helmet, ValidationPipe).
-- [ ] 1.3 Set up the Supabase Module and Service to wrap the Supabase client.
+- [x] 1.3 Set up the Supabase Module and Service to wrap the Supabase client.
 - [ ] 1.4 Implement the Auth Module with Passport and JWT Strategy.
 
 ## 2. Database Schema (Supabase PostgreSQL)
