@@ -43,5 +43,5 @@
 ## 7. Optimization & Verification
 
 - [x] 7.1 Implement caching using NestJS `CacheModule`.
-- [ ] 7.2 Run end-to-end (E2E) tests using NestJS testing utilities.
+- [x] 7.2 Run end-to-end (E2E) tests using NestJS testing utilities.
 - [ ] 7.3 Perform security audit on Guards and RLS policies.

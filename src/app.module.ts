@@ -41,6 +41,3 @@ import { IdentityModule } from './identity/identity.module';
   providers: [AppService],
 })
 export class AppModule {}
-
-})
-export class AppModule {}

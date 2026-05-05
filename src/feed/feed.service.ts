@@ -38,7 +38,7 @@ export class FeedService {
       const lastItem = data[data.length - 1];
       const score = (lastItem as any).trend_scores[0]?.score || 0;
       const createdAt = lastItem.created_at;
-      nextCursor = Buffer.from(\`\${score}|\${createdAt}\`).toString('base64');
+      nextCursor = Buffer.from(`${score}|${createdAt}`).toString('base64');
     }
 
     return {
