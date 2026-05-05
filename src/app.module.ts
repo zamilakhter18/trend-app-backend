@@ -8,6 +8,7 @@ import { ProfileModule } from './profile/profile.module';
 import { FeedModule } from './feed/feed.module';
 import { TrendModule } from './trend/trend.module';
 import { AiModule } from './ai/ai.module';
+import { EngagementModule } from './engagement/engagement.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AiModule } from './ai/ai.module';
     FeedModule,
     TrendModule,
     AiModule,
+    EngagementModule,
   ],
   controllers: [AppController],
   providers: [AppService],
