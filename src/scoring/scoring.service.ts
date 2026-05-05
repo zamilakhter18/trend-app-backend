@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { SupabaseService } from '../supabase/supabase.service';
 
 @Injectable()
@@ -6,6 +7,12 @@ export class ScoringService {
   private readonly logger = new Logger(ScoringService.name);
 
   constructor(private supabaseService: SupabaseService) {}
+
+  @Cron(CronExpression.EVERY_HOUR)
+  async handleCron() {
+    this.logger.debug('Called every hour');
+    await this.updateAllTrendScores();
+  }
 
   async updateAllTrendScores() {
     this.logger.log('Starting global trend score update...');
