@@ -1,5 +1,12 @@
 import { Controller, Get, Res } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiOkResponse, ApiInternalServerErrorResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
+  ApiInternalServerErrorResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { ResponseHandler } from './common/helpers/response-handler';
 import { messages } from './common/helpers/message';
@@ -23,6 +30,20 @@ export class AppController {
       data: 'Hello World!',
     },
   })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    example: {
+      statusCode: 400,
+      message: 'Bad request',
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized access',
+    example: {
+      statusCode: 401,
+      message: 'Unauthorized access',
+    },
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal Server Error',
     example: {
@@ -30,12 +51,22 @@ export class AppController {
       message: 'Something went wrong',
     },
   })
-  getHello(@Res() res: Response) {
+  async getHello(@Res() res: Response) {
     try {
-      const result = this.appService.getHello();
-      return this.responseHandler.successResponseWithData(res, messages.FETCH_SUCCESS, result);
+      const result = await this.appService.getHello();
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

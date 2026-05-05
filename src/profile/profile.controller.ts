@@ -1,9 +1,8 @@
 import { Controller, Get, UseGuards, Request, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse } from '@nestjs/swagger';
 import { ProfileService } from './profile.service';
 import { ResponseHandler } from '../common/helpers/response-handler';
-import { messages } from '../common/helpers/message';
 import type { Response } from 'express';
 
 @ApiTags('Profile')
@@ -26,6 +25,13 @@ export class ProfileController {
       data: { id: 'uuid', email: 'user@example.com', profile_data: {} },
     },
   })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    example: {
+      statusCode: 400,
+      message: 'Bad request',
+    },
+  })
   @ApiUnauthorizedResponse({
     description: 'Unauthorized',
     example: {
@@ -43,9 +49,12 @@ export class ProfileController {
   async getMe(@Request() req: any, @Res() res: Response) {
     try {
       const result = await this.profileService.getProfile(req.user.userId);
-      return this.responseHandler.successResponseWithData(res, messages.FETCH_SUCCESS, result);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(res, result.message, result.data);
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(res, (error as Error).message);
     }
   }
 }

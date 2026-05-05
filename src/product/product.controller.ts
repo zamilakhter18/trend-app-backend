@@ -1,6 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiCreatedResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+} from '@nestjs/swagger';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -49,12 +70,25 @@ export class ProductController {
       message: 'Something went wrong',
     },
   })
-  async create(@Body() createProductDto: CreateProductDto, @Res() res: Response) {
+  async create(
+    @Body() createProductDto: CreateProductDto,
+    @Res() res: Response,
+  ) {
     try {
       const result = await this.productService.create(createProductDto);
-      return this.responseHandler.successResponseWithData(res, messages.CREATE_SUCCESS, result);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -68,6 +102,20 @@ export class ProductController {
       data: [{ id: 'uuid', name: 'Product Name' }],
     },
   })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    example: {
+      statusCode: 400,
+      message: 'Bad request',
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized access',
+    example: {
+      statusCode: 401,
+      message: 'Unauthorized access',
+    },
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal Server Error',
     example: {
@@ -75,12 +123,25 @@ export class ProductController {
       message: 'Something went wrong',
     },
   })
-  async findAllByTrend(@Query('trend_id') trendId: string, @Res() res: Response) {
+  async findAllByTrend(
+    @Query('trend_id') trendId: string,
+    @Res() res: Response,
+  ) {
     try {
       const result = await this.productService.findAllByTrend(trendId);
-      return this.responseHandler.successResponseWithData(res, messages.FETCH_SUCCESS, result);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -101,6 +162,20 @@ export class ProductController {
       message: 'Resource not found',
     },
   })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    example: {
+      statusCode: 400,
+      message: 'Bad request',
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized access',
+    example: {
+      statusCode: 401,
+      message: 'Unauthorized access',
+    },
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal Server Error',
     example: {
@@ -111,12 +186,19 @@ export class ProductController {
   async findOne(@Param('id') id: string, @Res() res: Response) {
     try {
       const result = await this.productService.findOne(id);
-      if (!result) {
-        return this.responseHandler.errorResponse(res, messages.NOT_FOUND);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
       }
-      return this.responseHandler.successResponseWithData(res, messages.FETCH_SUCCESS, result);
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -153,12 +235,26 @@ export class ProductController {
       message: 'Something went wrong',
     },
   })
-  async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto, @Res() res: Response) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateProductDto: UpdateProductDto,
+    @Res() res: Response,
+  ) {
     try {
       const result = await this.productService.update(id, updateProductDto);
-      return this.responseHandler.successResponseWithData(res, messages.UPDATE_SUCCESS, result);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -171,6 +267,13 @@ export class ProductController {
     example: {
       statusCode: 200,
       message: 'Resource deleted successfully',
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    example: {
+      statusCode: 400,
+      message: 'Bad request',
     },
   })
   @ApiUnauthorizedResponse({
@@ -189,10 +292,16 @@ export class ProductController {
   })
   async remove(@Param('id') id: string, @Res() res: Response) {
     try {
-      await this.productService.remove(id);
-      return this.responseHandler.successResponse(res, messages.DELETE_SUCCESS);
+      const result = await this.productService.remove(id);
+      if (result.success) {
+        return this.responseHandler.successResponse(res, result.message);
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

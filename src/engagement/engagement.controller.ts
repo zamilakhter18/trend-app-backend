@@ -1,6 +1,24 @@
-import { Controller, Post, Delete, Body, Param, UseGuards, Request, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+  Request,
+  Res,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiCreatedResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+  ApiInternalServerErrorResponse,
+} from '@nestjs/swagger';
 import { EngagementService } from './engagement.service';
 import { EngageDto } from './dto/engage.dto';
 import { SaveDto } from './dto/save.dto';
@@ -50,12 +68,29 @@ export class EngagementController {
       message: 'Something went wrong',
     },
   })
-  async engage(@Request() req: any, @Body() engageDto: EngageDto, @Res() res: Response) {
+  async engage(
+    @Request() req: any,
+    @Body() engageDto: EngageDto,
+    @Res() res: Response,
+  ) {
     try {
-      const result = await this.engagementService.engage(req.user.userId, engageDto);
-      return this.responseHandler.successResponseWithData(res, messages.UPDATE_SUCCESS, result);
+      const result = await this.engagementService.engage(
+        req.user.userId,
+        engageDto,
+      );
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -92,12 +127,26 @@ export class EngagementController {
       message: 'Something went wrong',
     },
   })
-  async save(@Request() req: any, @Body() saveDto: SaveDto, @Res() res: Response) {
+  async save(
+    @Request() req: any,
+    @Body() saveDto: SaveDto,
+    @Res() res: Response,
+  ) {
     try {
       const result = await this.engagementService.save(req.user.userId, saveDto);
-      return this.responseHandler.successResponseWithData(res, messages.CREATE_SUCCESS, result);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -110,6 +159,13 @@ export class EngagementController {
     example: {
       statusCode: 200,
       message: 'Resource deleted successfully',
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    example: {
+      statusCode: 400,
+      message: 'Bad request',
     },
   })
   @ApiUnauthorizedResponse({
@@ -126,12 +182,25 @@ export class EngagementController {
       message: 'Something went wrong',
     },
   })
-  async unsave(@Request() req: any, @Param('trend_id') trendId: string, @Res() res: Response) {
+  async unsave(
+    @Request() req: any,
+    @Param('trend_id') trendId: string,
+    @Res() res: Response,
+  ) {
     try {
-      await this.engagementService.unsave(req.user.userId, trendId);
-      return this.responseHandler.successResponse(res, messages.DELETE_SUCCESS);
+      const result = await this.engagementService.unsave(
+        req.user.userId,
+        trendId,
+      );
+      if (result.success) {
+        return this.responseHandler.successResponse(res, result.message);
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -168,12 +237,29 @@ export class EngagementController {
       message: 'Something went wrong',
     },
   })
-  async trackClick(@Request() req: any, @Body() clickDto: ClickDto, @Res() res: Response) {
+  async trackClick(
+    @Request() req: any,
+    @Body() clickDto: ClickDto,
+    @Res() res: Response,
+  ) {
     try {
-      const result = await this.engagementService.trackClick(req.user.userId, clickDto);
-      return this.responseHandler.successResponseWithData(res, messages.CREATE_SUCCESS, result);
+      const result = await this.engagementService.trackClick(
+        req.user.userId,
+        clickDto,
+      );
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

@@ -1,6 +1,21 @@
-import { Controller, Get, UseGuards, Request, Query, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Request,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiUnauthorizedResponse,
+  ApiInternalServerErrorResponse,
+  ApiBadRequestResponse,
+} from '@nestjs/swagger';
 import { IdentityService } from './identity.service';
 import { ResponseHandler } from '../common/helpers/response-handler';
 import { messages } from '../common/helpers/message';
@@ -26,6 +41,13 @@ export class IdentityController {
       data: { trust_score: 85, accuracy: 0.9 },
     },
   })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    example: {
+      statusCode: 400,
+      message: 'Bad request',
+    },
+  })
   @ApiUnauthorizedResponse({
     description: 'Unauthorized',
     example: {
@@ -42,21 +64,49 @@ export class IdentityController {
   })
   async getMyPerformance(@Request() req: any, @Res() res: Response) {
     try {
-      const result = await this.identityService.getUserPerformance(req.user.userId);
-      return this.responseHandler.successResponseWithData(res, messages.FETCH_SUCCESS, result);
+      const result = await this.identityService.getUserPerformance(
+        req.user.userId,
+      );
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   @Get('leaderboard')
-  @ApiOperation({ summary: 'Get the user leaderboard based on trust and performance' })
+  @ApiOperation({
+    summary: 'Get the user leaderboard based on trust and performance',
+  })
   @ApiOkResponse({
     description: 'Leaderboard fetched successfully',
     example: {
       statusCode: 200,
       message: 'Data fetched successfully',
       data: [{ id: 'uuid', name: 'User Name', trust_score: 100 }],
+    },
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    example: {
+      statusCode: 400,
+      message: 'Bad request',
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized access',
+    example: {
+      statusCode: 401,
+      message: 'Unauthorized access',
     },
   })
   @ApiInternalServerErrorResponse({
@@ -70,9 +120,19 @@ export class IdentityController {
     try {
       const limitNum = limit ? parseInt(limit, 10) : 10;
       const result = await this.identityService.getLeaderboard(limitNum);
-      return this.responseHandler.successResponseWithData(res, messages.FETCH_SUCCESS, result);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

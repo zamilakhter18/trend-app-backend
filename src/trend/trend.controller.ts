@@ -1,9 +1,8 @@
 import { Controller, Get, Param, Res } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiOkResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiOkResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse, ApiNotFoundResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { TrendService } from './trend.service';
 import { AiService } from '../ai/ai.service';
 import { ResponseHandler } from '../common/helpers/response-handler';
-import { messages } from '../common/helpers/message';
 import type { Response } from 'express';
 
 @ApiTags('Trend')
@@ -32,6 +31,13 @@ export class TrendController {
       message: 'Bad request',
     },
   })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+    example: {
+      statusCode: 401,
+      message: 'Unauthorized access',
+    },
+  })
   @ApiNotFoundResponse({
     description: 'Not Found',
     example: {
@@ -49,12 +55,12 @@ export class TrendController {
   async getTrend(@Param('id') id: string, @Res() res: Response) {
     try {
       const result = await this.trendService.getTrend(id);
-      if (!result) {
-        return this.responseHandler.errorResponse(res, messages.NOT_FOUND);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }
-      return this.responseHandler.successResponseWithData(res, messages.FETCH_SUCCESS, result);
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(res, (error as Error).message);
     }
   }
 
@@ -68,6 +74,20 @@ export class TrendController {
       data: { explanation: 'This trend is about...' },
     },
   })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    example: {
+      statusCode: 400,
+      message: 'Bad request',
+    },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+    example: {
+      statusCode: 401,
+      message: 'Unauthorized access',
+    },
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal Server Error',
     example: {
@@ -78,9 +98,12 @@ export class TrendController {
   async getTrendExplanation(@Param('id') id: string, @Res() res: Response) {
     try {
       const result = await this.aiService.getTrendExplanation(id);
-      return this.responseHandler.successResponseWithData(res, messages.FETCH_SUCCESS, result);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(res, result.message, result.data);
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(res, (error as Error).message);
     }
   }
 }

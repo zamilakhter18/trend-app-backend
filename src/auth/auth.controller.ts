@@ -1,5 +1,13 @@
 import { Controller, Post, Body, HttpCode, HttpStatus, Res } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiOkResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+  ApiInternalServerErrorResponse,
+  ApiCreatedResponse,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
@@ -32,6 +40,13 @@ export class AuthController {
       message: 'Bad request',
     },
   })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized access',
+    example: {
+      statusCode: 401,
+      message: 'Unauthorized access',
+    },
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal Server Error',
     example: {
@@ -42,9 +57,19 @@ export class AuthController {
   async signup(@Body() signupDto: SignupDto, @Res() res: Response) {
     try {
       const result = await this.authService.signup(signupDto);
-      return this.responseHandler.successResponseWithData(res, messages.SIGNUP_SUCCESS, result);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -66,6 +91,13 @@ export class AuthController {
       message: 'Unauthorized access',
     },
   })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    example: {
+      statusCode: 400,
+      message: 'Bad request',
+    },
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal Server Error',
     example: {
@@ -76,12 +108,26 @@ export class AuthController {
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     try {
       const result = await this.authService.login(loginDto);
-      if (result && result.session?.access_token) {
-        return this.responseHandler.successResponseWithToken(res, messages.LOGIN_SUCCESS, result.session.access_token);
+      if (result.success) {
+        const token = result.data?.session?.access_token;
+        if (token) {
+          return this.responseHandler.successResponseWithToken(
+            res,
+            result.message,
+            token,
+          );
+        }
+        return this.responseHandler.unAuthorizeErrorResponse(
+          res,
+          messages.UNAUTHORIZED,
+        );
       }
-      return this.responseHandler.unAuthorizeErrorResponse(res, messages.UNAUTHORIZED);
+      return this.responseHandler.unAuthorizeErrorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

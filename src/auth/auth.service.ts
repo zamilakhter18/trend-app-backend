@@ -1,13 +1,15 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { ServiceResponse } from '../common/interfaces/service-response.interface';
+import { messages } from '../common/helpers/message';
 
 @Injectable()
 export class AuthService {
   constructor(private supabaseService: SupabaseService) {}
 
-  async signup(signupDto: SignupDto) {
+  async signup(signupDto: SignupDto): Promise<ServiceResponse> {
     const client = this.supabaseService.getClient();
     const { email, password, username, full_name, avatar_url } = signupDto;
 
@@ -24,13 +26,13 @@ export class AuthService {
     });
 
     if (error) {
-      throw new BadRequestException(error.message);
+      return { success: false, message: error.message };
     }
 
-    return data;
+    return { success: true, message: messages.SIGNUP_SUCCESS, data };
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto): Promise<ServiceResponse> {
     const client = this.supabaseService.getClient();
     const { email, password } = loginDto;
 
@@ -40,9 +42,9 @@ export class AuthService {
     });
 
     if (error) {
-      throw new UnauthorizedException(error.message);
+      return { success: false, message: error.message };
     }
 
-    return data;
+    return { success: true, message: messages.LOGIN_SUCCESS, data };
   }
 }

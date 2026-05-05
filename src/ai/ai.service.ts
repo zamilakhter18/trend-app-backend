@@ -1,11 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
+import { ServiceResponse } from '../common/interfaces/service-response.interface';
+import { messages } from '../common/helpers/message';
 
 @Injectable()
 export class AiService {
   constructor(private supabaseService: SupabaseService) {}
 
-  async getTrendExplanation(trendId: string) {
+  async getTrendExplanation(trendId: string): Promise<ServiceResponse> {
     const client = this.supabaseService.getClient();
 
     const { data, error } = await client
@@ -15,10 +17,16 @@ export class AiService {
       .single();
 
     if (error || !data) {
-      // If not found, maybe trigger an enrichment job in the future
-      throw new NotFoundException('AI analysis not found for this trend');
+      return {
+        success: false,
+        message: messages.NOT_FOUND,
+      };
     }
 
-    return data;
+    return {
+      success: true,
+      message: messages.FETCH_SUCCESS,
+      data,
+    };
   }
 }

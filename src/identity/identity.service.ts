@@ -1,11 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
+import { ServiceResponse } from '../common/interfaces/service-response.interface';
+import { messages } from '../common/helpers/message';
 
 @Injectable()
 export class IdentityService {
   constructor(private supabaseService: SupabaseService) {}
 
-  async getUserPerformance(userId: string) {
+  async getUserPerformance(userId: string): Promise<ServiceResponse> {
     const client = this.supabaseService.getClient();
 
     const { data, error } = await client
@@ -15,13 +17,16 @@ export class IdentityService {
       .single();
 
     if (error || !data) {
-      throw new NotFoundException('User identity not found');
+      return {
+        success: false,
+        message: error?.message || messages.NOT_FOUND,
+      };
     }
 
-    return data;
+    return { success: true, message: messages.FETCH_SUCCESS, data };
   }
 
-  async getLeaderboard(limit: number = 10) {
+  async getLeaderboard(limit: number = 10): Promise<ServiceResponse> {
     const client = this.supabaseService.getClient();
 
     const { data, error } = await client
@@ -31,9 +36,9 @@ export class IdentityService {
       .limit(limit);
 
     if (error) {
-      throw new Error(error.message);
+      return { success: false, message: error.message };
     }
 
-    return data;
+    return { success: true, message: messages.FETCH_SUCCESS, data };
   }
 }

@@ -1,5 +1,18 @@
-import { Controller, Get, Query, UseInterceptors, Res } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiOkResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Query,
+  UseInterceptors,
+  Res,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiOkResponse,
+  ApiInternalServerErrorResponse,
+  ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { FeedService } from './feed.service';
 import { ResponseHandler } from '../common/helpers/response-handler';
@@ -32,6 +45,13 @@ export class FeedController {
       message: 'Bad request',
     },
   })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized access',
+    example: {
+      statusCode: 401,
+      message: 'Unauthorized access',
+    },
+  })
   @ApiInternalServerErrorResponse({
     description: 'Internal Server Error',
     example: {
@@ -47,9 +67,19 @@ export class FeedController {
     try {
       const limitNum = limit ? parseInt(limit, 10) : 10;
       const result = await this.feedService.getFeed(limitNum, cursor);
-      return this.responseHandler.successResponseWithData(res, messages.FETCH_SUCCESS, result);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
+      }
+      return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(res, messages.INTERNAL_SERVER_ERROR);
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
