@@ -16,7 +16,7 @@
 - [x] 2.3 Implement interaction and commerce migrations (`engagements`, `saves`, `products`, `clickouts`).
 - [x] 2.4 Implement analysis and scoring migrations (`ai_analysis`, `trend_scores`, `sponsored_content`).
 - [x] 2.5 Apply optimized PostgreSQL indexes for feed sorting and tag searching.
-- [ ] 2.6 Configure Supabase RLS policies for all 12 tables.
+- [x] 2.6 Configure Supabase RLS policies for all 12 tables.
 
 ## 3. Auth & Profile APIs
 
