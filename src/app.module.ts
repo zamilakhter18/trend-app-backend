@@ -12,6 +12,7 @@ import { AiModule } from './ai/ai.module';
 import { EngagementModule } from './engagement/engagement.module';
 import { ProductModule } from './product/product.module';
 import { ScoringModule } from './scoring/scoring.module';
+import { IdentityModule } from './identity/identity.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ScoringModule } from './scoring/scoring.module';
     EngagementModule,
     ProductModule,
     ScoringModule,
+    IdentityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

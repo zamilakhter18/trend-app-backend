@@ -38,7 +38,7 @@
 
 - [x] 6.1 Implement the scoring algorithm in a dedicated `ScoringService`.
 - [x] 6.2 Configure NestJS `ScheduleModule` for periodic score update tasks.
-- [ ] 6.3 Implement `IdentityModule` for user-specific performance and rewards.
+- [x] 6.3 Implement `IdentityModule` for user-specific performance and rewards.
 
 ## 7. Optimization & Verification
 
