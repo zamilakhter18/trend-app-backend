@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { FeedModule } from './feed/feed.module';
 import { TrendModule } from './trend/trend.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TrendModule } from './trend/trend.module';
     ProfileModule,
     FeedModule,
     TrendModule,
+    AiModule,
   ],
   controllers: [AppController],
   providers: [AppService],
