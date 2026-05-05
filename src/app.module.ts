@@ -14,6 +14,7 @@ import { EngagementModule } from './engagement/engagement.module';
 import { ProductModule } from './product/product.module';
 import { ScoringModule } from './scoring/scoring.module';
 import { IdentityModule } from './identity/identity.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { IdentityModule } from './identity/identity.module';
       max: 100, // maximum number of items in cache
     }),
     ScheduleModule.forRoot(),
+    CommonModule,
     SupabaseModule,
     AuthModule,
     ProfileModule,
