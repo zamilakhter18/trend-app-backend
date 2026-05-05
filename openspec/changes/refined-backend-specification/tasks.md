@@ -1,3 +1,7 @@
+## General Guidelines
+
+- **Atomic Commits:** After every successfully implemented feature or sub-task, make a git commit with a clear and meaningful message describing the change.
+
 ## 1. Project Setup & Architecture
 
 - [ ] 1.1 Initialize a new NestJS project using the Nest CLI.
