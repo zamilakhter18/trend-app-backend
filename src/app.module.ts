@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { SupabaseModule } from './supabase/supabase.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
+import { FeedModule } from './feed/feed.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ProfileModule } from './profile/profile.module';
     SupabaseModule,
     AuthModule,
     ProfileModule,
+    FeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
