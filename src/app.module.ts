@@ -6,6 +6,7 @@ import { SupabaseModule } from './supabase/supabase.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { FeedModule } from './feed/feed.module';
+import { TrendModule } from './trend/trend.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { FeedModule } from './feed/feed.module';
     AuthModule,
     ProfileModule,
     FeedModule,
+    TrendModule,
   ],
   controllers: [AppController],
   providers: [AppService],
