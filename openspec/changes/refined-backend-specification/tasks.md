@@ -12,7 +12,7 @@
 ## 2. Database Schema (Supabase PostgreSQL)
 
 - [x] 2.1 Implement core user and profile migrations (`users`, `user_profile`).
-- [ ] 2.2 Implement trend core migrations (`trends`, `trend_content`, `trend_metadata`).
+- [x] 2.2 Implement trend core migrations (`trends`, `trend_content`, `trend_metadata`).
 - [ ] 2.3 Implement interaction and commerce migrations (`engagements`, `saves`, `products`, `clickouts`).
 - [ ] 2.4 Implement analysis and scoring migrations (`ai_analysis`, `trend_scores`, `sponsored_content`).
 - [ ] 2.5 Apply optimized PostgreSQL indexes for feed sorting and tag searching.
