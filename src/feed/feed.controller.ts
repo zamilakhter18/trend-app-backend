@@ -1,10 +1,12 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 import { FeedService } from './feed.service';
 
 @Controller('feed')
 export class FeedController {
   constructor(private feedService: FeedService) {}
 
+  @UseInterceptors(CacheInterceptor)
   @Get()
   async getFeed(
     @Query('limit') limit?: string,
