@@ -1,27 +1,29 @@
-import { Injectable } from '@nestjs/common';
-import { SupabaseService } from '../supabase/supabase.service';
+import { Injectable, Inject } from '@nestjs/common';
+import { DRIZZLE } from '../db/db.module';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import * as schema from '../db/schema';
+import { eq } from 'drizzle-orm';
 import { ServiceResponse } from '../common/interfaces/service-response.interface';
 import { messages } from '../common/helpers/message';
 
 @Injectable()
 export class TrendService {
-  constructor(private supabaseService: SupabaseService) {}
+  constructor(
+    @Inject(DRIZZLE)
+    private db: PostgresJsDatabase<typeof schema>,
+  ) {}
 
   async getTrend(id: string): Promise<ServiceResponse> {
-    const client = this.supabaseService.getClient();
+    const data = await this.db.query.trends.findFirst({
+      where: eq(schema.trends.id, id),
+      with: {
+        content: true,
+        metadata: true,
+        products: true,
+      },
+    });
 
-    const { data, error } = await client
-      .from('trends')
-      .select(`
-        *,
-        trend_content(*),
-        trend_metadata(*),
-        products(*)
-      `)
-      .eq('id', id)
-      .single();
-
-    if (error || !data) {
+    if (!data) {
       return {
         success: false,
         message: messages.NOT_FOUND,

@@ -15,6 +15,7 @@ import { ProductModule } from './product/product.module';
 import { ScoringModule } from './scoring/scoring.module';
 import { IdentityModule } from './identity/identity.module';
 import { CommonModule } from './common/common.module';
+import { DbModule } from './db/db.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CommonModule } from './common/common.module';
     }),
     ScheduleModule.forRoot(),
     CommonModule,
+    DbModule,
     SupabaseModule,
     AuthModule,
     ProfileModule,
