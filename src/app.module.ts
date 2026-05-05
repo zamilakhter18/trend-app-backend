@@ -16,11 +16,21 @@ import { ScoringModule } from './scoring/scoring.module';
 import { IdentityModule } from './identity/identity.module';
 import { CommonModule } from './common/common.module';
 import { DbModule } from './db/db.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      url: process.env.DATABASE_URL,
+      autoLoadEntities: true,
+      synchronize: false,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     }),
     CacheModule.register({
       isGlobal: true,

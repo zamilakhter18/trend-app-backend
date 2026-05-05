@@ -1,26 +1,21 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { DRIZZLE } from '../db/db.module';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import * as schema from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Trend } from '../db/entities/Trend.entity';
 import { ServiceResponse } from '../common/interfaces/service-response.interface';
 import { messages } from '../common/helpers/message';
 
 @Injectable()
 export class TrendService {
   constructor(
-    @Inject(DRIZZLE)
-    private db: PostgresJsDatabase<typeof schema>,
+    @InjectRepository(Trend)
+    private readonly trendRepository: Repository<Trend>,
   ) {}
 
   async getTrend(id: string): Promise<ServiceResponse> {
-    const data = await this.db.query.trends.findFirst({
-      where: eq(schema.trends.id, id),
-      with: {
-        content: true,
-        metadata: true,
-        products: true,
-      },
+    const data = await this.trendRepository.findOne({
+      where: { id },
+      relations: ['contents', 'metadata', 'products'],
     });
 
     if (!data) {

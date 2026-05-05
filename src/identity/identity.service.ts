@@ -1,26 +1,21 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { DRIZZLE } from '../db/db.module';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import * as schema from '../db/schema';
-import { desc, eq } from 'drizzle-orm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserProfile } from '../db/entities/UserProfile.entity';
 import { ServiceResponse } from '../common/interfaces/service-response.interface';
 import { messages } from '../common/helpers/message';
 
 @Injectable()
 export class IdentityService {
   constructor(
-    @Inject(DRIZZLE)
-    private db: PostgresJsDatabase<typeof schema>,
+    @InjectRepository(UserProfile)
+    private readonly profileRepository: Repository<UserProfile>,
   ) {}
 
   async getUserPerformance(userId: string): Promise<ServiceResponse> {
-    const data = await this.db.query.userProfile.findFirst({
-      columns: {
-        trendScore: true,
-        level: true,
-        badges: true,
-      },
-      where: eq(schema.userProfile.userId, userId),
+    const data = await this.profileRepository.findOne({
+      select: ['trendScore', 'level', 'badges'],
+      where: { userId },
     });
 
     if (!data) {
@@ -34,17 +29,10 @@ export class IdentityService {
   }
 
   async getLeaderboard(limit: number = 10): Promise<ServiceResponse> {
-    const data = await this.db.query.userProfile.findMany({
-      columns: {
-        userId: true,
-        username: true,
-        fullName: true,
-        avatarUrl: true,
-        trendScore: true,
-        level: true,
-      },
-      orderBy: [desc(schema.userProfile.trendScore)],
-      limit: limit,
+    const data = await this.profileRepository.find({
+      select: ['userId', 'username', 'fullName', 'avatarUrl', 'trendScore', 'level'],
+      order: { trendScore: 'DESC' },
+      take: limit,
     });
 
     return { success: true, message: messages.FETCH_SUCCESS, data };

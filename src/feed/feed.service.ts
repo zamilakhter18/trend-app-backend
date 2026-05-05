@@ -1,16 +1,15 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { DRIZZLE } from '../db/db.module';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import * as schema from '../db/schema';
-import { desc, lt, and, eq, or } from 'drizzle-orm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Trend } from '../db/entities/Trend.entity';
 import { ServiceResponse } from '../common/interfaces/service-response.interface';
 import { messages } from '../common/helpers/message';
 
 @Injectable()
 export class FeedService {
   constructor(
-    @Inject(DRIZZLE)
-    private db: PostgresJsDatabase<typeof schema>,
+    @InjectRepository(Trend)
+    private readonly trendRepository: Repository<Trend>,
   ) {}
 
   async getFeed(
@@ -18,60 +17,33 @@ export class FeedService {
     cursor?: string,
   ): Promise<ServiceResponse<any>> {
     try {
-      let query = this.db
-        .select({
-          trend: schema.trends,
-          score: schema.trendScores,
-        })
-        .from(schema.trends)
-        .innerJoin(
-          schema.trendScores,
-          eq(schema.trends.id, schema.trendScores.trendId),
-        )
-        .limit(limit)
-        .orderBy(
-          desc(schema.trendScores.score),
-          desc(schema.trends.createdAt),
-        );
+      const query = this.trendRepository
+        .createQueryBuilder('trend')
+        .innerJoinAndSelect('trend.score', 'score')
+        .leftJoinAndSelect('trend.contents', 'contents')
+        .take(limit)
+        .orderBy('score.score', 'DESC')
+        .addOrderBy('trend.createdAt', 'DESC');
 
       if (cursor) {
         const [scoreStr, createdAtStr] = Buffer.from(cursor, 'base64')
           .toString()
           .split('|');
-        const score = scoreStr;
-        const createdAt = new Date(createdAtStr);
+        const score = parseFloat(scoreStr);
+        const createdAt = createdAtStr;
 
-        query = query.where(
-          or(
-            lt(schema.trendScores.score, score),
-            and(
-              eq(schema.trendScores.score, score),
-              lt(schema.trends.createdAt, createdAt),
-            ),
-          ),
-        ) as any;
+        query.where(
+          '(score.score < :score OR (score.score = :score AND trend.createdAt < :createdAt))',
+          { score, createdAt },
+        );
       }
 
-      const results = await query;
-
-      // Fetch content for each trend (batching would be better, but keeping it simple for now)
-      const data = await Promise.all(
-        results.map(async (row) => {
-          const content = await this.db.query.trendContent.findMany({
-            where: eq(schema.trendContent.trendId, row.trend.id),
-          });
-          return {
-            ...row.trend,
-            trend_scores: [row.score],
-            trend_content: content,
-          };
-        }),
-      );
+      const data = await query.getMany();
 
       let nextCursor = null;
       if (data.length === limit) {
         const lastItem = data[data.length - 1];
-        const lastScore = (lastItem as any).trend_scores[0]?.score || '0';
+        const lastScore = lastItem.score?.score || 0;
         const lastCreatedAt = lastItem.createdAt?.toISOString();
         nextCursor = Buffer.from(`${lastScore}|${lastCreatedAt}`).toString('base64');
       }

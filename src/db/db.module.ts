@@ -1,27 +1,34 @@
 import { Module, Global } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
-import * as schema from './schema';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserProfile } from './entities/UserProfile.entity';
+import { Trend } from './entities/Trend.entity';
+import { TrendContent } from './entities/TrendContent.entity';
+import { TrendMetadata } from './entities/TrendMetadata.entity';
+import { Engagement } from './entities/Engagement.entity';
+import { Save } from './entities/Save.entity';
+import { Product } from './entities/Product.entity';
+import { Clickout } from './entities/Clickout.entity';
+import { AiAnalysis } from './entities/AiAnalysis.entity';
+import { TrendScore } from './entities/TrendScore.entity';
+import { SponsoredContent } from './entities/SponsoredContent.entity';
 
-export const DRIZZLE = 'DRIZZLE';
+const entities = [
+  UserProfile,
+  Trend,
+  TrendContent,
+  TrendMetadata,
+  Engagement,
+  Save,
+  Product,
+  Clickout,
+  AiAnalysis,
+  TrendScore,
+  SponsoredContent,
+];
 
 @Global()
 @Module({
-  providers: [
-    {
-      provide: DRIZZLE,
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const databaseUrl = configService.get<string>('DATABASE_URL');
-        if (!databaseUrl) {
-          throw new Error('DATABASE_URL is not defined');
-        }
-        const queryClient = postgres(databaseUrl);
-        return drizzle(queryClient, { schema });
-      },
-    },
-  ],
-  exports: [DRIZZLE],
+  imports: [TypeOrmModule.forFeature(entities)],
+  exports: [TypeOrmModule],
 })
 export class DbModule {}

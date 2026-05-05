@@ -1,21 +1,20 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { DRIZZLE } from '../db/db.module';
-import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import * as schema from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserProfile } from '../db/entities/UserProfile.entity';
 import { ServiceResponse } from '../common/interfaces/service-response.interface';
 import { messages } from '../common/helpers/message';
 
 @Injectable()
 export class ProfileService {
   constructor(
-    @Inject(DRIZZLE)
-    private db: PostgresJsDatabase<typeof schema>,
+    @InjectRepository(UserProfile)
+    private readonly profileRepository: Repository<UserProfile>,
   ) {}
 
   async getProfile(userId: string): Promise<ServiceResponse> {
-    const data = await this.db.query.userProfile.findFirst({
-      where: eq(schema.userProfile.userId, userId),
+    const data = await this.profileRepository.findOne({
+      where: { userId },
     });
 
     if (!data) {
