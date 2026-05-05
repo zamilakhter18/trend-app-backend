@@ -21,7 +21,7 @@
 ## 3. Auth & Profile APIs
 
 - [x] 3.1 Implement `AuthModule` with `signup` and `login` endpoints.
-- [ ] 3.2 Implement `ProfileModule` to retrieve the current user's profile and metadata.
+- [x] 3.2 Implement `ProfileModule` to retrieve the current user's profile and metadata.
 
 ## 4. Feed & Trend Intelligence
 
