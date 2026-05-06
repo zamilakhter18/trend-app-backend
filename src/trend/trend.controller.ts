@@ -1,11 +1,14 @@
-import { Controller, Get, Param, Res } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiOkResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse, ApiNotFoundResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { Controller, Get, Param, Res, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiTags, ApiOperation, ApiOkResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse, ApiNotFoundResponse, ApiUnauthorizedResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { TrendService } from './trend.service';
 import { AiService } from '../ai/ai.service';
 import { ResponseHandler } from '../common/helpers/response-handler';
 import type { Response } from 'express';
 
 @ApiTags('Trend')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
 @Controller('trend')
 export class TrendController {
   constructor(

@@ -4,7 +4,9 @@ import {
   Query,
   UseInterceptors,
   Res,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiTags,
   ApiOperation,
@@ -12,6 +14,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { FeedService } from './feed.service';
@@ -20,6 +23,8 @@ import { messages } from '../common/helpers/message';
 import type { Response } from 'express';
 
 @ApiTags('Feed')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
 @Controller('feed')
 export class FeedController {
   constructor(

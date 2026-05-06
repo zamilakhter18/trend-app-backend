@@ -4,22 +4,29 @@ This document outlines the interaction between users, the API endpoints, and the
 
 ---
 
-## 👤 1. Guest / Unauthenticated User
-Guests can browse the platform, view trends, and see leaderboards without logging in.
+## 🔐 Security & Authentication
+All endpoints (except Public Auth) require a valid **JSON Web Token (JWT)**.
+- **Header:** `Authorization: Bearer <your_jwt_token>`
+- **Token Source:** Obtained from the `POST /auth/login` or `POST /auth/signup` response.
+
+---
+
+## 👤 1. Authenticated User (Consumer / Curator)
+Registered users can browse trends, engage with content, and track performance.
 
 ### Work Cycle
-1. **View Feed:** Opens the app and loads the global trend feed.
-2. **View Trend:** Clicks on a specific trend to see details and AI explanations.
-3. **View Products:** Checks products associated with a trend.
-4. **View Leaderboard:** Checks top-performing creators/curators.
+1. **Login:** Obtain JWT token.
+2. **View Feed:** Load personalized global trend feed using JWT.
+3. **Engage:** Like, comment, or share trends.
+4. **Save:** Bookmark trends for later.
 
 ### 🔗 APIs
 
 #### **Get Trend Feed**
 - **Endpoint:** `GET /feed`
-- **Action:** Fetches trending topics ordered by score (cached).
-- **DB Reflection:** Queries `trends` table joined with `trend_scores`.
-- **Response Example:**
+- **Security:** `Bearer Auth Required`
+- **Action:** Fetches trending topics ordered by score.
+- **Success Response:**
 ```json
 {
   "statusCode": 200,
@@ -28,73 +35,28 @@ Guests can browse the platform, view trends, and see leaderboards without loggin
 }
 ```
 
-#### **Get Trend Details & AI Explanation**
-- **Endpoints:** 
-  - `GET /trend/:id` (Details)
-  - `GET /trend/:id/explanation` (AI Summary)
-- **DB Reflection:** Queries `trends`, `trend_metadata`, and `ai_analysis` tables.
-
-#### **View Products for a Trend**
-- **Endpoint:** `GET /product?trend_id=uuid`
-- **DB Reflection:** Queries the `products` table where `trend_id` matches.
-
----
-
-## 🛡️ 2. Registered User (Consumer / Curator)
-Users who have signed up. They can engage with content, save trends, and track their reputation.
-
-### Work Cycle
-1. **Onboarding:** Sign up and Login.
-2. **Engagement:** Like, comment, or share a trend on their feed.
-3. **Save:** Bookmark a trend for later.
-4. **Identity Tracking:** Check their own "Trust Score" and performance metrics.
-
-### 🔗 APIs
-
-#### **Authentication (Signup / Login)**
-- **Endpoints:** `POST /auth/signup` & `POST /auth/login`
-- **DB Reflection:** Creates a new user in Supabase Auth and a corresponding row in the `user_profile` table.
-- **Payload (Signup):**
-```json
-{
-  "email": "user@example.com",
-  "password": "securePass123",
-  "username": "trendsetter99",
-  "full_name": "John Doe"
-}
-```
-
-#### **Engage with a Trend (Requires Auth)**
+#### **Engage with a Trend**
 - **Endpoint:** `POST /engagement/engage`
-- **DB Reflection:** Inserts a row into the `engagements` table. This triggers a score update for the trend.
+- **Security:** `Bearer Auth Required`
 - **Payload:**
 ```json
 {
-  "trend_id": "uuid",
+  "trend_id": "550e8400-e29b-41d4-a716-446655440000",
   "type": "like", 
   "content": "This is amazing!" 
 }
 ```
 
-#### **Save a Trend (Requires Auth)**
-- **Endpoint:** `POST /engagement/save`
-- **DB Reflection:** Inserts a row into the `saves` table.
-
 ---
 
-## 💼 3. Creator / Affiliate Marketer
+## 💼 2. Creator / Affiliate Marketer
 Users who actively add products to trends to monetize traffic.
-
-### Work Cycle
-1. Finds an emerging trend.
-2. Creates a related product integration with an affiliate URL.
-3. Manages (Updates/Deletes) their product listings.
 
 ### 🔗 APIs
 
-#### **Create Product Integration (Requires Auth)**
+#### **Create Product Integration**
 - **Endpoint:** `POST /product`
-- **DB Reflection:** Inserts a row into the `products` table.
+- **Security:** `Bearer Auth Required`
 - **Payload:**
 ```json
 {
@@ -107,8 +69,49 @@ Users who actively add products to trends to monetize traffic.
 
 ---
 
+## ⚠️ Error Response Examples
+
+The following error formats are consistent across all APIs:
+
+#### **401 Unauthorized** (Missing or Invalid Token)
+```json
+{
+  "statusCode": 401,
+  "message": "Unauthorized"
+}
+```
+
+#### **400 Bad Request** (Validation Error)
+```json
+{
+  "statusCode": 400,
+  "message": [
+    "email must be an email",
+    "password must be longer than or equal to 6 characters"
+  ],
+  "error": "Bad Request"
+}
+```
+
+#### **404 Not Found** (Resource Missing)
+```json
+{
+  "statusCode": 404,
+  "message": "Resource not found"
+}
+```
+
+#### **500 Internal Server Error**
+```json
+{
+  "statusCode": 500,
+  "message": "Something went wrong"
+}
+```
+
+---
+
 ## ⚙️ System Background Processes (Cron)
 - **Global Score Update:** 
   - **Frequency:** Every hour (currently 1 min for testing).
-  - **Action:** Recalculates trend velocity and engagement metrics.
-  - **DB Reflection:** Updates `trend_scores` table.
+  - **Action:** Recalculates trend velocity and engagement metrics in `trend_scores` table.

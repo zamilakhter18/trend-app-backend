@@ -83,6 +83,8 @@ export class IdentityController {
     }
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Get('leaderboard')
   @ApiOperation({
     summary: 'Get the user leaderboard based on trust and performance',
