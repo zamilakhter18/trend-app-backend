@@ -7,10 +7,12 @@ import {
   ApiUnauthorizedResponse,
   ApiInternalServerErrorResponse,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ResponseHandler } from '../common/helpers/response-handler';
 import { messages } from '../common/helpers/message';
 import type { Response } from 'express';
@@ -32,7 +34,12 @@ export class AuthController {
     example: {
       statusCode: 201,
       message: 'User registered successfully',
-      data: { id: 'uuid', email: 'user@example.com' },
+      data: { 
+        id: 'uuid', 
+        email: 'user@example.com',
+        access_token: 'abc...',
+        refresh_token: 'xyz...'
+      },
     },
   })
   @ApiBadRequestResponse({
@@ -40,13 +47,6 @@ export class AuthController {
     example: {
       statusCode: 400,
       message: 'Bad request',
-    },
-  })
-  @ApiUnauthorizedResponse({
-    description: 'Unauthorized access',
-    example: {
-      statusCode: 401,
-      message: 'Unauthorized access',
     },
   })
   @ApiInternalServerErrorResponse({
@@ -84,7 +84,10 @@ export class AuthController {
     example: {
       statusCode: 200,
       message: 'Login successful',
-      data: { token: 'jwt-token' },
+      data: { 
+        access_token: 'abc...',
+        refresh_token: 'xyz...'
+      },
     },
   })
   @ApiUnauthorizedResponse({
@@ -92,13 +95,6 @@ export class AuthController {
     example: {
       statusCode: 401,
       message: 'Unauthorized access',
-    },
-  })
-  @ApiBadRequestResponse({
-    description: 'Bad Request',
-    example: {
-      statusCode: 400,
-      message: 'Bad request',
     },
   })
   @ApiInternalServerErrorResponse({
@@ -112,20 +108,61 @@ export class AuthController {
     try {
       const result = await this.authService.login(loginDto);
       if (result.success) {
-        const token = result.data?.session?.access_token;
-        if (token) {
-          return this.responseHandler.successResponseWithToken(
-            res,
-            result.message,
-            token,
-          );
-        }
-        return this.responseHandler.unAuthorizeErrorResponse(
+        return this.responseHandler.successResponseWithData(
           res,
-          messages.UNAUTHORIZED,
+          result.message,
+          result.data,
         );
       }
       return this.responseHandler.unAuthorizeErrorResponse(res, result.message);
+    } catch (error) {
+      return this.responseHandler.catchErrorResponse(
+        res,
+        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Public()
+  @Post('refresh-token')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Refresh access token using a valid refresh token' })
+  @ApiOkResponse({
+    description: 'Token refreshed successfully',
+    example: {
+      statusCode: 200,
+      message: 'Token refreshed successfully',
+      data: {
+        access_token: 'new-abc...',
+        refresh_token: 'new-xyz...'
+      }
+    },
+  })
+  @ApiForbiddenResponse({
+    description: 'Invalid or expired refresh token',
+    example: {
+      statusCode: 403,
+      message: 'Invalid or expired refresh token'
+    }
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal Server Error',
+    example: {
+      statusCode: 500,
+      message: 'Something went wrong',
+    },
+  })
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Res() res: Response) {
+    try {
+      const result = await this.authService.refreshToken(refreshTokenDto.refresh_token);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(
+          res,
+          result.message,
+          result.data,
+        );
+      }
+      return this.responseHandler.forbiddenErrorResponse(res, result.message);
     } catch (error) {
       return this.responseHandler.catchErrorResponse(
         res,

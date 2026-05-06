@@ -56,6 +56,13 @@ export class ResponseHandler {
     });
   }
 
+  forbiddenErrorResponse(res: Response, msg: string) {
+    return res.status(HttpStatus.FORBIDDEN).json({
+      statusCode: HttpStatus.FORBIDDEN,
+      message: msg,
+    });
+  }
+
   catchErrorResponse(res: Response, msg: string) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,

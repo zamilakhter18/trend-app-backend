@@ -30,7 +30,7 @@ Guests can browse the platform and view basic content without a token.
 Registered users who can engage with content and track their own performance.
 
 ### Work Cycle
-1. **Login:** Obtain JWT.
+1. **Login:** Obtain JWT Access & Refresh tokens.
 2. **Engage:** Like, comment, or share trends.
 3. **Save:** bookmark trends.
 4. **Track:** View personal performance metrics.
@@ -46,7 +46,33 @@ Registered users who can engage with content and track their own performance.
 
 ---
 
-## 💼 3. Creator (`CREATOR` Role)
+## 🔄 3. Token Refresh Flow
+Access tokens have a short lifespan (15m). Use the refresh token (7d) to obtain new credentials without re-logging.
+
+### 🔗 Refresh API
+- **Refresh Token:** `POST /auth/refresh-token`
+- **Security:** `@Public` (Request body carries the credential)
+- **Payload:**
+```json
+{
+  "refresh_token": "your_long_lived_refresh_token"
+}
+```
+- **Success Response:**
+```json
+{
+  "statusCode": 200,
+  "message": "Token refreshed successfully",
+  "data": {
+    "access_token": "new_access_token",
+    "refresh_token": "new_refresh_token"
+  }
+}
+```
+
+---
+
+## 💼 4. Creator (`CREATOR` Role)
 Users who manage product integrations for trends.
 
 ### 🔗 Secured APIs (JWT + Role Required)
@@ -56,7 +82,7 @@ Users who manage product integrations for trends.
 
 ---
 
-## 👑 4. Administrator (`ADMIN` Role)
+## 👑 5. Administrator (`ADMIN` Role)
 Users with elevated permissions to manage the platform.
 
 ### 🔗 Secured APIs (JWT + Admin Role Required)
@@ -74,11 +100,11 @@ Users with elevated permissions to manage the platform.
 }
 ```
 
-#### **403 Forbidden** (Insufficient Role or Invalid User)
+#### **403 Forbidden** (Insufficient Role or Invalid Refresh Token)
 ```json
 {
   "statusCode": 403,
-  "message": "Unauthorized role"
+  "message": "Unauthorized role" // OR "Invalid or expired refresh token"
 }
 ```
 
