@@ -11,21 +11,21 @@ import { Trend } from './Trend.entity';
 @Entity('saves')
 export class Save {
   @PrimaryColumn('uuid', { name: 'user_id' })
-  userId: string;
+  userId!: string;
 
   @ManyToOne(() => UserProfile, (profile) => profile.saves, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
-  user: UserProfile;
+  user!: UserProfile;
 
   @PrimaryColumn('uuid', { name: 'trend_id' })
-  trendId: string;
+  trendId!: string;
 
   @ManyToOne(() => Trend, (trend) => trend.saves, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'trend_id' })
-  trend: Trend;
+  trend!: Trend;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
-  createdAt: Date;
+  createdAt!: Date;
 }

@@ -11,24 +11,24 @@ import { Trend } from './Trend.entity';
 @Entity('trend_content')
 export class TrendContent {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ name: 'trend_id' })
-  trendId: string;
+  trendId!: string;
 
   @ManyToOne(() => Trend, (trend) => trend.contents, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'trend_id' })
-  trend: Trend;
+  trend!: Trend;
 
   @Column({ name: 'content_url' })
-  contentUrl: string;
+  contentUrl!: string;
 
   @Column({ name: 'content_type' })
-  contentType: string; // 'video', 'image', 'link'
+  contentType!: string; // 'video', 'image', 'link'
 
   @Column({ name: 'is_primary', default: false })
-  isPrimary: boolean;
+  isPrimary!: boolean;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
-  createdAt: Date;
+  createdAt!: Date;
 }

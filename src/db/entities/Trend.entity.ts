@@ -22,56 +22,56 @@ import { SponsoredContent } from './SponsoredContent.entity';
 @Entity('trends')
 export class Trend {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ name: 'creator_id', nullable: true })
-  creatorId: string;
+  creatorId!: string;
 
   @ManyToOne(() => UserProfile, (profile) => profile.trends, {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'creator_id' })
-  creator: UserProfile;
+  creator!: UserProfile;
 
   @Column()
-  title: string;
+  title!: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description!: string;
 
   @Column({
     type: 'text',
     default: 'emerging',
   })
-  phase: 'emerging' | 'rising' | 'peak' | 'fading';
+  phase!: 'emerging' | 'rising' | 'peak' | 'fading';
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @OneToMany(() => TrendContent, (content) => content.trend)
-  contents: TrendContent[];
+  contents!: TrendContent[];
 
   @OneToOne(() => TrendMetadata, (metadata) => metadata.trend)
-  metadata: TrendMetadata;
+  metadata!: TrendMetadata;
 
   @OneToMany(() => Engagement, (engagement) => engagement.trend)
-  engagements: Engagement[];
+  engagements!: Engagement[];
 
   @OneToMany(() => Save, (save) => save.trend)
-  saves: Save[];
+  saves!: Save[];
 
   @OneToMany(() => Product, (product) => product.trend)
-  products: Product[];
+  products!: Product[];
 
   @OneToOne(() => AiAnalysis, (analysis) => analysis.trend)
-  aiAnalysis: AiAnalysis;
+  aiAnalysis!: AiAnalysis;
 
   @OneToOne(() => TrendScore, (score) => score.trend)
-  score: TrendScore;
+  score!: TrendScore;
 
   @OneToOne(() => SponsoredContent, (sponsored) => sponsored.trend)
-  sponsoredContent: SponsoredContent;
+  sponsoredContent!: SponsoredContent;
 }

@@ -11,17 +11,17 @@ import { Trend } from './Trend.entity';
 @Entity('trend_metadata')
 export class TrendMetadata {
   @PrimaryColumn('uuid', { name: 'trend_id' })
-  trendId: string;
+  trendId!: string;
 
   @OneToOne(() => Trend, (trend) => trend.metadata, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'trend_id' })
-  trend: Trend;
+  trend!: Trend;
 
   @Column('text', { array: true, default: '{}' })
-  tags: string[];
+  tags!: string[];
 
   @Column('text', { array: true, default: '{}' })
-  categories: string[];
+  categories!: string[];
 
   @Column('decimal', {
     name: 'sentiment_score',
@@ -29,11 +29,11 @@ export class TrendMetadata {
     scale: 2,
     nullable: true,
   })
-  sentimentScore: number;
+  sentimentScore!: number;
 
   @Column({ name: 'ai_summary', type: 'text', nullable: true })
-  aiSummary: string;
+  aiSummary!: string;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
-  updatedAt: Date;
+  updatedAt!: Date;
 }

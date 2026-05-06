@@ -14,39 +14,39 @@ import { Clickout } from './Clickout.entity';
 @Entity('products')
 export class Product {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ name: 'trend_id', nullable: true })
-  trendId: string;
+  trendId!: string;
 
   @ManyToOne(() => Trend, (trend) => trend.products, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'trend_id' })
-  trend: Trend;
+  trend!: Trend;
 
   @Column()
-  name: string;
+  name!: string;
 
   @Column({ type: 'text', nullable: true })
-  description: string;
+  description!: string;
 
   @Column('decimal', { precision: 12, scale: 2, nullable: true })
-  price: number;
+  price!: number;
 
   @Column({ default: 'USD' })
-  currency: string;
+  currency!: string;
 
   @Column({ name: 'affiliate_url' })
-  affiliateUrl: string;
+  affiliateUrl!: string;
 
   @Column({ name: 'image_url', nullable: true })
-  imageUrl: string;
+  imageUrl!: string;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @OneToMany(() => Clickout, (clickout) => clickout.product)
-  clickouts: Clickout[];
+  clickouts!: Clickout[];
 }
