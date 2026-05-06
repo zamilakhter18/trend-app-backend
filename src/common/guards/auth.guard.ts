@@ -6,21 +6,19 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { JwtService } from '@nestjs/jwt';
+import { CustomJwtService } from '../helpers/jwt.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserProfile } from '../../db/entities/UserProfile.entity';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private jwtService: JwtService,
+    private jwtService: CustomJwtService,
     @InjectRepository(UserProfile)
     private userRepository: Repository<UserProfile>,
-    private configService: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -35,9 +33,7 @@ export class AuthGuard implements CanActivate {
     if (isPublic) {
       if (token) {
         try {
-          const payload = await this.jwtService.verifyAsync(token, {
-            secret: this.configService.get<string>('JWT_SECRET'),
-          });
+          const payload = await this.jwtService.verify(token);
           const user = await this.userRepository.findOne({
             where: { userId: payload.sub || payload.userId },
           });
@@ -56,9 +52,7 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: this.configService.get<string>('JWT_SECRET'),
-      });
+      const payload = await this.jwtService.verify(token);
       const user = await this.userRepository.findOne({
         where: { userId: payload.sub || payload.userId },
       });
