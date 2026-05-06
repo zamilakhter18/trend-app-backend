@@ -3,10 +3,14 @@ import { AppModule } from './app.module';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import { ExecutionTimeInterceptor } from './common/interceptors/execution-time.interceptor';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
+
+  // Interceptors: Execution Time Logging
+  app.useGlobalInterceptors(new ExecutionTimeInterceptor());
 
   // Security: Helmet
   app.use(helmet());
