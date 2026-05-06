@@ -130,6 +130,27 @@ Users with elevated permissions to manage the platform.
 
 ---
 
+## ⚙️ 6. Data Ingestion Architecture
+The system receives automated trend data from external Python scraping pipelines.
+
+### 🐍 Python Pipeline Integration
+1. **Python Scraper**: Extracts trends from social media (Instagram, TikTok, etc.).
+2. **Data Submission**: Scraper sends POST request to `/ingestion/social-import` with an internal API token.
+3. **Validation**: NestJS validates the `x-ingestion-token`.
+4. **Persistence**: Backend saves data across `trends`, `trend_metadata`, and `trend_scores` tables.
+
+#### 🔗 Ingestion API
+- **Social Import:** `POST /ingestion/social-import`
+- **Security:** `x-ingestion-token` Header (Internal)
+- **Action:** Batch or single trend insertion.
+
+### 🛠️ Admin Control
+Administrators can manually trigger the ingestion process.
+- **Trigger Pipeline:** `POST /admin/ingestion/run`
+- **Security:** `Bearer Auth` + `ADMIN` Role.
+
+---
+
 ## ⚙️ System Background Processes (Cron)
 - **Global Score Update:** 
   - **Frequency:** Every hour (currently 1 min for testing).
