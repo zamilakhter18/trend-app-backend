@@ -1,5 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Res } from "@nestjs/common";
-import { AuthGuard } from "@nestjs/passport";
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Res } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiCreatedResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse } from "@nestjs/swagger";
 import { ProductService } from "./product.service";
 import { CreateProductDto } from "./dto/create-product.dto";
@@ -7,6 +6,7 @@ import { UpdateProductDto } from "./dto/update-product.dto";
 import { ResponseHandler } from "../common/helpers/response-handler";
 import { messages } from "../common/helpers/message";
 import type { Response } from "express";
+import { Public } from "../common/decorators/public.decorator";
 
 @ApiTags("Product")
 @Controller("product")
@@ -17,7 +17,6 @@ export class ProductController {
   ) {}
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard("jwt"))
   @Post()
   @ApiOperation({ summary: "Add a new product integration" })
   @ApiCreatedResponse({
@@ -61,6 +60,7 @@ export class ProductController {
     }
   }
 
+  @Public()
   @Get()
   @ApiOperation({ summary: "List all products for a specific trend" })
   @ApiOkResponse({
@@ -104,6 +104,7 @@ export class ProductController {
     }
   }
 
+  @Public()
   @Get(":id")
   @ApiOperation({ summary: "Get details of a specific product" })
   @ApiOkResponse({
@@ -155,7 +156,6 @@ export class ProductController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard("jwt"))
   @Patch(":id")
   @ApiOperation({ summary: "Update product information" })
   @ApiOkResponse({
@@ -200,7 +200,6 @@ export class ProductController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard("jwt"))
   @Delete(":id")
   @ApiOperation({ summary: "Remove a product integration" })
   @ApiOkResponse({

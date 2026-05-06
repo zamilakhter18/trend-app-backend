@@ -11,6 +11,7 @@ import { Engagement } from './Engagement.entity';
 import { Save } from './Save.entity';
 import { Clickout } from './Clickout.entity';
 import { SponsoredContent } from './SponsoredContent.entity';
+import { UserRole } from '../../common/enums/user-role.enum';
 
 @Entity('user_profile')
 export class UserProfile {
@@ -25,6 +26,13 @@ export class UserProfile {
 
   @Column({ name: 'avatar_url', nullable: true })
   avatarUrl!: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role!: UserRole;
 
   @Column('decimal', {
     name: 'trend_score',

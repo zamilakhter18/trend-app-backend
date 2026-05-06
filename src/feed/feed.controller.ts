@@ -4,9 +4,7 @@ import {
   Query,
   UseInterceptors,
   Res,
-  UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
   ApiTags,
   ApiOperation,
@@ -21,10 +19,9 @@ import { FeedService } from './feed.service';
 import { ResponseHandler } from '../common/helpers/response-handler';
 import { messages } from '../common/helpers/message';
 import type { Response } from 'express';
+import { Public } from '../common/decorators/public.decorator';
 
 @ApiTags('Feed')
-@ApiBearerAuth()
-@UseGuards(AuthGuard('jwt'))
 @Controller('feed')
 export class FeedController {
   constructor(
@@ -32,6 +29,7 @@ export class FeedController {
     private responseHandler: ResponseHandler,
   ) {}
 
+  @Public()
   @UseInterceptors(CacheInterceptor)
   @Get()
   @ApiOperation({ summary: 'Get the personalized trend feed' })

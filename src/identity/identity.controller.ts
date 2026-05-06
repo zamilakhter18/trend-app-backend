@@ -1,12 +1,9 @@
 import {
   Controller,
   Get,
-  UseGuards,
-  Request,
   Query,
   Res,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
   ApiTags,
   ApiOperation,
@@ -20,6 +17,11 @@ import { IdentityService } from './identity.service';
 import { ResponseHandler } from '../common/helpers/response-handler';
 import { messages } from '../common/helpers/message';
 import type { Response } from 'express';
+import { Public } from '../common/decorators/public.decorator';
+import { Roles } from '../common/decorators/role.decorator';
+import { UserRole } from '../common/enums/user-role.enum';
+import { GetFullUser } from '../common/decorators/get-full-user.decorator';
+import { UserProfile } from '../db/entities/UserProfile.entity';
 
 @ApiTags('Identity')
 @Controller('identity')
@@ -30,7 +32,6 @@ export class IdentityController {
   ) {}
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @Get('performance')
   @ApiOperation({ summary: 'Get the performance metrics for the current user' })
   @ApiOkResponse({
@@ -62,10 +63,10 @@ export class IdentityController {
       message: 'Something went wrong',
     },
   })
-  async getMyPerformance(@Request() req: any, @Res() res: Response) {
+  async getMyPerformance(@GetFullUser() user: UserProfile, @Res() res: Response) {
     try {
       const result = await this.identityService.getUserPerformance(
-        req.user.userId,
+        user.userId,
       );
       if (result.success) {
         return this.responseHandler.successResponseWithData(
@@ -83,8 +84,7 @@ export class IdentityController {
     }
   }
 
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @Public()
   @Get('leaderboard')
   @ApiOperation({
     summary: 'Get the user leaderboard based on trust and performance',
@@ -136,5 +136,13 @@ export class IdentityController {
         (error as Error).message || messages.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  @ApiBearerAuth()
+  @Roles(UserRole.ADMIN)
+  @Get('admin-stats')
+  @ApiOperation({ summary: 'Admin only statistics' })
+  async getAdminStats(@Res() res: Response) {
+    return this.responseHandler.successResponseWithData(res, 'Admin stats fetched', { users: 100, trends: 50 });
   }
 }

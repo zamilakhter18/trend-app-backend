@@ -12,6 +12,8 @@ import { ResponseHandler } from './common/helpers/response-handler';
 import { messages } from './common/helpers/message';
 import type { Response } from 'express';
 
+import { Public } from './common/decorators/public.decorator';
+
 @ApiTags('Health')
 @Controller()
 export class AppController {
@@ -20,6 +22,7 @@ export class AppController {
     private responseHandler: ResponseHandler,
   ) {}
 
+  @Public()
   @Get()
   @ApiOperation({ summary: 'Health check endpoint' })
   @ApiOkResponse({

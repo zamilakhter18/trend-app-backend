@@ -14,6 +14,7 @@ import { LoginDto } from './dto/login.dto';
 import { ResponseHandler } from '../common/helpers/response-handler';
 import { messages } from '../common/helpers/message';
 import type { Response } from 'express';
+import { Public } from '../common/decorators/public.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -23,6 +24,7 @@ export class AuthController {
     private responseHandler: ResponseHandler,
   ) {}
 
+  @Public()
   @Post('signup')
   @ApiOperation({ summary: 'Register a new user' })
   @ApiCreatedResponse({
@@ -73,6 +75,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login with credentials' })

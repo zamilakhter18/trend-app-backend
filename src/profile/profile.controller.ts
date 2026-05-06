@@ -1,9 +1,10 @@
-import { Controller, Get, UseGuards, Request, Res } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, Get, Res } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse } from '@nestjs/swagger';
 import { ProfileService } from './profile.service';
 import { ResponseHandler } from '../common/helpers/response-handler';
 import type { Response } from 'express';
+import { GetFullUser } from '../common/decorators/get-full-user.decorator';
+import { UserProfile } from '../db/entities/UserProfile.entity';
 
 @ApiTags('Profile')
 @Controller('profile')
@@ -14,7 +15,6 @@ export class ProfileController {
   ) {}
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @Get('me')
   @ApiOperation({ summary: 'Get the profile of the currently authenticated user' })
   @ApiOkResponse({
@@ -46,9 +46,9 @@ export class ProfileController {
       message: 'Something went wrong',
     },
   })
-  async getMe(@Request() req: any, @Res() res: Response) {
+  async getMe(@GetFullUser() user: UserProfile, @Res() res: Response) {
     try {
-      const result = await this.profileService.getProfile(req.user.userId);
+      const result = await this.profileService.getProfile(user.userId);
       if (result.success) {
         return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }

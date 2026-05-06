@@ -17,6 +17,10 @@ import { IdentityModule } from './identity/identity.module';
 import { CommonModule } from './common/common.module';
 import { DbModule } from './db/db.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './common/guards/auth.guard';
+import { RolesGuard } from './common/guards/role.guard';
+import { UserProfile } from './db/entities/UserProfile.entity';
 
 @Module({
   imports: [
@@ -32,6 +36,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         rejectUnauthorized: false,
       },
     }),
+    TypeOrmModule.forFeature([UserProfile]),
     CacheModule.register({
       isGlobal: true,
       ttl: 60, // 1 minute default TTL
@@ -52,6 +57,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     IdentityModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}

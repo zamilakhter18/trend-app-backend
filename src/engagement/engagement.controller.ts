@@ -4,11 +4,9 @@ import {
   Delete,
   Body,
   Param,
-  UseGuards,
   Request,
   Res,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
   ApiTags,
   ApiOperation,
@@ -36,7 +34,6 @@ export class EngagementController {
   ) {}
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @Post('engage')
   @ApiOperation({ summary: 'Log a user engagement (upvote/downvote)' })
   @ApiOkResponse({
@@ -95,7 +92,6 @@ export class EngagementController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @Post('save')
   @ApiOperation({ summary: 'Save a trend to user bookmarks' })
   @ApiCreatedResponse({
@@ -151,7 +147,6 @@ export class EngagementController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @Delete('save/:trend_id')
   @ApiOperation({ summary: 'Remove a trend from user bookmarks' })
   @ApiOkResponse({
@@ -205,7 +200,6 @@ export class EngagementController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @Post('click')
   @ApiOperation({ summary: 'Track a click on a trend or product' })
   @ApiCreatedResponse({
