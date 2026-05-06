@@ -39,6 +39,15 @@ export class SponsoredContent {
   @Column({ name: 'is_active', default: true })
   isActive!: boolean;
 
+  @Column({ name: 'sponsor_name', nullable: true })
+  sponsorName!: string;
+
+  @Column({ name: 'campaign_name', nullable: true })
+  campaignName!: string;
+
+  @Column({ name: 'priority_score', default: 0 })
+  priorityScore!: number;
+
   @Column({ name: 'starts_at', type: 'timestamptz', nullable: true })
   startsAt!: Date;
 
