@@ -1,12 +1,12 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
-import { SponsoredContent } from '../db/entities/SponsoredContent.entity';
-import { Trend } from '../db/entities/Trend.entity';
-import { CreateSponsoredContentDto } from './dto/create-sponsored-content.dto';
-import { UpdateSponsoredContentDto } from './dto/update-sponsored-content.dto';
-import { ServiceResponse } from '../common/interfaces/service-response.interface';
-import { messages } from '../common/helpers/message';
+import { Injectable, Logger, NotFoundException, BadRequestException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
+import { SponsoredContent } from "../db/entities/SponsoredContent.entity";
+import { Trend } from "../db/entities/Trend.entity";
+import { CreateSponsoredContentDto } from "./dto/create-sponsored-content.dto";
+import { UpdateSponsoredContentDto } from "./dto/update-sponsored-content.dto";
+import { ServiceResponse } from "../common/interfaces/service-response.interface";
+import { messages } from "../common/helpers/message";
 
 @Injectable()
 export class SponsoredContentService {
@@ -27,13 +27,13 @@ export class SponsoredContentService {
       // 1. Validate trend exists
       const trend = await this.trendRepository.findOne({ where: { id: dto.trend_id } });
       if (!trend) {
-        throw new NotFoundException('Trend not found');
+        throw new NotFoundException("Trend not found");
       }
 
       // 2. Check for existing active campaign for this trend
       const existing = await this.sponsoredRepository.findOne({ where: { trendId: dto.trend_id, isActive: true } });
       if (existing) {
-        throw new BadRequestException('Active campaign already exists for this trend');
+        throw new BadRequestException("Active campaign already exists for this trend");
       }
 
       // 3. Create entry
@@ -72,8 +72,8 @@ export class SponsoredContentService {
           startsAt: LessThanOrEqual(now),
           endsAt: MoreThanOrEqual(now),
         },
-        relations: ['trend', 'trend.contents', 'trend.score'],
-        order: { priorityScore: 'DESC' },
+        relations: ["trend", "trend.contents", "trend.score"],
+        order: { priorityScore: "DESC" },
         take: limit,
         skip: offset,
       });
@@ -95,7 +95,7 @@ export class SponsoredContentService {
     try {
       const sponsored = await this.sponsoredRepository.findOne({ where: { trendId } });
       if (!sponsored) {
-        throw new NotFoundException('Sponsored content not found');
+        throw new NotFoundException("Sponsored content not found");
       }
 
       if (dto.sponsor_name) sponsored.sponsorName = dto.sponsor_name;
@@ -125,7 +125,7 @@ export class SponsoredContentService {
     try {
       const result = await this.sponsoredRepository.delete({ trendId });
       if (result.affected === 0) {
-        throw new NotFoundException('Sponsored content not found');
+        throw new NotFoundException("Sponsored content not found");
       }
       return {
         success: true,

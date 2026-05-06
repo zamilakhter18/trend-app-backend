@@ -1,20 +1,13 @@
-import { Controller, Get, Res } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiOkResponse,
-  ApiInternalServerErrorResponse,
-  ApiBadRequestResponse,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
-import { AppService } from './app.service';
-import { ResponseHandler } from './common/helpers/response-handler';
-import { messages } from './common/helpers/message';
-import type { Response } from 'express';
+import { Controller, Get, Res } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiOkResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse, ApiUnauthorizedResponse } from "@nestjs/swagger";
+import { AppService } from "./app.service";
+import { ResponseHandler } from "./common/helpers/response-handler";
+import { messages } from "./common/helpers/message";
+import type { Response } from "express";
 
-import { Public } from './common/decorators/public.decorator';
+import { Public } from "./common/decorators/public.decorator";
 
-@ApiTags('Health')
+@ApiTags("Health")
 @Controller()
 export class AppController {
   constructor(
@@ -24,52 +17,45 @@ export class AppController {
 
   @Public()
   @Get()
-  @ApiOperation({ summary: 'Health check endpoint' })
+  @ApiOperation({ summary: "Health check endpoint" })
   @ApiOkResponse({
-    description: 'Health check successful',
+    description: "Health check successful",
     example: {
       statusCode: 200,
-      message: 'Data fetched successfully',
-      data: 'Hello World!',
+      message: "Data fetched successfully",
+      data: "Hello World!",
     },
   })
   @ApiBadRequestResponse({
-    description: 'Bad Request',
+    description: "Bad Request",
     example: {
       statusCode: 400,
-      message: 'Bad request',
+      message: "Bad request",
     },
   })
   @ApiUnauthorizedResponse({
-    description: 'Unauthorized access',
+    description: "Unauthorized access",
     example: {
       statusCode: 401,
-      message: 'Unauthorized access',
+      message: "Unauthorized access",
     },
   })
   @ApiInternalServerErrorResponse({
-    description: 'Internal Server Error',
+    description: "Internal Server Error",
     example: {
       statusCode: 500,
-      message: 'Something went wrong',
+      message: "Something went wrong",
     },
   })
   async getHello(@Res() res: Response) {
     try {
       const result = await this.appService.getHello();
       if (result.success) {
-        return this.responseHandler.successResponseWithData(
-          res,
-          result.message,
-          result.data,
-        );
+        return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }
       return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(
-        res,
-        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
-      );
+      return this.responseHandler.catchErrorResponse(res, (error as Error).message || messages.INTERNAL_SERVER_ERROR);
     }
   }
 }
