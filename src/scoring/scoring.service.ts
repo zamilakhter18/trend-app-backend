@@ -10,9 +10,9 @@ export class ScoringService {
 
   constructor(private supabaseService: SupabaseService) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
-    this.logger.debug('Called every hour');
+    this.logger.debug('Called every minute');
     await this.updateAllTrendScores();
   }
 
