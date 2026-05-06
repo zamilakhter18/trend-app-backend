@@ -64,3 +64,126 @@ Guests can browse the platform and view basic content without a token.
 
 ---
 ...
+
+## 🏗️ System Architecture Flow
+
+Here is a high-level overview of the Trend App's system architecture, from the client application to the backend services.
+
+### Core Architecture Diagram
+
+```
+Flutter App
+    ↓
+NestJS APIs
+    ↓
+Supabase PostgreSQL
+    ↓
+AI / Vision Services
+    ↓
+Scoring Engine
+    ↓
+Ranked Feed Response
+```
+
+### Explanation of Each Layer
+
+#### A. Flutter App
+
+*   **Description**: The mobile client for iOS and Android, built with Flutter.
+*   **Handles**:
+    *   Authentication (signup, login, token management)
+    *   Media uploads to Supabase Storage
+    *   Rendering of the ranked trend feed
+    *   User engagement actions (likes, saves, clicks)
+
+#### B. NestJS APIs
+
+*   **Description**: The central backend layer, built with NestJS (Node.js).
+*   **Handles**:
+    *   Secure authentication and Role-Based Access Control (RBAC)
+    *   Core business logic for all application features
+    *   Serving feed APIs to the Flutter app
+    *   Orchestration of the scoring engine and AI services
+    *   Data ingestion APIs for the Python scraper
+
+#### C. Supabase PostgreSQL
+
+*   **Description**: The persistent relational database, powered by Supabase.
+*   **Stores**:
+    *   User profiles and authentication IDs (`user_profile`)
+    *   Trend data, including titles, descriptions, and media URLs (`trends`)
+    *   Products associated with trends (`products`)
+    *   User engagement metrics (likes, saves, views) (`engagements`)
+    *   AI-generated analysis and tags (`ai_analysis`)
+    *   Calculated trend scores (`trend_scores`)
+
+#### D. AI / Vision Services
+
+*   **Description**: A suite of external and internal AI services for content enrichment.
+*   **APIs Used**:
+    *   External LLM APIs (e.g., OpenAI, Google AI) for text analysis
+    *   Vision classification APIs (e.g., Google Vision) for image analysis
+*   **Used For**:
+    *   Generating concise trend summaries
+    *   Performing sentiment analysis on trend content
+    *   Classifying images for safety and content moderation
+    *   Assigning visual categories and aesthetics (e.g., "minimalist", "vintage")
+
+#### E. Scoring Engine
+
+*   **Description**: A cron-based ranking system that runs periodically to score and rank trends.
+*   **Calculates**:
+    *   **Engagement Velocity**: How quickly a trend is gaining likes and views.
+    *   **Save Rate**: The ratio of saves to impressions.
+    *   **Click-Through Rate (CTR)**: The effectiveness of associated product links.
+    *   **Time Decay**: Reduces the score of older trends to prioritize newness.
+    *   **Final Feed Score**: A weighted combination of the above metrics to produce a final ranking score.
+
+---
+
+### Data and Media Flows
+
+#### Data Ingestion Flow
+
+The system uses a Python scraper to import trends from external social platforms.
+
+```
+Python Scraper
+      ↓
+Ingestion APIs (POST /ingestion/social-import)
+      ↓
+NestJS Backend
+      ↓
+Supabase Database
+```
+
+#### Media Upload Flow
+
+Media is uploaded directly from the client to Supabase Storage to optimize performance.
+
+```
+Flutter App
+      ↓
+Generate Signed Upload URL (POST /upload/generate-url)
+      ↓
+Supabase Storage
+      ↓
+Public Media URL is returned
+      ↓
+NestJS stores the public URL in the database
+```
+
+#### Authentication Flow
+
+User authentication is managed by Supabase Auth, with JWTs used to protect API endpoints.
+
+```
+User Signup/Login
+      ↓
+Supabase Auth
+      ↓
+JWT + Refresh Token are returned to the client
+      ↓
+Client uses JWT to access protected APIs
+```
+
