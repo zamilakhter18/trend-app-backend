@@ -1,16 +1,10 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-  ForbiddenException,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { CustomJwtService } from '../helpers/jwt.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserProfile } from '../../db/entities/UserProfile.entity';
-import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, ForbiddenException } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { CustomJwtService } from "../helpers/jwt.service";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { UserProfile } from "../../db/entities/UserProfile.entity";
+import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -22,10 +16,7 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [context.getHandler(), context.getClass()]);
 
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
@@ -48,7 +39,7 @@ export class AuthGuard implements CanActivate {
     }
 
     if (!token) {
-      throw new UnauthorizedException('Token missing');
+      throw new UnauthorizedException("Token missing");
     }
 
     try {
@@ -58,19 +49,19 @@ export class AuthGuard implements CanActivate {
       });
 
       if (!user) {
-        throw new ForbiddenException('User not found or deleted');
+        throw new ForbiddenException("User not found or deleted");
       }
 
       request.user = user;
     } catch (err) {
-      throw new ForbiddenException('Invalid token');
+      throw new ForbiddenException("Invalid token");
     }
 
     return true;
   }
 
   private extractTokenFromHeader(request: any): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    const [type, token] = request.headers.authorization?.split(" ") ?? [];
+    return type === "Bearer" ? token : undefined;
   }
 }
