@@ -21,6 +21,9 @@ export class UserProfile {
   @Column({ unique: true, nullable: true })
   username!: string;
 
+  @Column({ unique: true, nullable: true })
+  email!: string;
+
   @Column({ name: 'full_name', nullable: true })
   fullName!: string;
 

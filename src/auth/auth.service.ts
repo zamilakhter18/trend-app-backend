@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
@@ -24,7 +24,7 @@ export class AuthService {
   private generateTokens(user: UserProfile) {
     const payload = {
       sub: user.userId,
-      email: user.username,
+      email: user.email,
       role: user.role,
     };
 
@@ -38,43 +38,63 @@ export class AuthService {
   }
 
   async signup(signupDto: SignupDto): Promise<ServiceResponse> {
-    const client = this.supabaseService.getClient();
     const { email, password, username, full_name, avatar_url } = signupDto;
 
-    const { data, error } = await client.auth.signUp({
+    // 1. Check if username already exists in our database
+    const existingUser = await this.userRepository.findOne({
+      where: { username },
+    });
+
+    if (existingUser) {
+      return { success: false, message: 'Username already taken' };
+    }
+
+    // 2. Signup via Supabase Auth
+    const client = this.supabaseService.getClient();
+    const { data: authData, error: authError } = await client.auth.signUp({
       email,
       password,
-      options: {
+    });
+
+    if (authError) {
+      return { success: false, message: authError.message };
+    }
+
+    if (!authData.user) {
+      return { success: false, message: 'Auth failed' };
+    }
+
+    try {
+      // 3. Create User Profile in our database
+      const profile = this.userRepository.create({
+        userId: authData.user.id,
+        email,
+        username,
+        fullName: full_name,
+        avatarUrl: avatar_url,
+      });
+
+      const savedProfile = await this.userRepository.save(profile);
+
+      // 4. Generate JWT tokens
+      const tokens = this.generateTokens(savedProfile);
+
+      return {
+        success: true,
+        message: messages.SIGNUP_SUCCESS,
         data: {
-          username,
-          full_name,
-          avatar_url,
+          user: savedProfile,
+          ...tokens,
         },
-      },
-    });
-
-    if (error) {
-      return { success: false, message: error.message };
+      };
+    } catch (error) {
+      // Rollback Supabase user if profile creation fails? (Optional complexity)
+      // For now, return error
+      return { 
+        success: false, 
+        message: (error as any).code === '23505' ? 'Email or username already exists' : 'Profile creation failed' 
+      };
     }
-
-    // Attempt to find the newly created user profile to generate tokens
-    const user = await this.userRepository.findOne({
-      where: { userId: data.user?.id },
-    });
-
-    let tokens = {};
-    if (user) {
-      tokens = this.generateTokens(user);
-    }
-
-    return {
-      success: true,
-      message: messages.SIGNUP_SUCCESS,
-      data: {
-        user: data.user,
-        ...tokens,
-      },
-    };
   }
 
   async login(loginDto: LoginDto): Promise<ServiceResponse> {
@@ -105,7 +125,7 @@ export class AuthService {
       success: true,
       message: messages.LOGIN_SUCCESS,
       data: {
-        user: data.user,
+        user,
         ...tokens,
       },
     };

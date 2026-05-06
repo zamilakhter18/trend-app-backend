@@ -11,12 +11,35 @@ The system uses a centralized **JWT-based Authentication** and **Role-Based Auth
 - **Token Source:** Obtained from `POST /auth/login` or `POST /auth/signup`.
 - **User Roles:** `USER` (Default), `CREATOR`, `ADMIN`.
 
+### 🚀 Signup Flow Architecture
+The signup process follows a multi-step sequence to ensure auth and profile synchronization:
+
+1. **User Signup Request**: User submits email, password, username, etc.
+2. **Supabase Auth**: Backend calls Supabase to create the user in the `auth.users` schema.
+3. **Profile Creation**: Upon successful Supabase signup, the backend creates a corresponding entry in the `public.user_profile` table (sharing the same UUID).
+4. **Token Generation**: Custom JWT Access and Refresh tokens are generated.
+5. **Response**: Final payload includes user profile details and both tokens.
+
+```text
+User Request
+    ↓
+Supabase Auth (auth.users)
+    ↓
+Backend Profile (public.user_profile)
+    ↓
+JWT Sign (Access + Refresh)
+    ↓
+Success Response
+```
+
 ---
 
 ## 👤 1. Guest / Unauthenticated User
 Guests can browse the platform and view basic content without a token.
 
 ### 🔗 Public APIs
+- **Register Account:** `POST /auth/signup`
+- **Login Account:** `POST /auth/login`
 - **Get Trend Feed:** `GET /feed`
 - **Get Trend Details:** `GET /trend/:id`
 - **Get Trend Explanation (AI):** `GET /trend/:id/explanation`
@@ -58,17 +81,6 @@ Access tokens have a short lifespan (15m). Use the refresh token (7d) to obtain 
   "refresh_token": "your_long_lived_refresh_token"
 }
 ```
-- **Success Response:**
-```json
-{
-  "statusCode": 200,
-  "message": "Token refreshed successfully",
-  "data": {
-    "access_token": "new_access_token",
-    "refresh_token": "new_refresh_token"
-  }
-}
-```
 
 ---
 
@@ -104,16 +116,15 @@ Users with elevated permissions to manage the platform.
 ```json
 {
   "statusCode": 403,
-  "message": "Unauthorized role" // OR "Invalid or expired refresh token"
+  "message": "Unauthorized role"
 }
 ```
 
-#### **400 Bad Request** (Validation Error)
+#### **409 Conflict** (Username/Email Already Exists)
 ```json
 {
   "statusCode": 400,
-  "message": ["email must be an email"],
-  "error": "Bad Request"
+  "message": "Username already taken"
 }
 ```
 

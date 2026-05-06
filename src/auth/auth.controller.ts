@@ -8,6 +8,7 @@ import {
   ApiInternalServerErrorResponse,
   ApiCreatedResponse,
   ApiForbiddenResponse,
+  ApiConflictResponse,
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto';
@@ -28,18 +29,31 @@ export class AuthController {
 
   @Public()
   @Post('signup')
-  @ApiOperation({ summary: 'Register a new user' })
+  @ApiOperation({ summary: 'Register a new user and create profile' })
   @ApiCreatedResponse({
-    description: 'User successfully created',
+    description: 'User successfully created with profile and tokens',
     example: {
       statusCode: 201,
       message: 'User registered successfully',
       data: { 
-        id: 'uuid', 
-        email: 'user@example.com',
+        user: {
+          userId: 'uuid',
+          email: 'user@example.com',
+          username: 'trendsetter99',
+          fullName: 'John Doe',
+          avatarUrl: 'https://example.com/avatar.png',
+          role: 'user'
+        },
         access_token: 'abc...',
         refresh_token: 'xyz...'
       },
+    },
+  })
+  @ApiConflictResponse({
+    description: 'Conflict',
+    example: {
+      statusCode: 400,
+      message: 'Username already taken',
     },
   })
   @ApiBadRequestResponse({
@@ -85,6 +99,7 @@ export class AuthController {
       statusCode: 200,
       message: 'Login successful',
       data: { 
+        user: { userId: 'uuid', username: 'user1' },
         access_token: 'abc...',
         refresh_token: 'xyz...'
       },
