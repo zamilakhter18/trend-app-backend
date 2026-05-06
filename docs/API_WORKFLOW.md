@@ -187,3 +187,55 @@ JWT + Refresh Token are returned to the client
 Client uses JWT to access protected APIs
 ```
 
+---
+
+## 🚦 Rate Limiting & API Protection
+
+To protect the backend from abuse, spam, and excessive API usage, the system employs a rate limiting strategy. Throttling is applied to specific endpoints that are either resource-intensive or high-risk.
+
+Rate limiting is especially applied on:
+*   Authentication APIs
+*   Ingestion APIs
+*   AI/Vision APIs
+*   Upload URL generation APIs
+
+### Example Protected APIs
+
+*   `POST /auth/signup`
+*   `POST /auth/login`
+*   `POST /ingestion/social-import`
+*   `POST /ai/analyze-trend`
+*   `POST /upload/generate-url`
+
+### Purpose of Rate Limiting
+
+*   **Prevent Brute-Force Attacks**: Limits login and signup attempts to block password guessing.
+*   **Avoid AI API Abuse**: Controls access to expensive AI and Vision services.
+*   **Reduce Spam Ingestion**: Prevents bad actors from flooding the database with spam trends.
+*   **Improve System Stability**: Ensures the backend remains responsive and available for all users.
+*   **Protect Backend Resources**: Conserves server CPU, memory, and bandwidth.
+
+---
+
+## ☁️ Why Supabase?
+
+Supabase was chosen as the primary backend infrastructure layer because it offers a comprehensive suite of tools that accelerate development while providing a scalable and secure foundation.
+
+### Core Supabase Features Used
+
+*   **PostgreSQL Database**: A powerful, open-source relational database for storing all application data.
+*   **Built-in Authentication**: Secure user management and authentication, including social logins and password resets.
+*   **Supabase Storage**: Scalable object storage for user-generated media like images and videos.
+*   **Scalable Cloud Infrastructure**: Managed infrastructure that grows with the application's needs.
+*   **Row Level Security (RLS)**: Fine-grained access control policies at the database level.
+*   **Realtime Capabilities**: The ability to listen for database changes in real-time.
+*   **Developer-Friendly APIs**: Auto-generated APIs and client libraries for easy integration.
+
+### Architecture Benefits
+
+*   **Rapid Backend Development**: Supabase's built-in features significantly reduce the time required to build and deploy a secure backend.
+*   **Reduced Infrastructure Complexity**: By providing an integrated solution, Supabase eliminates the need to manage separate services for database, auth, and storage.
+*   **Secure Authentication System**: Leverages Supabase's robust and battle-tested authentication service.
+*   **Scalable Media Storage**: Supabase Storage provides a simple and scalable solution for handling large media files.
+*   **Simplified PostgreSQL Management**: Automatic backups, scaling, and maintenance of the PostgreSQL database.
+
