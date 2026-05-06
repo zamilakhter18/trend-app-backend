@@ -5,79 +5,80 @@ This document outlines the interaction between users, the API endpoints, and the
 ---
 
 ## 🔐 Security & Authentication
-All endpoints (except Public Auth) require a valid **JSON Web Token (JWT)**.
+The system uses a centralized **JWT-based Authentication** and **Role-Based Authorization (RBAC)** system.
+
 - **Header:** `Authorization: Bearer <your_jwt_token>`
-- **Token Source:** Obtained from the `POST /auth/login` or `POST /auth/signup` response.
+- **Token Source:** Obtained from `POST /auth/login` or `POST /auth/signup`.
+- **User Roles:** `USER` (Default), `CREATOR`, `ADMIN`.
 
 ---
 
-## 👤 1. Authenticated User (Consumer / Curator)
-Registered users can browse trends, engage with content, and track performance.
+## 👤 1. Guest / Unauthenticated User
+Guests can browse the platform and view basic content without a token.
+
+### 🔗 Public APIs
+- **Get Trend Feed:** `GET /feed`
+- **Get Trend Details:** `GET /trend/:id`
+- **Get Trend Explanation (AI):** `GET /trend/:id/explanation`
+- **List Trend Products:** `GET /product?trend_id=uuid`
+- **Get Product Details:** `GET /product/:id`
+- **Health Check:** `GET /`
+
+---
+
+## 🛡️ 2. Authenticated User (`USER` Role)
+Registered users who can engage with content and track their own performance.
 
 ### Work Cycle
-1. **Login:** Obtain JWT token.
-2. **View Feed:** Load personalized global trend feed using JWT.
-3. **Engage:** Like, comment, or share trends.
-4. **Save:** Bookmark trends for later.
+1. **Login:** Obtain JWT.
+2. **Engage:** Like, comment, or share trends.
+3. **Save:** bookmark trends.
+4. **Track:** View personal performance metrics.
 
-### 🔗 APIs
-
-#### **Get Trend Feed**
-- **Endpoint:** `GET /feed`
-- **Security:** `Bearer Auth Required`
-- **Action:** Fetches trending topics ordered by score.
-- **Success Response:**
-```json
-{
-  "statusCode": 200,
-  "message": "Data fetched successfully",
-  "data": [{ "id": "uuid", "title": "AI Gadgets", "score": 105.5 }]
-}
-```
-
-#### **Engage with a Trend**
-- **Endpoint:** `POST /engagement/engage`
-- **Security:** `Bearer Auth Required`
-- **Payload:**
-```json
-{
-  "trend_id": "550e8400-e29b-41d4-a716-446655440000",
-  "type": "like", 
-  "content": "This is amazing!" 
-}
-```
+### 🔗 Secured APIs (JWT Required)
+- **Log Engagement:** `POST /engagement/engage`
+- **Save Trend:** `POST /engagement/save`
+- **Remove Saved Trend:** `DELETE /engagement/save/:trend_id`
+- **Track Product Click:** `POST /engagement/click`
+- **Get My Profile:** `GET /profile/me`
+- **Get My Performance:** `GET /identity/performance`
+- **Get Leaderboard:** `GET /identity/leaderboard` (Also accessible to guests via @Public, but tracks user context if provided)
 
 ---
 
-## 💼 2. Creator / Affiliate Marketer
-Users who actively add products to trends to monetize traffic.
+## 💼 3. Creator (`CREATOR` Role)
+Users who manage product integrations for trends.
 
-### 🔗 APIs
+### 🔗 Secured APIs (JWT + Role Required)
+- **Create Product:** `POST /product`
+- **Update Product:** `PATCH /product/:id`
+- **Delete Product:** `DELETE /product/:id`
 
-#### **Create Product Integration**
-- **Endpoint:** `POST /product`
-- **Security:** `Bearer Auth Required`
-- **Payload:**
-```json
-{
-  "trend_id": "uuid",
-  "name": "Eco-friendly Bottle",
-  "affiliate_url": "https://amazon.com/example",
-  "price": 19.99
-}
-```
+---
+
+## 👑 4. Administrator (`ADMIN` Role)
+Users with elevated permissions to manage the platform.
+
+### 🔗 Secured APIs (JWT + Admin Role Required)
+- **Get Admin Statistics:** `GET /identity/admin-stats`
 
 ---
 
 ## ⚠️ Error Response Examples
 
-The following error formats are consistent across all APIs:
-
 #### **401 Unauthorized** (Missing or Invalid Token)
 ```json
 {
   "statusCode": 401,
-  "message": "Unauthorized"
+  "message": "Token missing"
+}
+```
+
+#### **403 Forbidden** (Insufficient Role or Invalid User)
+```json
+{
+  "statusCode": 403,
+  "message": "Unauthorized role"
 }
 ```
 
@@ -85,27 +86,8 @@ The following error formats are consistent across all APIs:
 ```json
 {
   "statusCode": 400,
-  "message": [
-    "email must be an email",
-    "password must be longer than or equal to 6 characters"
-  ],
+  "message": ["email must be an email"],
   "error": "Bad Request"
-}
-```
-
-#### **404 Not Found** (Resource Missing)
-```json
-{
-  "statusCode": 404,
-  "message": "Resource not found"
-}
-```
-
-#### **500 Internal Server Error**
-```json
-{
-  "statusCode": 500,
-  "message": "Something went wrong"
 }
 ```
 
