@@ -11,7 +11,7 @@ import { Engagement } from './Engagement.entity';
 import { Save } from './Save.entity';
 import { Clickout } from './Clickout.entity';
 import { SponsoredContent } from './SponsoredContent.entity';
-import { UserRole } from '../../common/enums/user-role.enum';
+import { UserRoleEnum } from '../../common/helpers/enum';
 
 @Entity('user_profile')
 export class UserProfile {
@@ -32,10 +32,10 @@ export class UserProfile {
 
   @Column({
     type: 'enum',
-    enum: UserRole,
-    default: UserRole.USER,
+    enum: UserRoleEnum,
+    default: UserRoleEnum.USER,
   })
-  role!: UserRole;
+  role!: UserRoleEnum;
 
   @Column('decimal', {
     name: 'trend_score',

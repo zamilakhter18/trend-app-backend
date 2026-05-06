@@ -16,7 +16,7 @@ import { CreateSponsoredContentDto } from './dto/create-sponsored-content.dto';
 import { UpdateSponsoredContentDto } from './dto/update-sponsored-content.dto';
 import { ResponseHandler } from '../common/helpers/response-handler';
 import { Roles } from '../common/decorators/role.decorator';
-import { UserRole } from '../common/enums/user-role.enum';
+import { UserRoleEnum } from '../common/helpers/enum';
 import { Public } from '../common/decorators/public.decorator';
 import type { Response } from 'express';
 
@@ -29,7 +29,7 @@ export class SponsoredContentController {
   ) {}
 
   @ApiBearerAuth()
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRoleEnum.ADMIN)
   @Post()
   @ApiOperation({ summary: 'Create a new sponsored content campaign (Admin only)' })
   @ApiCreatedResponse({
@@ -83,7 +83,7 @@ export class SponsoredContentController {
   }
 
   @ApiBearerAuth()
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRoleEnum.ADMIN)
   @Patch(':trendId')
   @ApiOperation({ summary: 'Update a sponsored campaign (Admin only)' })
   @ApiOkResponse({ description: 'Campaign updated successfully' })
@@ -105,7 +105,7 @@ export class SponsoredContentController {
   }
 
   @ApiBearerAuth()
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRoleEnum.ADMIN)
   @Delete(':trendId')
   @ApiOperation({ summary: 'Delete a sponsored campaign (Admin only)' })
   @ApiOkResponse({ description: 'Campaign deleted successfully' })

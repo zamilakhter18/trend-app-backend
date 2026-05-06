@@ -15,7 +15,7 @@ import { AnalyzeTrendDto } from './dto/analyze-trend.dto';
 import { ClassifyImageDto } from './dto/classify-image.dto';
 import { ResponseHandler } from '../common/helpers/response-handler';
 import { Roles } from '../common/decorators/role.decorator';
-import { UserRole } from '../common/enums/user-role.enum';
+import { UserRoleEnum } from '../common/helpers/enum';
 import type { Response } from 'express';
 
 @ApiTags('AI Intelligence')
@@ -28,7 +28,7 @@ export class AiController {
   ) {}
 
   @Post('analyze-trend')
-  @Roles(UserRole.ADMIN, UserRole.CREATOR)
+  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.CREATOR)
   @ApiOperation({ summary: 'Analyze trend content using LLM (Admin/Creator only)' })
   @ApiCreatedResponse({
     description: 'Trend analysis completed and stored',

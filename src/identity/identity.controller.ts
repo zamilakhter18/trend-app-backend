@@ -19,7 +19,7 @@ import { messages } from '../common/helpers/message';
 import type { Response } from 'express';
 import { Public } from '../common/decorators/public.decorator';
 import { Roles } from '../common/decorators/role.decorator';
-import { UserRole } from '../common/enums/user-role.enum';
+import { UserRoleEnum } from '../common/helpers/enum';
 import { GetFullUser } from '../common/decorators/get-full-user.decorator';
 import { UserProfile } from '../db/entities/UserProfile.entity';
 
@@ -139,7 +139,7 @@ export class IdentityController {
   }
 
   @ApiBearerAuth()
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRoleEnum.ADMIN)
   @Get('admin-stats')
   @ApiOperation({ summary: 'Admin only statistics' })
   async getAdminStats(@Res() res: Response) {

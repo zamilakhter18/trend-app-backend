@@ -16,7 +16,7 @@ import { SocialImportDto } from './dto/social-import.dto';
 import { IngestionRunDto } from './dto/ingestion-run.dto';
 import { ResponseHandler } from '../common/helpers/response-handler';
 import { Roles } from '../common/decorators/role.decorator';
-import { UserRole } from '../common/enums/user-role.enum';
+import { UserRoleEnum } from '../common/helpers/enum';
 import { Public } from '../common/decorators/public.decorator';
 import type { Response } from 'express';
 
@@ -64,7 +64,7 @@ export class IngestionController {
   }
 
   @ApiBearerAuth()
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRoleEnum.ADMIN)
   @Post('admin/ingestion/run')
   @ApiOperation({ summary: 'Manually trigger the ingestion pipeline (Admin only)' })
   @ApiOkResponse({

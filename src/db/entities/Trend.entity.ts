@@ -19,7 +19,7 @@ import { AiAnalysis } from './AiAnalysis.entity';
 import { TrendScore } from './TrendScore.entity';
 import { SponsoredContent } from './SponsoredContent.entity';
 
-import { Platform } from '../../common/enums/platform.enum';
+import { PlatformEnum } from '../../common/helpers/enum';
 
 @Entity('trends')
 export class Trend {
@@ -29,8 +29,8 @@ export class Trend {
   @Column({ name: 'creator_id', nullable: true })
   creatorId!: string;
 
-  @Column({ type: 'enum', enum: Platform, default: Platform.OTHER })
-  source!: Platform;
+  @Column({ type: 'enum', enum: PlatformEnum, default: PlatformEnum.OTHER })
+  source!: PlatformEnum;
 
   @Column({ name: 'external_id', nullable: true })
   externalId!: string;

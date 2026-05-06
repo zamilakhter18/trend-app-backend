@@ -1,16 +1,16 @@
 import { IsNotEmpty, IsString, IsEnum, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { StorageBucket } from '../../common/enums/storage-bucket.enum';
+import { StorageBucketEnum } from '../../common/helpers/enum';
 
 export class GenerateUploadUrlDto {
   @ApiProperty({
     description: 'The target Supabase Storage bucket',
-    enum: StorageBucket,
-    example: StorageBucket.TREND_MEDIA,
+    enum: StorageBucketEnum,
+    example: StorageBucketEnum.TREND_MEDIA,
   })
   @IsNotEmpty()
-  @IsEnum(StorageBucket)
-  bucket!: StorageBucket;
+  @IsEnum(StorageBucketEnum)
+  bucket!: StorageBucketEnum;
 
   @ApiProperty({
     description: 'The name of the file to be uploaded, including extension',

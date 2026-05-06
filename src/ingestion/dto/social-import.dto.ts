@@ -1,16 +1,16 @@
 import { IsNotEmpty, IsString, IsEnum, IsUrl, IsArray, IsNumber, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Platform } from '../../common/enums/platform.enum';
+import { PlatformEnum } from '../../common/helpers/enum';
 
 export class SocialImportDto {
   @ApiProperty({
     description: 'The source platform of the trend',
-    enum: Platform,
-    example: Platform.INSTAGRAM,
+    enum: PlatformEnum,
+    example: PlatformEnum.INSTAGRAM,
   })
   @IsNotEmpty()
-  @IsEnum(Platform)
-  source!: Platform;
+  @IsEnum(PlatformEnum)
+  source!: PlatformEnum;
 
   @ApiProperty({
     description: 'The external ID from the source platform',
