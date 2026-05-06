@@ -63,7 +63,7 @@ export class IngestionController {
     }
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT-auth')
   @Roles(UserRoleEnum.ADMIN)
   @Post('admin/ingestion/run')
   @ApiOperation({ summary: 'Manually trigger the ingestion pipeline (Admin only)' })

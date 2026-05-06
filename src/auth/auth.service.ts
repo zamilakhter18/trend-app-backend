@@ -1,13 +1,13 @@
-import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
-import { SupabaseService } from '../supabase/supabase.service';
-import { SignupDto } from './dto/signup.dto';
-import { LoginDto } from './dto/login.dto';
-import { ServiceResponse } from '../common/interfaces/service-response.interface';
-import { messages } from '../common/helpers/message';
-import { CustomJwtService } from '../common/helpers/jwt.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserProfile } from '../db/entities/UserProfile.entity';
+import { Injectable, ConflictException, InternalServerErrorException } from "@nestjs/common";
+import { SupabaseService } from "../supabase/supabase.service";
+import { SignupDto } from "./dto/signup.dto";
+import { LoginDto } from "./dto/login.dto";
+import { ServiceResponse } from "../common/interfaces/service-response.interface";
+import { messages } from "../common/helpers/message";
+import { CustomJwtService } from "../common/helpers/jwt.service";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { UserProfile } from "../db/entities/UserProfile.entity";
 
 @Injectable()
 export class AuthService {
@@ -28,8 +28,8 @@ export class AuthService {
       role: user.role,
     };
 
-    const accessToken = this.jwtService.sign(payload, '15m');
-    const refreshToken = this.jwtService.sign(payload, '7d');
+    const accessToken = this.jwtService.sign(payload, "15m");
+    const refreshToken = this.jwtService.sign(payload, "7d");
 
     return {
       access_token: accessToken,
@@ -46,7 +46,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      return { success: false, message: 'Username already taken' };
+      return { success: false, message: "Username already taken" };
     }
 
     // 2. Signup via Supabase Auth
@@ -61,7 +61,7 @@ export class AuthService {
     }
 
     if (!authData.user) {
-      return { success: false, message: 'Auth failed' };
+      return { success: false, message: "Auth failed" };
     }
 
     try {
@@ -90,9 +90,9 @@ export class AuthService {
     } catch (error) {
       // Rollback Supabase user if profile creation fails? (Optional complexity)
       // For now, return error
-      return { 
-        success: false, 
-        message: (error as any).code === '23505' ? 'Email or username already exists' : 'Profile creation failed' 
+      return {
+        success: false,
+        message: (error as any).code === "23505" ? "Email or username already exists" : "Profile creation failed",
       };
     }
   }
@@ -116,7 +116,7 @@ export class AuthService {
     });
 
     if (!user) {
-      return { success: false, message: 'User profile not found' };
+      return { success: false, message: "User profile not found" };
     }
 
     const tokens = this.generateTokens(user);
@@ -142,7 +142,7 @@ export class AuthService {
       });
 
       if (!user) {
-        return { success: false, message: 'User not found or deleted' };
+        return { success: false, message: "User not found or deleted" };
       }
 
       // 3. Generate new tokens (Rotation)
@@ -150,13 +150,13 @@ export class AuthService {
 
       return {
         success: true,
-        message: 'Token refreshed successfully',
+        message: "Token refreshed successfully",
         data: tokens,
       };
     } catch (error) {
       return {
         success: false,
-        message: 'Invalid or expired refresh token',
+        message: "Invalid or expired refresh token",
       };
     }
   }

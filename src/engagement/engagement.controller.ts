@@ -26,6 +26,7 @@ import { messages } from '../common/helpers/message';
 import type { Response } from 'express';
 
 @ApiTags('Engagement')
+@ApiBearerAuth('JWT-auth')
 @Controller('engagement')
 export class EngagementController {
   constructor(
@@ -33,7 +34,6 @@ export class EngagementController {
     private responseHandler: ResponseHandler,
   ) {}
 
-  @ApiBearerAuth()
   @Post('engage')
   @ApiOperation({ summary: 'Log a user engagement (upvote/downvote)' })
   @ApiOkResponse({
@@ -91,7 +91,6 @@ export class EngagementController {
     }
   }
 
-  @ApiBearerAuth()
   @Post('save')
   @ApiOperation({ summary: 'Save a trend to user bookmarks' })
   @ApiCreatedResponse({
@@ -146,7 +145,6 @@ export class EngagementController {
     }
   }
 
-  @ApiBearerAuth()
   @Delete('save/:trend_id')
   @ApiOperation({ summary: 'Remove a trend from user bookmarks' })
   @ApiOkResponse({
@@ -199,7 +197,6 @@ export class EngagementController {
     }
   }
 
-  @ApiBearerAuth()
   @Post('click')
   @ApiOperation({ summary: 'Track a click on a trend or product' })
   @ApiCreatedResponse({

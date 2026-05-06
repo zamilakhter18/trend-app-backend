@@ -28,7 +28,7 @@ export class SponsoredContentController {
     private responseHandler: ResponseHandler,
   ) {}
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT-auth')
   @Roles(UserRoleEnum.ADMIN)
   @Post()
   @ApiOperation({ summary: 'Create a new sponsored content campaign (Admin only)' })
@@ -82,7 +82,7 @@ export class SponsoredContentController {
     }
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT-auth')
   @Roles(UserRoleEnum.ADMIN)
   @Patch(':trendId')
   @ApiOperation({ summary: 'Update a sponsored campaign (Admin only)' })
@@ -104,7 +104,7 @@ export class SponsoredContentController {
     }
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT-auth')
   @Roles(UserRoleEnum.ADMIN)
   @Delete(':trendId')
   @ApiOperation({ summary: 'Delete a sponsored campaign (Admin only)' })

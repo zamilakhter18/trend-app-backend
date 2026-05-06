@@ -19,7 +19,7 @@ import { UserRoleEnum } from '../common/helpers/enum';
 import type { Response } from 'express';
 
 @ApiTags('AI Intelligence')
-@ApiBearerAuth()
+@ApiBearerAuth('JWT-auth')
 @Controller('ai')
 export class AiController {
   constructor(

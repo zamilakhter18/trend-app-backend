@@ -7,6 +7,7 @@ import { GetFullUser } from '../common/decorators/get-full-user.decorator';
 import { UserProfile } from '../db/entities/UserProfile.entity';
 
 @ApiTags('Profile')
+@ApiBearerAuth('JWT-auth')
 @Controller('profile')
 export class ProfileController {
   constructor(
@@ -14,7 +15,6 @@ export class ProfileController {
     private responseHandler: ResponseHandler,
   ) {}
 
-  @ApiBearerAuth()
   @Get('me')
   @ApiOperation({ summary: 'Get the profile of the currently authenticated user' })
   @ApiOkResponse({

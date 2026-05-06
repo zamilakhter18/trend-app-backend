@@ -1,15 +1,15 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as jwt from 'jsonwebtoken';
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class CustomJwtService {
   private readonly secret: string;
 
   constructor(private configService: ConfigService) {
-    const jwtSecret = this.configService.get<string>('JWT_SECRET');
+    const jwtSecret = this.configService.get<string>("JWT_SECRET");
     if (!jwtSecret) {
-      throw new InternalServerErrorException('JWT_SECRET is missing from configuration');
+      throw new InternalServerErrorException("JWT_SECRET is missing from configuration");
     }
     this.secret = jwtSecret;
   }

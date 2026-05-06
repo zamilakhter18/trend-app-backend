@@ -1,26 +1,16 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Res } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiOkResponse,
-  ApiBadRequestResponse,
-  ApiUnauthorizedResponse,
-  ApiInternalServerErrorResponse,
-  ApiCreatedResponse,
-  ApiForbiddenResponse,
-  ApiConflictResponse,
-} from '@nestjs/swagger';
-import { AuthService } from './auth.service';
-import { SignupDto } from './dto/signup.dto';
-import { LoginDto } from './dto/login.dto';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
-import { ResponseHandler } from '../common/helpers/response-handler';
-import { messages } from '../common/helpers/message';
-import type { Response } from 'express';
-import { Public } from '../common/decorators/public.decorator';
+import { Controller, Post, Body, HttpCode, HttpStatus, Res } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiOkResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse, ApiCreatedResponse, ApiForbiddenResponse, ApiConflictResponse } from "@nestjs/swagger";
+import { AuthService } from "./auth.service";
+import { SignupDto } from "./dto/signup.dto";
+import { LoginDto } from "./dto/login.dto";
+import { RefreshTokenDto } from "./dto/refresh-token.dto";
+import { ResponseHandler } from "../common/helpers/response-handler";
+import { messages } from "../common/helpers/message";
+import type { Response } from "express";
+import { Public } from "../common/decorators/public.decorator";
 
-@ApiTags('Auth')
-@Controller('auth')
+@ApiTags("Auth")
+@Controller("auth")
 export class AuthController {
   constructor(
     private authService: AuthService,
@@ -28,161 +18,140 @@ export class AuthController {
   ) {}
 
   @Public()
-  @Post('signup')
-  @ApiOperation({ summary: 'Register a new user and create profile' })
+  @Post("signup")
+  @ApiOperation({ summary: "Register a new user and create profile" })
   @ApiCreatedResponse({
-    description: 'User successfully created with profile and tokens',
+    description: "User successfully created with profile and tokens",
     example: {
       statusCode: 201,
-      message: 'User registered successfully',
-      data: { 
+      message: "User registered successfully",
+      data: {
         user: {
-          userId: 'uuid',
-          email: 'user@example.com',
-          username: 'trendsetter99',
-          fullName: 'John Doe',
-          avatarUrl: 'https://example.com/avatar.png',
-          role: 'user'
+          userId: "uuid",
+          email: "user@example.com",
+          username: "trendsetter99",
+          fullName: "John Doe",
+          avatarUrl: "https://example.com/avatar.png",
+          role: "user",
         },
-        access_token: 'abc...',
-        refresh_token: 'xyz...'
+        access_token: "abc...",
+        refresh_token: "xyz...",
       },
     },
   })
   @ApiConflictResponse({
-    description: 'Conflict',
+    description: "Conflict",
     example: {
       statusCode: 400,
-      message: 'Username already taken',
+      message: "Username already taken",
     },
   })
   @ApiBadRequestResponse({
-    description: 'Bad Request',
+    description: "Bad Request",
     example: {
       statusCode: 400,
-      message: 'Bad request',
+      message: "Bad request",
     },
   })
   @ApiInternalServerErrorResponse({
-    description: 'Internal Server Error',
+    description: "Internal Server Error",
     example: {
       statusCode: 500,
-      message: 'Something went wrong',
+      message: "Something went wrong",
     },
   })
   async signup(@Body() signupDto: SignupDto, @Res() res: Response) {
     try {
       const result = await this.authService.signup(signupDto);
       if (result.success) {
-        return this.responseHandler.successResponseWithData(
-          res,
-          result.message,
-          result.data,
-        );
+        return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }
       return this.responseHandler.errorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(
-        res,
-        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
-      );
+      return this.responseHandler.catchErrorResponse(res, (error as Error).message || messages.INTERNAL_SERVER_ERROR);
     }
   }
 
   @Public()
-  @Post('login')
+  @Post("login")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Login with credentials' })
+  @ApiOperation({ summary: "Login with credentials" })
   @ApiOkResponse({
-    description: 'Login successful',
+    description: "Login successful",
     example: {
       statusCode: 200,
-      message: 'Login successful',
-      data: { 
-        user: { userId: 'uuid', username: 'user1' },
-        access_token: 'abc...',
-        refresh_token: 'xyz...'
+      message: "Login successful",
+      data: {
+        user: { userId: "uuid", username: "user1" },
+        access_token: "abc...",
+        refresh_token: "xyz...",
       },
     },
   })
   @ApiUnauthorizedResponse({
-    description: 'Unauthorized',
+    description: "Unauthorized",
     example: {
       statusCode: 401,
-      message: 'Unauthorized access',
+      message: "Unauthorized access",
     },
   })
   @ApiInternalServerErrorResponse({
-    description: 'Internal Server Error',
+    description: "Internal Server Error",
     example: {
       statusCode: 500,
-      message: 'Something went wrong',
+      message: "Something went wrong",
     },
   })
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
     try {
       const result = await this.authService.login(loginDto);
       if (result.success) {
-        return this.responseHandler.successResponseWithData(
-          res,
-          result.message,
-          result.data,
-        );
+        return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }
       return this.responseHandler.unAuthorizeErrorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(
-        res,
-        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
-      );
+      return this.responseHandler.catchErrorResponse(res, (error as Error).message || messages.INTERNAL_SERVER_ERROR);
     }
   }
 
   @Public()
-  @Post('refresh-token')
+  @Post("refresh-token")
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Refresh access token using a valid refresh token' })
+  @ApiOperation({ summary: "Refresh access token using a valid refresh token" })
   @ApiOkResponse({
-    description: 'Token refreshed successfully',
+    description: "Token refreshed successfully",
     example: {
       statusCode: 200,
-      message: 'Token refreshed successfully',
+      message: "Token refreshed successfully",
       data: {
-        access_token: 'new-abc...',
-        refresh_token: 'new-xyz...'
-      }
+        access_token: "new-abc...",
+        refresh_token: "new-xyz...",
+      },
     },
   })
   @ApiForbiddenResponse({
-    description: 'Invalid or expired refresh token',
+    description: "Invalid or expired refresh token",
     example: {
       statusCode: 403,
-      message: 'Invalid or expired refresh token'
-    }
+      message: "Invalid or expired refresh token",
+    },
   })
   @ApiInternalServerErrorResponse({
-    description: 'Internal Server Error',
+    description: "Internal Server Error",
     example: {
       statusCode: 500,
-      message: 'Something went wrong',
+      message: "Something went wrong",
     },
   })
   async refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Res() res: Response) {
     try {
       const result = await this.authService.refreshToken(refreshTokenDto.refresh_token);
       if (result.success) {
-        return this.responseHandler.successResponseWithData(
-          res,
-          result.message,
-          result.data,
-        );
+        return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }
       return this.responseHandler.forbiddenErrorResponse(res, result.message);
     } catch (error) {
-      return this.responseHandler.catchErrorResponse(
-        res,
-        (error as Error).message || messages.INTERNAL_SERVER_ERROR,
-      );
+      return this.responseHandler.catchErrorResponse(res, (error as Error).message || messages.INTERNAL_SERVER_ERROR);
     }
   }
 }

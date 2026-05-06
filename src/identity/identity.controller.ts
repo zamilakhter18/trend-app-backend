@@ -31,7 +31,7 @@ export class IdentityController {
     private responseHandler: ResponseHandler,
   ) {}
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT-auth')
   @Get('performance')
   @ApiOperation({ summary: 'Get the performance metrics for the current user' })
   @ApiOkResponse({
@@ -138,7 +138,7 @@ export class IdentityController {
     }
   }
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT-auth')
   @Roles(UserRoleEnum.ADMIN)
   @Get('admin-stats')
   @ApiOperation({ summary: 'Admin only statistics' })

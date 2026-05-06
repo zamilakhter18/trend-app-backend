@@ -66,6 +66,7 @@ export class TrendController {
     }
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Get(':id/explanation')
   @ApiOperation({ summary: 'Get AI-generated explanation for a trend' })
   @ApiOkResponse({

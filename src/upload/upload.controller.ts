@@ -25,7 +25,7 @@ export class UploadController {
     private responseHandler: ResponseHandler,
   ) {}
 
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT-auth')
   @Post('generate-url')
   @ApiOperation({ 
     summary: 'Generate a signed URL for direct client-side media uploads',
