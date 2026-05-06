@@ -151,7 +151,33 @@ Administrators can manually trigger the ingestion process.
 
 ---
 
+## ⚙️ 7. Trend Ranking & Scoring Engine
+The backend implements an intelligent ranking system to ensure the most relevant and viral content surfaces at the top of the feed.
+
+### 🧮 Scoring Formula
+The `final_score` for each trend is calculated hourly via a global cron job using the following metrics:
+
+1. **Engagement Velocity (50%)**: Measures how fast users are interacting with the trend in the last 24 hours.
+2. **Save Rate (30%)**: Ratio of saves to total interactions, indicating long-term interest.
+3. **Click-Through Rate (20%)**: Measures affiliate product interest relative to trend engagement.
+4. **Time Decay (Penalty)**: Older trends naturally lose visibility over time using a gravity-based decay formula: `Score / (age + 2)^1.8`.
+
+```text
+User Engagement
+    ↓
+(Likes, Comments, Saves, Clicks)
+    ↓
+Scoring Engine (Cron)
+    ↓
+Recalculate Final Score
+    ↓
+GET /feed (Ranked by final_score DESC)
+```
+
+---
+
 ## ⚙️ System Background Processes (Cron)
 - **Global Score Update:** 
-  - **Frequency:** Every hour (currently 1 min for testing).
-  - **Action:** Recalculates trend velocity and engagement metrics in `trend_scores` table.
+  - **Frequency:** Every hour.
+  - **Action:** Runs the ranking algorithm across all active trends and updates `trend_scores`.
+  - **Metrics Updated:** `velocity`, `save_rate_score`, `ctr_score`, `final_score`.

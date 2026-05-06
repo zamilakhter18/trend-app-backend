@@ -13,6 +13,7 @@ import {
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
   ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { FeedService } from './feed.service';
@@ -32,13 +33,21 @@ export class FeedController {
   @Public()
   @UseInterceptors(CacheInterceptor)
   @Get()
-  @ApiOperation({ summary: 'Get the personalized trend feed' })
+  @ApiOperation({ 
+    summary: 'Get the personalized trend feed',
+    description: 'Returns a list of trends ranked by a combination of engagement velocity, save rate, and click-through rate, with a time-decay penalty for older content.'
+  })
+  @ApiQuery({ name: 'limit', required: false, example: 10, description: 'Number of trends to return' })
+  @ApiQuery({ name: 'cursor', required: false, description: 'Base64 encoded cursor for pagination' })
   @ApiOkResponse({
     description: 'Feed fetched successfully',
     example: {
       statusCode: 200,
       message: 'Data fetched successfully',
-      data: [{ id: 'uuid', title: 'Trend Title', score: 100 }],
+      data: {
+        data: [{ id: 'uuid', title: 'Trend Title', score: { finalScore: 85.5 } }],
+        nextCursor: 'base64-string'
+      },
     },
   })
   @ApiBadRequestResponse({
