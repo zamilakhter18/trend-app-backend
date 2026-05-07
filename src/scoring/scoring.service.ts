@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, MoreThan } from "typeorm";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import { Trend } from "../db/entities/Trend.entity";
 import { TrendScore } from "../db/entities/TrendScore.entity";
 import { Interaction } from "../db/entities/Interaction.entity";
@@ -23,6 +24,24 @@ export class ScoringService {
     @InjectRepository(Clickout)
     private clickoutRepository: Repository<Clickout>,
   ) {}
+
+  /**
+   * Periodic task to update all active trend scores.
+   * Runs every 15 minutes.
+   */
+  @Cron("0 */15 * * * *")
+  async handlePeriodicScoringUpdate() {
+    this.logger.log("Starting periodic trend scoring update...");
+    const trends = await this.trendRepository.find({
+      where: { status: "PUBLISHED" },
+      select: ["id"],
+    });
+
+    for (const trend of trends) {
+      await this.calculateTrendScore(trend.id);
+    }
+    this.logger.log(`Updated scores for ${trends.length} trends.`);
+  }
 
   /**
    * Recalculate scores for a specific trend.

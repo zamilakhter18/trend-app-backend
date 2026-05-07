@@ -20,6 +20,8 @@ import { BrandModule } from "./brand/brand.module";
 import { UploadModule } from "./upload/upload.module";
 import { CommonModule } from "./common/common.module";
 import { DbModule } from "./db/db.module";
+import { SearchModule } from "./search/search.module";
+import { RewardsModule } from "./rewards/rewards.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { APP_GUARD } from "@nestjs/core";
 import { AuthGuard } from "./common/guards/auth.guard";
@@ -63,6 +65,8 @@ import { UserProfile } from "./db/entities/UserProfile.entity";
     SponsoredContentModule,
     BrandModule,
     UploadModule,
+    SearchModule,
+    RewardsModule,
   ],
   controllers: [AppController],
   providers: [

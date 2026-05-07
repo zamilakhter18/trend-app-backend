@@ -247,13 +247,25 @@ Raw ingestion and AI scoring signals.
 - `metadata`: JSONB.
 - `createdAt`: Timestamp.
 
-### 21. EarlyDiscoveryReward (`early_discovery_rewards`)
-Tracking for early discovery rewards.
-- `id`: UUID, Primary Key.
-- `userId`: UUID, Foreign Key to `UserProfile`.
-- `trendId`: UUID, Foreign Key to `Trend`.
-- `phaseAtDiscovery`: Enum (`emerging`, `rising`, `peak`, `fading`).
-- `bonusPoints`: Decimal.
-- `rewardType`: Enum (`POINTS`, `BADGE`, `PERK`).
-- `claimed`: Boolean.
-- `createdAt`: Timestamp.
+---
+
+## 🔐 Security & Row Level Security (RLS)
+
+The system uses a combination of NestJS application security and Supabase RLS for defense-in-depth.
+
+### 🛡️ RLS Policy Principles
+
+1.  **NestJS Service Access**: The NestJS backend connects via a high-privileged role (`service_role` or equivalent) to perform aggregate scoring and ingestion.
+2.  **Public Access**: `trends`, `trend_content`, and `products` are readable by `anon` and `authenticated` roles to support the public feed.
+3.  **Owner-Only Write**: `user_profile` updates and `saves` are restricted to the `userId` matching the `auth.uid()`.
+4.  **Audit Integrity**: `score_events` and `trend_phase_history` are **Insert-Only** for the system role; no user (including the owner) can modify or delete these records.
+
+### 📜 Policy Examples
+
+| Table | Role | Permission | Policy Rule |
+| :--- | :--- | :--- | :--- |
+| `user_profile` | `authenticated` | `SELECT` | `auth.uid() = user_id` (Private fields) |
+| `trends` | `anon` | `SELECT` | `status = 'PUBLISHED'` |
+| `saves` | `authenticated` | `ALL` | `auth.uid() = user_id` |
+| `score_events` | `authenticated` | `SELECT` | `auth.uid() = user_id` |
+| `score_events` | `authenticated` | `INSERT` | `DENY` (Only system can write) |

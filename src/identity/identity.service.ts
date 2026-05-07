@@ -15,7 +15,7 @@ export class IdentityService {
   async getUserPerformance(userId: string): Promise<ServiceResponse> {
     const data = await this.profileRepository.findOne({
       where: { userId },
-      relations: ["userBadges"],
+      relations: ["userBadges", "scoreEvents"],
     });
 
     if (!data) {
