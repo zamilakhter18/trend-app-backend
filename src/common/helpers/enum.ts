@@ -28,3 +28,11 @@ export enum StorageBucketEnum {
   PROFILE_IMAGES = "profile-images",
   PRODUCT_MEDIA = "product-media",
 }
+
+export enum ClickSourceType {
+  ORGANIC_FEED = 'ORGANIC_FEED',
+  SPONSORED_FEED = 'SPONSORED_FEED',
+  CREATOR_PROFILE = 'CREATOR_PROFILE',
+  SEARCH = 'SEARCH',
+  RECOMMENDED = 'RECOMMENDED',
+}

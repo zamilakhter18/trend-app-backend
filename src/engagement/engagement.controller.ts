@@ -7,6 +7,7 @@ import {
   Request,
   Res,
 } from '@nestjs/common';
+import * as crypto from 'crypto';
 import {
   ApiTags,
   ApiOperation,
@@ -23,6 +24,7 @@ import { SaveDto } from './dto/save.dto';
 import { ClickDto } from './dto/click.dto';
 import { ResponseHandler } from '../common/helpers/response-handler';
 import { messages } from '../common/helpers/message';
+import { Public } from '../common/decorators/public.decorator';
 import type { Response } from 'express';
 
 @ApiTags('Engagement')
@@ -197,6 +199,7 @@ export class EngagementController {
     }
   }
 
+  @Public()
   @Post('click')
   @ApiOperation({ summary: 'Track a click on a trend or product' })
   @ApiCreatedResponse({
@@ -234,9 +237,15 @@ export class EngagementController {
     @Res() res: Response,
   ) {
     try {
+      const ip = req.ip || req.connection?.remoteAddress;
+      const ipHash = ip
+        ? crypto.createHash('sha256').update(ip).digest('hex')
+        : undefined;
+
       const result = await this.engagementService.trackClick(
-        req.user.userId,
+        req.user?.userId || null,
         clickDto,
+        ipHash,
       );
       if (result.success) {
         return this.responseHandler.successResponseWithData(

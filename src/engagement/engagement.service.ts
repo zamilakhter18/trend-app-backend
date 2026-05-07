@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, MoreThan } from 'typeorm';
 import { Engagement } from '../db/entities/Engagement.entity';
 import { Save } from '../db/entities/Save.entity';
 import { Clickout } from '../db/entities/Clickout.entity';
@@ -63,11 +63,42 @@ export class EngagementService {
   async trackClick(
     userId: string | null,
     clickDto: ClickDto,
+    ipHash?: string,
   ): Promise<ServiceResponse> {
     try {
+      // Basic deduplication: check if same user/product or IP/product click exists in last 5 minutes
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+      
+      const where: any = {
+        productId: clickDto.product_id,
+        createdAt: MoreThan(fiveMinutesAgo),
+      };
+
+      if (userId) {
+        where.userId = userId;
+      } else if (ipHash) {
+        where.ipHash = ipHash;
+      }
+
+      const existingClick = await this.clickoutRepository.findOne({ where });
+
+      if (existingClick) {
+        return { 
+          success: true, 
+          message: 'Click already tracked (deduplicated)', 
+          data: existingClick 
+        };
+      }
+
       const clickout = this.clickoutRepository.create({
         userId,
         productId: clickDto.product_id,
+        trendId: clickDto.trend_id,
+        campaignId: clickDto.campaign_id,
+        sourceType: clickDto.source_type,
+        creatorId: clickDto.creator_id,
+        sessionId: clickDto.session_id,
+        ipHash,
       });
       const data = await this.clickoutRepository.save(clickout);
 

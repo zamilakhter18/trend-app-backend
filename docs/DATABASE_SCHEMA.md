@@ -110,11 +110,37 @@ User bookmarks for trends.
 - `createdAt`: Timestamp.
 
 ### 10. Clickout (`clickouts`)
-Tracks when users click on product affiliate links.
+Tracks and attributes product discovery and commerce intent.
+- `id`: UUID, Primary Key.
+- `userId`: UUID, Nullable, Foreign Key to `UserProfile`.
+- `productId`: UUID, Foreign Key to `Product`.
+- `trendId`: UUID, Nullable, Foreign Key to `Trend`.
+- `campaignId`: UUID, Nullable, Foreign Key to `CreatorCampaign`.
+- `sourceType`: Enum (`ORGANIC_FEED`, `SPONSORED_FEED`, `CREATOR_PROFILE`, `SEARCH`, `RECOMMENDED`).
+- `creatorId`: UUID, Nullable, Foreign Key to `UserProfile`.
+- `sessionId`: String, Nullable.
+- `ipHash`: String, Nullable, for deduplication.
+- `createdAt`: Timestamp.
+
+## Commerce & Conversion Intelligence (Future-Ready)
+
+The architecture is designed to support a multi-touch attribution model and scalable conversion tracking.
+
+### 16. PurchaseEvent (`purchase_events`) (Planned)
 - `id`: UUID, Primary Key.
 - `userId`: UUID, Foreign Key to `UserProfile`.
 - `productId`: UUID, Foreign Key to `Product`.
-- `createdAt`: Timestamp.
+- `clickoutId`: UUID, Foreign Key to `Clickout` for direct attribution.
+- `amount`: Decimal.
+- `currency`: String.
+- `status`: Enum (`pending`, `confirmed`, `refunded`).
+- `metadata`: JSONB.
+
+### 17. AffiliateCallback (`affiliate_callbacks`) (Planned)
+- `id`: UUID, Primary Key.
+- `provider`: String (e.g., "Impact", "Rakuten").
+- `rawPayload`: JSONB.
+- `processed`: Boolean.
 
 ### 11. Brand (`brands`)
 Separate entity for advertisers and organizations.

@@ -114,6 +114,37 @@ Guests can browse the platform and view basic content without a token.
 
 ---
 
+## 🛍️ Commerce Attribution & Conversion Intelligence
+
+The system implements a sophisticated clickout tracking architecture to attribute product discovery and prepare for future commerce monetization.
+
+### 🔗 Click Attribution Model
+
+Every clickout is captured with rich context to ensure high-fidelity analytics:
+- **Trend Attribution**: Which specific trend generated the interest.
+- **Source Attribution**: Whether the click came from an `ORGANIC_FEED`, `SPONSORED_FEED`, or `SEARCH`.
+- **Campaign Attribution**: Linking clicks to specific Brand/Creator campaigns.
+- **Creator Attribution**: Crediting the specific creator who drove the traffic.
+- **Deduplication Protection**: A 5-minute window deduplication strategy (based on `user_id`/`ip_hash` and `product_id`) prevents inflated analytics and protects trend scoring integrity.
+
+### 📈 Conversion Roadmap
+
+The architecture avoids simplistic "converted" flags in favor of a scalable event-driven system:
+
+1.  **Clickout Events**: The foundation of attribution, capturing intent and context.
+2.  **Purchase Events**: Future entities that store actual transaction data from commerce partners.
+3.  **Affiliate Callbacks**: A system for processing webhooks from affiliate networks (Impact, ShareASale, etc.).
+4.  **Reconciliation Engine**: A backend process that matches `AffiliateCallbacks` to original `ClickoutEvents` to close the loop and attribute revenue.
+
+### 🚫 Analytics Integrity
+
+To ensure trustworthy data for brands and internal scoring:
+- **Spam Filtering**: Rapid repeated clicks from the same source are logged but marked or ignored in scoring.
+- **Bot Detection**: `ip_hash` and `session_id` analysis helps identify and filter non-human traffic.
+- **Integrity Guards**: Clicks that fail deduplication do not contribute to a trend's `velocity` or `ctrScore`.
+
+---
+
 ## 🎨 Future-Ready Creator Architecture
 
 While the MVP focuses on consumer engagement, the architecture is designed to scale into a full creator economy.
