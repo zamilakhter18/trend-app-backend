@@ -44,6 +44,17 @@ To prevent analytics inflation, clickouts are deduplicated at the **Application 
 
 ---
 
+## 🎁 Discount & Perk System
+
+The system provides score-gated incentives and brand-linked partnerships.
+
+- **Score-Gated Access**: Brands can issue `discount_codes` with a `min_score_required`. Users whose `trendScore` meets the threshold can unlock these perks.
+- **Reward Links**: Early adopters who earn `early_discovery_rewards` may receive exclusive fixed-amount or percentage-based codes as part of their reward package.
+- **Usage Tracking**: Each code tracks `max_uses` and `use_count` to ensure campaign budget integrity.
+- **Affiliate Integration**: These codes are often linked to specific affiliate products, allowing for tracked conversion loops.
+
+---
+
 ## 🚀 API Endpoint Specifications
 
 ### 1. Authentication (`/auth`)
