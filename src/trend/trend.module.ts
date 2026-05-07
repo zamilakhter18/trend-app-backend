@@ -9,5 +9,6 @@ import { AuthModule } from "../auth/auth.module";
   imports: [SupabaseModule, AiModule, AuthModule],
   providers: [TrendService],
   controllers: [TrendController],
+  exports: [TrendService],
 })
 export class TrendModule {}
