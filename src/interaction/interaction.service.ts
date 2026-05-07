@@ -23,6 +23,24 @@ export class InteractionService {
 
   async interact(userId: string | null, interactDto: InteractDto): Promise<ServiceResponse> {
     try {
+      // Inflation Protection: prevent duplicate VIEW/SHARE from same user/IP within short window (1 hour)
+      if (interactDto.interaction_type === "VIEW" || interactDto.interaction_type === "SHARE") {
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+        const existing = await this.interactionRepository.findOne({
+          where: {
+            userId: userId || undefined,
+            trendId: interactDto.trend_id || undefined,
+            productId: interactDto.product_id || undefined,
+            interactionType: interactDto.interaction_type,
+            createdAt: MoreThan(oneHourAgo),
+          },
+        });
+
+        if (existing) {
+          return { success: true, message: "Interaction already recorded (deduplicated)", data: existing };
+        }
+      }
+
       const interaction = this.interactionRepository.create({
         userId,
         trendId: interactDto.trend_id || null,
@@ -42,6 +60,19 @@ export class InteractionService {
 
   async save(userId: string, saveDto: SaveDto): Promise<ServiceResponse> {
     try {
+      // Fake Save Protection: prevent duplicate saves for the same item
+      const existingSave = await this.saveRepository.findOne({
+        where: {
+          userId,
+          trendId: saveDto.trend_id || undefined,
+          productId: saveDto.product_id || undefined,
+        },
+      });
+
+      if (existingSave) {
+        return { success: true, message: "Already saved", data: existingSave };
+      }
+
       const saveEntry = this.saveRepository.create({
         userId,
         trendId: saveDto.trend_id || null,

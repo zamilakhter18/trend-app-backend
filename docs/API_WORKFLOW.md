@@ -327,6 +327,34 @@ All responses follow a standard envelope:
 
 ---
 
+## 🛡️ Rate Limiting & Abuse Protection
+
+Spam prevention is critical for maintaining the integrity of trend intelligence metrics. The system implements protection across multiple layers:
+
+### 1. Global Rate Limiting (Interaction Throttling)
+- **Mechanism**: The API uses a global `ThrottlerGuard` (NestJS) to limit requests.
+- **Default Limit**: 100 requests per minute per IP address.
+- **Bot Prevention**: This prevents automated scripts from overwhelming the API or performing mass-data scraping.
+
+### 2. View Inflation Protection
+- **Deduplication**: `VIEW` and `SHARE` interactions are deduplicated at the application layer.
+- **Window**: The system will only record one view/share per user (or IP, if anonymous) per trend/product within a **1-hour window**.
+- **Impact**: Prevents "view-looping" bots from artificially inflating the momentum of a trend.
+
+### 3. Click Spam Protection
+- **Deduplication**: `CLICK` interactions are tracked in the `clickouts` table with a **5-minute deduplication window**.
+- **Context**: Subsequent clicks on the same product by the same user/IP within 300 seconds are recorded in the database but flagged as duplicates and not counted toward scoring velocity.
+
+### 4. Fake Save Protection
+- **Constraint**: Each user can only have **one active save** per trend or product.
+- **Logic**: Attempting to save an item that is already in the user's bookmark list will result in a "Success" response but will not create a redundant record or additional scoring boost.
+
+### 5. Authentication Abuse
+- **Supabase Auth**: Leveraging Supabase's built-in email rate limiting and CAPTCHA support (if enabled) for `/auth/signup` and `/auth/login`.
+- **JWT Expiry**: Short-lived (15m) access tokens minimize the window of opportunity for intercepted tokens.
+
+---
+
 ## 🔢 Pagination Patterns
 
 The system uses two primary pagination strategies:

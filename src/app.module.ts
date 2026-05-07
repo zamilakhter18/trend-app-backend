@@ -25,6 +25,7 @@ import { RewardsModule } from "./rewards/rewards.module";
 import { AdminModule } from "./admin/admin.module";
 import { DiscountModule } from "./discount/discount.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
 import { APP_GUARD } from "@nestjs/core";
 import { AuthGuard } from "./common/guards/auth.guard";
 import { RolesGuard } from "./common/guards/role.guard";
@@ -35,6 +36,12 @@ import { UserProfile } from "./db/entities/UserProfile.entity";
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100, // Global limit: 100 requests per minute
+      },
+    ]),
     TypeOrmModule.forRoot({
       type: "postgres",
       url: process.env.DATABASE_URL,
@@ -75,6 +82,10 @@ import { UserProfile } from "./db/entities/UserProfile.entity";
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
