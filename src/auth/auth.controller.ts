@@ -154,4 +154,33 @@ export class AuthController {
       return this.responseHandler.catchErrorResponse(res, (error as Error).message || messages.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @Post("logout")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Logout the current user" })
+  @ApiOkResponse({
+    description: "Logout successful",
+    example: {
+      statusCode: 200,
+      message: "Logged out successfully",
+    },
+  })
+  @ApiInternalServerErrorResponse({
+    description: "Internal Server Error",
+    example: {
+      statusCode: 500,
+      message: "Something went wrong",
+    },
+  })
+  async logout(@Res() res: Response) {
+    try {
+      const result = await this.authService.logout();
+      if (result.success) {
+        return this.responseHandler.successResponse(res, result.message);
+      }
+      return this.responseHandler.errorResponse(res, result.message);
+    } catch (error) {
+      return this.responseHandler.catchErrorResponse(res, (error as Error).message || messages.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

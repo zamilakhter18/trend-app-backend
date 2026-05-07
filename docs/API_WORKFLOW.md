@@ -126,6 +126,11 @@ All responses follow a standard envelope:
 - **Request Body**: `{ "refresh_token": "..." }`
 - **Response (200)**: `{ "statusCode": 200, "data": { "access_token": "...", "refresh_token": "..." } }`
 
+#### `POST /auth/logout`
+- **Auth**: Optional/Public
+- **Purpose**: Invalidate the current session and sign out.
+- **Response (200)**: `{ "statusCode": 200, "message": "Logged out successfully" }`
+
 ---
 
 ### 2. Trends & Feed (`/feed`, `/trend`)
@@ -225,6 +230,14 @@ All responses follow a standard envelope:
 #### `PATCH /identity/profile`
 - **Auth**: Required
 - **Request Body**: `{ "username": "...", "fullName": "...", "avatarUrl": "..." }`
+- **Response (200)**:
+```json
+{
+  "statusCode": 200,
+  "message": "Resource updated successfully",
+  "data": { "userId": "uuid", "username": "trendsetter_new" }
+}
+```
 
 #### `GET /identity/performance`
 - **Auth**: Required
@@ -261,6 +274,22 @@ All responses follow a standard envelope:
 #### `GET /discounts`
 - **Auth**: Public (Generic list)
 - **Purpose**: List all active (`isActive: true`) discount codes and brand perks that have not expired.
+- **Response (200)**:
+```json
+{
+  "statusCode": 200,
+  "message": "Data fetched successfully",
+  "data": [
+    {
+      "id": "uuid",
+      "code": "SAVE10",
+      "discountType": "PERCENTAGE",
+      "discountValue": 10,
+      "brand": { "name": "Brand Name" }
+    }
+  ]
+}
+```
 
 ---
 
@@ -268,10 +297,24 @@ All responses follow a standard envelope:
 
 #### `POST /admin/trends`
 - **Auth**: Admin
-- **Request Body**: Same as CreateTrendDto.
+- **Request Body**:
+```json
+{
+  "title": "Required: Trend Title",
+  "description": "Optional: Text",
+  "source": "Optional: e.g. tiktok",
+  "externalId": "Optional: ID from source",
+  "phase": "Optional: emerging | rising | peak | fading",
+  "contentType": "Optional: ORGANIC | SPONSORED",
+  "status": "Optional: DRAFT | PUBLISHED | ARCHIVED | FLAGGED"
+}
+```
+- **Response (201)**: `{ "statusCode": 201, "data": { "id": "uuid", "title": "..." } }`
 
 #### `PATCH /admin/trends/:id`
 - **Auth**: Admin
+- **Request Body**: Same fields as POST, all optional.
+- **Response (200)**: `{ "statusCode": 200, "data": { "id": "uuid", "title": "..." } }`
 
 #### `POST /admin/ingestion/run`
 - **Auth**: Admin

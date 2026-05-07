@@ -160,4 +160,15 @@ export class AuthService {
       };
     }
   }
+
+  async logout(): Promise<ServiceResponse> {
+    const client = this.supabaseService.getClient();
+    const { error } = await client.auth.signOut();
+
+    if (error) {
+      return { success: false, message: error.message };
+    }
+
+    return { success: true, message: "Logged out successfully" };
+  }
 }
