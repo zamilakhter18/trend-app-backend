@@ -16,6 +16,7 @@ import { ScoringModule } from "./scoring/scoring.module";
 import { IdentityModule } from "./identity/identity.module";
 import { IngestionModule } from "./ingestion/ingestion.module";
 import { SponsoredContentModule } from "./sponsored-content/sponsored-content.module";
+import { BrandModule } from "./brand/brand.module";
 import { UploadModule } from "./upload/upload.module";
 import { CommonModule } from "./common/common.module";
 import { DbModule } from "./db/db.module";
@@ -60,6 +61,7 @@ import { UserProfile } from "./db/entities/UserProfile.entity";
     IdentityModule,
     IngestionModule,
     SponsoredContentModule,
+    BrandModule,
     UploadModule,
   ],
   controllers: [AppController],

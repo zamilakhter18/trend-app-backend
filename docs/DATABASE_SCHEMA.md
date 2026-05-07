@@ -107,16 +107,28 @@ Tracks when users click on product affiliate links.
 - `productId`: UUID, Foreign Key to `Product`.
 - `createdAt`: Timestamp.
 
-### 11. SponsoredContent (`sponsored_content`)
-Advertising data for promoted trends.
+### 11. Brand (`brands`)
+Separate entity for advertisers and organizations.
+- `id`: UUID, Primary Key.
+- `name`: String, Unique.
+- `verified`: Boolean.
+- `billingMetadata`: JSONB.
+- `websiteUrl`: String.
+- `logoUrl`: String.
+- `ownerId`: UUID, Foreign Key to `UserProfile`.
+- `createdAt`: Timestamp.
+- `updatedAt`: Timestamp.
+
+### 12. SponsoredContent (`sponsored_content`)
+Advertising data for promoted trends. Isolated from organic scoring.
 - `trendId`: UUID, Primary Key, Foreign Key to `Trend`.
-- `advertiserId`: UUID, Foreign Key to `UserProfile`.
+- `brandId`: UUID, Foreign Key to `Brand`.
 - `budget`: Decimal.
-- `bidAmount`: Decimal.
+- `placementBid`: Decimal.
 - `isActive`: Boolean.
-- `sponsorName`: String.
+- `sponsorName`: String (Display override).
 - `campaignName`: String.
-- `priorityScore`: Integer.
+- `campaignPriority`: Integer (Used for placement weight, NOT organic ranking).
 - `startsAt`: Timestamp.
 - `endsAt`: Timestamp.
 - `createdAt`: Timestamp.

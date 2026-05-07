@@ -11,12 +11,20 @@ export class CreateSponsoredContentDto {
   trend_id!: string;
 
   @ApiProperty({
-    description: 'Name of the sponsor organization',
-    example: 'Nike',
+    description: 'The UUID of the brand/advertiser',
+    example: '550e8400-e29b-41d4-a716-446655440001',
   })
   @IsNotEmpty()
+  @IsUUID()
+  brand_id!: string;
+
+  @ApiProperty({
+    description: 'Name of the sponsor organization (display override)',
+    example: 'Nike',
+  })
+  @IsOptional()
   @IsString()
-  sponsor_name!: string;
+  sponsor_name?: string;
 
   @ApiProperty({
     description: 'Name of the marketing campaign',
@@ -36,14 +44,23 @@ export class CreateSponsoredContentDto {
   budget!: number;
 
   @ApiProperty({
-    description: 'Priority score for feed injection (0-100)',
+    description: 'Bid amount for this placement',
+    example: 2.50,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  placement_bid?: number;
+
+  @ApiProperty({
+    description: 'Campaign priority for feed injection (0-100)',
     example: 95,
   })
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
   @Max(100)
-  priority_score!: number;
+  campaign_priority!: number;
 
   @ApiProperty({
     description: 'Start date of the campaign',

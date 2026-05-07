@@ -1,7 +1,15 @@
-import { IsOptional, IsString, IsNumber, IsDateString, Min, Max, IsBoolean } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsDateString, Min, Max, IsBoolean, IsUUID } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateSponsoredContentDto {
+  @ApiPropertyOptional({
+    description: 'The UUID of the brand/advertiser',
+    example: '550e8400-e29b-41d4-a716-446655440001',
+  })
+  @IsOptional()
+  @IsUUID()
+  brand_id?: string;
+
   @ApiPropertyOptional({
     description: 'Name of the sponsor organization',
     example: 'Nike',
@@ -28,14 +36,23 @@ export class UpdateSponsoredContentDto {
   budget?: number;
 
   @ApiPropertyOptional({
-    description: 'Priority score for feed injection (0-100)',
+    description: 'Bid amount for this placement',
+    example: 3.00,
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  placement_bid?: number;
+
+  @ApiPropertyOptional({
+    description: 'Campaign priority for feed injection (0-100)',
     example: 98,
   })
   @IsOptional()
   @IsNumber()
   @Min(0)
   @Max(100)
-  priority_score?: number;
+  campaign_priority?: number;
 
   @ApiPropertyOptional({
     description: 'Start date of the campaign',

@@ -11,6 +11,7 @@ import { Clickout } from './entities/Clickout.entity';
 import { AiAnalysis } from './entities/AiAnalysis.entity';
 import { TrendScore } from './entities/TrendScore.entity';
 import { SponsoredContent } from './entities/SponsoredContent.entity';
+import { Brand } from './entities/Brand.entity';
 
 const entities = [
   UserProfile,
@@ -24,6 +25,7 @@ const entities = [
   AiAnalysis,
   TrendScore,
   SponsoredContent,
+  Brand,
 ];
 
 @Global()

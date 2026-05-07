@@ -84,7 +84,25 @@ Guests can browse the platform and view basic content without a token.
 
 ---
 
-...
+---
+
+## 🛡️ Trust-Preserving Sponsored Content Architecture
+
+The system maintains a strict separation between organic trend ranking and paid promotional placement to ensure platform integrity and user trust.
+
+### ⚖️ Organic vs. Sponsored Isolation
+
+1.  **Organic Ranking**: Based exclusively on engagement metrics (velocity, CTR, save rate, momentum). Paid metadata NEVER influences the organic `finalScore`.
+2.  **Sponsored Placement**: Managed through an isolated injection layer. Sponsored items are fetched separately and merged into the feed at specific intervals (e.g., every 5th item).
+3.  **Terminology**: We use "Campaign Priority" or "Placement Weight" instead of "Ranking Scores" for sponsored content to avoid logical cross-contamination.
+
+### 🏢 Brand & Advertiser Entities
+
+Advertisers are managed as separate **Brand** entities, distinct from regular consumer profiles.
+- Brands support billing, verification, and campaign management.
+- A regular user can own or manage one or more Brand entities.
+
+---
 
 ## 🏗️ System Architecture Flow
 

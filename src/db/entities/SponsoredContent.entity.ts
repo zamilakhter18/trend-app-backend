@@ -8,7 +8,7 @@ import {
   OneToOne,
 } from 'typeorm';
 import { Trend } from './Trend.entity';
-import { UserProfile } from './UserProfile.entity';
+import { Brand } from './Brand.entity';
 
 @Entity('sponsored_content')
 export class SponsoredContent {
@@ -21,20 +21,20 @@ export class SponsoredContent {
   @JoinColumn({ name: 'trend_id' })
   trend!: Trend;
 
-  @Column({ name: 'advertiser_id', nullable: true })
-  advertiserId!: string;
+  @Column({ name: 'brand_id', nullable: true })
+  brandId!: string;
 
-  @ManyToOne(() => UserProfile, (profile) => profile.sponsoredContents, {
+  @ManyToOne(() => Brand, (brand) => brand.sponsoredContents, {
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'advertiser_id' })
-  advertiser!: UserProfile;
+  @JoinColumn({ name: 'brand_id' })
+  brand!: Brand;
 
   @Column('decimal', { precision: 12, scale: 2, nullable: true })
   budget!: number;
 
-  @Column('decimal', { name: 'bid_amount', precision: 12, scale: 2, nullable: true })
-  bidAmount!: number;
+  @Column('decimal', { name: 'placement_bid', precision: 12, scale: 2, nullable: true })
+  placementBid!: number;
 
   @Column({ name: 'is_active', default: true })
   isActive!: boolean;
@@ -45,8 +45,8 @@ export class SponsoredContent {
   @Column({ name: 'campaign_name', nullable: true })
   campaignName!: string;
 
-  @Column({ name: 'priority_score', default: 0 })
-  priorityScore!: number;
+  @Column({ name: 'campaign_priority', default: 0 })
+  campaignPriority!: number;
 
   @Column({ name: 'starts_at', type: 'timestamptz', nullable: true })
   startsAt!: Date;

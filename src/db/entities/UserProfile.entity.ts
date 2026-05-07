@@ -10,7 +10,7 @@ import { Trend } from './Trend.entity';
 import { Engagement } from './Engagement.entity';
 import { Save } from './Save.entity';
 import { Clickout } from './Clickout.entity';
-import { SponsoredContent } from './SponsoredContent.entity';
+import { Brand } from './Brand.entity';
 import { UserRoleEnum } from '../../common/helpers/enum';
 
 @Entity('user_profile')
@@ -69,6 +69,6 @@ export class UserProfile {
   @OneToMany(() => Clickout, (clickout) => clickout.user)
   clickouts!: Clickout[];
 
-  @OneToMany(() => SponsoredContent, (sponsored) => sponsored.advertiser)
-  sponsoredContents!: SponsoredContent[];
+  @OneToMany(() => Brand, (brand) => brand.owner)
+  brands!: Brand[];
 }

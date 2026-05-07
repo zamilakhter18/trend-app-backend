@@ -4,9 +4,10 @@ import { SponsoredContentService } from "./sponsored-content.service";
 import { SponsoredContentController } from "./sponsored-content.controller";
 import { SponsoredContent } from "../db/entities/SponsoredContent.entity";
 import { Trend } from "../db/entities/Trend.entity";
+import { Brand } from "../db/entities/Brand.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SponsoredContent, Trend])],
+  imports: [TypeOrmModule.forFeature([SponsoredContent, Trend, Brand])],
   providers: [SponsoredContentService],
   controllers: [SponsoredContentController],
   exports: [SponsoredContentService],
