@@ -19,7 +19,6 @@ describe("TrendController", () => {
 
     controller = module.get<TrendController>(TrendController);
   });
-...
 
   it("should be defined", () => {
     expect(controller).toBeDefined();
