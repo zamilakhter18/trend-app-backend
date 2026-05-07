@@ -30,7 +30,7 @@ Relational badge system for reward traceability.
 ### 3. Trend (`trends`)
 The central entity representing a trend.
 - `id`: UUID, Primary Key.
-- `creatorId`: UUID, Foreign Key to `UserProfile`.
+- `creatorId`: UUID, Foreign Key to `UserProfile`. *Note: In a future migration, this will point to `creator_profiles` once the creator economy features are fully established.*
 - `source`: String (Flexible: TikTok, Instagram, Pinterest, Ecommerce, etc.).
 - `externalId`: String, ID from the source platform.
 - `title`: String.
@@ -134,7 +134,7 @@ Tracks and attributes product discovery and commerce intent.
 - `sessionId`: String, Nullable.
 - `ipHash`: String, Nullable.
 - `converted`: Boolean. Tracks if the click led to a purchase.
-- `convertedAt`: Timestamp.
+- `convertedAt`: Timestamp, Nullable.
 - `createdAt`: Timestamp.
 
 ## Commerce & Conversion Intelligence (Future-Ready)
@@ -178,6 +178,7 @@ Marketing and reward-linked perks.
 - `minScoreRequired`: Integer. Minimum user trend score to use.
 - `maxUses`: Integer, Nullable.
 - `useCount`: Integer.
+- `isActive`: Boolean, default `true`. Allows instant deactivation of a code.
 - `expiresAt`: Timestamp.
 - `createdAt`: Timestamp.
 - `updatedAt`: Timestamp.

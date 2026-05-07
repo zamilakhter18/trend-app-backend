@@ -50,6 +50,12 @@ export class DiscountCode {
   useCount!: number;
 
   @Column({
+    name: "is_active",
+    default: true,
+  })
+  isActive!: boolean;
+
+  @Column({
     name: "expires_at",
     type: "timestamptz",
     nullable: true,
