@@ -11,14 +11,23 @@ Stores user-related information, roles, and gamification metrics.
 - `email`: String, Unique.
 - `fullName`: String.
 - `avatarUrl`: String.
-- `role`: Enum (`USER`, `ADMIN`, `ADVERTISER`).
-- `trendScore`: Decimal, tracks user's contribution value.
-- `level`: Integer, user level.
-- `badges`: Array of Strings.
+- `role`: Enum (`USER`, `ADMIN`, `CREATOR`).
+- `trendScore`: Decimal, tracks user's contribution value. Source of truth for level.
+- `level`: Integer, computed dynamically from `trendScore` (floor(trendScore / 100) + 1).
 - `createdAt`: Timestamp.
 - `updatedAt`: Timestamp.
 
-### 2. Trend (`trends`)
+### 2. UserBadge (`user_badges`)
+Relational badge system for reward traceability.
+- `id`: UUID, Primary Key.
+- `userId`: UUID, Foreign Key to `UserProfile`.
+- `badgeType`: Enum (`EARLY_SPOTTER`, `STREETWEAR_EXPERT`, `LUXURY_CURATOR`, `TREND_HUNTER`).
+- `earnedAt`: Timestamp, when the badge was earned.
+- `sourceTrendId`: UUID, Nullable, Foreign Key to `Trend` that triggered the reward.
+- `metadata`: JSONB, additional context for the reward.
+- `createdAt`: Timestamp.
+
+### 3. Trend (`trends`)
 The central entity representing a trend.
 - `id`: UUID, Primary Key.
 - `creatorId`: UUID, Foreign Key to `UserProfile`.
@@ -132,3 +141,37 @@ Advertising data for promoted trends. Isolated from organic scoring.
 - `startsAt`: Timestamp.
 - `endsAt`: Timestamp.
 - `createdAt`: Timestamp.
+
+## Creator Economy Entities (Future-Ready)
+
+### 13. CreatorProfile (`creator_profiles`)
+Future-ready expansion for creator-specific metadata.
+- `id`: UUID, Primary Key.
+- `userId`: UUID, Foreign Key to `UserProfile`.
+- `bio`: Text.
+- `portfolioUrl`: String.
+- `socialLinks`: JSONB.
+- `isVerified`: Boolean.
+- `createdAt`: Timestamp.
+- `updatedAt`: Timestamp.
+
+### 14. CreatorAnalytics (`creator_analytics`)
+Performance metrics for creators.
+- `id`: UUID, Primary Key.
+- `creatorProfileId`: UUID, Foreign Key to `CreatorProfile`.
+- `totalReach`: Integer.
+- `totalEngagement`: Integer.
+- `averageEngagementRate`: Decimal.
+- `audienceDemographics`: JSONB.
+- `lastUpdated`: Timestamp.
+
+### 15. CreatorCampaign (`creator_campaigns`)
+Tracks collaborations between Brands and Creators.
+- `id`: UUID, Primary Key.
+- `creatorProfileId`: UUID, Foreign Key to `CreatorProfile`.
+- `brandId`: UUID, Foreign Key to `Brand`.
+- `name`: String.
+- `status`: Enum (`pending`, `active`, `completed`, `cancelled`).
+- `budget`: Decimal.
+- `createdAt`: Timestamp.
+- `updatedAt`: Timestamp.

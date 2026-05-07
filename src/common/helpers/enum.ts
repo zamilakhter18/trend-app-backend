@@ -3,9 +3,16 @@
  */
 
 export enum UserRoleEnum {
-  USER = "user",
-  ADMIN = "admin",
-  CREATOR = "creator",
+  USER = 'user',
+  ADMIN = 'admin',
+  CREATOR = 'creator',
+}
+
+export enum BadgeTypeEnum {
+  EARLY_SPOTTER = 'EARLY_SPOTTER',
+  STREETWEAR_EXPERT = 'STREETWEAR_EXPERT',
+  LUXURY_CURATOR = 'LUXURY_CURATOR',
+  TREND_HUNTER = 'TREND_HUNTER',
 }
 
 export enum PlatformEnum {

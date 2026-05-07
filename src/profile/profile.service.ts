@@ -15,6 +15,7 @@ export class ProfileService {
   async getProfile(userId: string): Promise<ServiceResponse> {
     const data = await this.profileRepository.findOne({
       where: { userId },
+      relations: ['userBadges'],
     });
 
     if (!data) {

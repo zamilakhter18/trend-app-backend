@@ -12,6 +12,10 @@ import { AiAnalysis } from './entities/AiAnalysis.entity';
 import { TrendScore } from './entities/TrendScore.entity';
 import { SponsoredContent } from './entities/SponsoredContent.entity';
 import { Brand } from './entities/Brand.entity';
+import { UserBadge } from './entities/UserBadge.entity';
+import { CreatorProfile } from './entities/CreatorProfile.entity';
+import { CreatorAnalytics } from './entities/CreatorAnalytics.entity';
+import { CreatorCampaign } from './entities/CreatorCampaign.entity';
 
 const entities = [
   UserProfile,
@@ -26,6 +30,10 @@ const entities = [
   TrendScore,
   SponsoredContent,
   Brand,
+  UserBadge,
+  CreatorProfile,
+  CreatorAnalytics,
+  CreatorCampaign,
 ];
 
 @Global()

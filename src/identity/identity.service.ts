@@ -14,8 +14,8 @@ export class IdentityService {
 
   async getUserPerformance(userId: string): Promise<ServiceResponse> {
     const data = await this.profileRepository.findOne({
-      select: ['trendScore', 'level', 'badges'],
       where: { userId },
+      relations: ['userBadges'],
     });
 
     if (!data) {
@@ -30,7 +30,6 @@ export class IdentityService {
 
   async getLeaderboard(limit: number = 10): Promise<ServiceResponse> {
     const data = await this.profileRepository.find({
-      select: ['userId', 'username', 'fullName', 'avatarUrl', 'trendScore', 'level'],
       order: { trendScore: 'DESC' },
       take: limit,
     });

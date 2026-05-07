@@ -13,6 +13,34 @@ The system uses a centralized **JWT-based Authentication** and **Role-Based Auth
 - **User Roles:** `USER` (Default), `CREATOR`, `ADMIN`.
 - **Integration:** All protected APIs are marked with `@ApiBearerAuth('JWT-auth')` for seamless Swagger UI testing.
 
+---
+
+## 🏆 Reward & Gamification Architecture
+
+The system uses a multi-layered approach to user rewards, ensuring traceability and consistency.
+
+### 📊 Trend Score & Leveling
+
+- **Source of Truth**: The `trend_score` in `user_profile` is the canonical value for user contributions.
+- **Computed Level**: User `level` is derived dynamically from `trend_score`.
+  - **Formula**: `level = floor(trend_score / 100) + 1`
+  - This avoids data drift and ensures the level always reflects the current score.
+
+### 🏅 Relational Badge System
+
+Badges are stored in the `user_badges` table instead of a simple array. This provides:
+- **Earned Timestamps**: Exactly when a user achieved a milestone.
+- **Source Traceability**: Linking a badge to the specific `trend_id` that triggered it (e.g., for "Early Spotter").
+- **Metadata Support**: Storing additional context about the reward.
+
+**Badge Types:**
+- `EARLY_SPOTTER`: Awarded for engaging with a trend in its 'emerging' phase.
+- `STREETWEAR_EXPERT`: High engagement/accuracy in streetwear category.
+- `LUXURY_CURATOR`: High engagement/accuracy in luxury category.
+- `TREND_HUNTER`: High volume of successful trend discoveries.
+
+---
+
 ### 📖 Swagger API Documentation
 
 The project includes interactive API documentation powered by Swagger (OpenAPI).
@@ -83,6 +111,16 @@ Guests can browse the platform and view basic content without a token.
 - **List Trend Products:** `GET /product?trend_id=uuid`
 
 ---
+
+---
+
+## 🎨 Future-Ready Creator Architecture
+
+While the MVP focuses on consumer engagement, the architecture is designed to scale into a full creator economy.
+
+- **Creator Profiles**: Separate from consumer profiles, allowing for bios, portfolios, and verification.
+- **Creator Analytics**: Dedicated tracking for reach, engagement rates, and audience demographics.
+- **Creator Campaigns**: Infrastructure for brand-creator collaborations and sponsored trend campaigns.
 
 ---
 
