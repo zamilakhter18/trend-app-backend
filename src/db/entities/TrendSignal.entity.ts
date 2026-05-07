@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { Trend } from "./Trend.entity";
-import { SignalTypeEnum, PlatformEnum } from "../../common/helpers/enum";
+import { SignalTypeEnum } from "../../common/helpers/enum";
 
 @Entity("trend_signals")
 export class TrendSignal {
@@ -14,12 +14,8 @@ export class TrendSignal {
   @JoinColumn({ name: "trend_id" })
   trend!: Trend;
 
-  @Column({
-    type: "enum",
-    enum: PlatformEnum,
-    default: PlatformEnum.OTHER,
-  })
-  source!: PlatformEnum;
+  @Column({ default: "other" })
+  source!: string;
 
   @Column({
     type: "enum",

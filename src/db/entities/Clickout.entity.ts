@@ -63,6 +63,12 @@ export class Clickout {
   @Column({ name: "ip_hash", type: "text", nullable: true })
   ipHash!: string | null;
 
+  @Column({ default: false })
+  converted!: boolean;
+
+  @Column({ name: "converted_at", type: "timestamptz", nullable: true })
+  convertedAt!: Date | null;
+
   @CreateDateColumn({ name: "created_at", type: "timestamptz" })
   createdAt!: Date;
 }

@@ -20,8 +20,9 @@ import { TrendPhaseHistory } from "./entities/TrendPhaseHistory.entity";
 import { ScoreEvent } from "./entities/ScoreEvent.entity";
 import { TrendSignal } from "./entities/TrendSignal.entity";
 import { EarlyDiscoveryReward } from "./entities/EarlyDiscoveryReward.entity";
+import { DiscountCode } from "./entities/DiscountCode.entity";
 
-const entities = [UserProfile, Trend, TrendContent, TrendMetadata, Interaction, Save, Product, Clickout, AiAnalysis, TrendScore, SponsoredContent, Brand, UserBadge, CreatorProfile, CreatorAnalytics, CreatorCampaign, TrendPhaseHistory, ScoreEvent, TrendSignal, EarlyDiscoveryReward];
+const entities = [UserProfile, Trend, TrendContent, TrendMetadata, Interaction, Save, Product, Clickout, AiAnalysis, TrendScore, SponsoredContent, Brand, UserBadge, CreatorProfile, CreatorAnalytics, CreatorCampaign, TrendPhaseHistory, ScoreEvent, TrendSignal, EarlyDiscoveryReward, DiscountCode];
 
 @Global()
 @Module({

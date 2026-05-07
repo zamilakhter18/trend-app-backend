@@ -13,9 +13,9 @@ Stores user-related information, roles, and gamification metrics.
 - `avatarUrl`: String.
 - `role`: Enum (`USER`, `ADMIN`, `CREATOR`).
 - `trendScore`: Decimal, tracks user's contribution value. Source of truth for level.
-- `level`: Integer, computed dynamically from `trendScore` (floor(trendScore / 100) + 1).
 - `createdAt`: Timestamp.
 - `updatedAt`: Timestamp.
+*Note: `level` is a virtual field computed dynamically from `trendScore` at runtime.*
 
 ### 2. UserBadge (`user_badges`)
 Relational badge system for reward traceability.
@@ -132,7 +132,9 @@ Tracks and attributes product discovery and commerce intent.
 - `sourceType`: Enum (`ORGANIC_FEED`, `SPONSORED_FEED`, `CREATOR_PROFILE`, `SEARCH`, `RECOMMENDED`).
 - `creatorId`: UUID, Nullable, Foreign Key to `UserProfile`.
 - `sessionId`: String, Nullable.
-- `ipHash`: String, Nullable, for deduplication.
+- `ipHash`: String, Nullable.
+- `converted`: Boolean. Tracks if the click led to a purchase.
+- `convertedAt`: Timestamp.
 - `createdAt`: Timestamp.
 
 ## Commerce & Conversion Intelligence (Future-Ready)
@@ -166,9 +168,23 @@ Advertising data for promoted trends. Isolated from organic scoring.
 - `endsAt`: Timestamp.
 - `createdAt`: Timestamp.
 
+### 14. DiscountCode (`discount_codes`)
+Marketing and reward-linked perks.
+- `id`: UUID, Primary Key.
+- `code`: String, Unique.
+- `brandId`: UUID, Foreign Key to `Brand`.
+- `discountType`: String (`PERCENTAGE`, `FIXED_AMOUNT`).
+- `discountValue`: Decimal.
+- `minScoreRequired`: Integer. Minimum user trend score to use.
+- `maxUses`: Integer, Nullable.
+- `useCount`: Integer.
+- `expiresAt`: Timestamp.
+- `createdAt`: Timestamp.
+- `updatedAt`: Timestamp.
+
 ## Creator Economy Entities (Future-Ready)
 
-### 14. CreatorProfile (`creator_profiles`)
+### 15. CreatorProfile (`creator_profiles`)
 Future-ready expansion for creator-specific metadata.
 - `id`: UUID, Primary Key.
 - `userId`: UUID, Foreign Key to `UserProfile`.
@@ -179,7 +195,7 @@ Future-ready expansion for creator-specific metadata.
 - `createdAt`: Timestamp.
 - `updatedAt`: Timestamp.
 
-### 15. CreatorAnalytics (`creator_analytics`)
+### 16. CreatorAnalytics (`creator_analytics`)
 Performance metrics for creators.
 - `id`: UUID, Primary Key.
 - `creatorProfileId`: UUID, Foreign Key to `CreatorProfile`.
@@ -189,7 +205,7 @@ Performance metrics for creators.
 - `audienceDemographics`: JSONB.
 - `lastUpdated`: Timestamp.
 
-### 16. CreatorCampaign (`creator_campaigns`)
+### 17. CreatorCampaign (`creator_campaigns`)
 Tracks collaborations between Brands and Creators.
 - `id`: UUID, Primary Key.
 - `creatorProfileId`: UUID, Foreign Key to `CreatorProfile`.
@@ -202,7 +218,7 @@ Tracks collaborations between Brands and Creators.
 
 ## Auditing & Lifecycle Entities
 
-### 17. TrendPhaseHistory (`trend_phase_history`)
+### 18. TrendPhaseHistory (`trend_phase_history`)
 Tracks every lifecycle transition of a trend.
 - `id`: UUID, Primary Key.
 - `trendId`: UUID, Foreign Key to `Trend`.
@@ -211,7 +227,7 @@ Tracks every lifecycle transition of a trend.
 - `changedAt`: Timestamp.
 - `metadata`: JSONB.
 
-### 18. ScoreEvent (`score_events`)
+### 19. ScoreEvent (`score_events`)
 Append-only audit history for user score changes.
 - `id`: UUID, Primary Key.
 - `userId`: UUID, Foreign Key to `UserProfile`.
@@ -221,17 +237,17 @@ Append-only audit history for user score changes.
 - `sourceId`: UUID, Nullable.
 - `createdAt`: Timestamp.
 
-### 19. TrendSignal (`trend_signals`)
+### 20. TrendSignal (`trend_signals`)
 Raw ingestion and AI scoring signals.
 - `id`: UUID, Primary Key.
 - `trendId`: UUID, Foreign Key to `Trend`.
-- `source`: Enum (`instagram`, `tiktok`, `x`, `pinterest`, `other`).
+- `source`: String. Flexible ingestion source (e.g., TikTok, Instagram, Ecommerce hot-lists).
 - `signalType`: Enum (`velocity`, `saves`, `growth`, `momentum`).
 - `signalValue`: Decimal.
 - `metadata`: JSONB.
 - `createdAt`: Timestamp.
 
-### 20. EarlyDiscoveryReward (`early_discovery_rewards`)
+### 21. EarlyDiscoveryReward (`early_discovery_rewards`)
 Tracking for early discovery rewards.
 - `id`: UUID, Primary Key.
 - `userId`: UUID, Foreign Key to `UserProfile`.
