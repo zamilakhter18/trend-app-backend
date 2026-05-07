@@ -1,13 +1,16 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, OneToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { Trend } from "./Trend.entity";
 import { Brand } from "./Brand.entity";
 
 @Entity("sponsored_content")
 export class SponsoredContent {
-  @PrimaryColumn("uuid", { name: "trend_id" })
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
+
+  @Column({ name: "trend_id" })
   trendId!: string;
 
-  @OneToOne(() => Trend, (trend) => trend.sponsoredContent, {
+  @ManyToOne(() => Trend, (trend) => trend.sponsoredCampaigns, {
     onDelete: "CASCADE",
   })
   @JoinColumn({ name: "trend_id" })
@@ -37,8 +40,12 @@ export class SponsoredContent {
   @Column({ name: "campaign_name", nullable: true })
   campaignName!: string;
 
-  @Column({ name: "campaign_priority", default: 0 })
-  campaignPriority!: number;
+  /**
+   * Used for paid placement slot weighting. 
+   * CRITICAL: This MUST NOT be used for organic trend ranking or feed sorting.
+   */
+  @Column({ name: "placement_slot_weight", default: 0, comment: "Weight for paid placement logic, NOT organic ranking" })
+  placementSlotWeight!: number;
 
   @Column({ name: "starts_at", type: "timestamptz", nullable: true })
   startsAt!: Date;

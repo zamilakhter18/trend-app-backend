@@ -81,8 +81,8 @@ export class Trend {
   @OneToOne(() => TrendScore, (score) => score.trend)
   score!: TrendScore;
 
-  @OneToOne(() => SponsoredContent, (sponsored) => sponsored.trend)
-  sponsoredContent!: SponsoredContent;
+  @OneToMany(() => SponsoredContent, (sponsored) => sponsored.trend)
+  sponsoredCampaigns!: SponsoredContent[];
 
   @OneToMany(() => TrendPhaseHistory, (history) => history.trend)
   phaseHistory!: TrendPhaseHistory[];

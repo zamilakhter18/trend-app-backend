@@ -53,7 +53,7 @@ export class SponsoredContentService {
         campaignName: dto.campaign_name,
         budget: dto.budget,
         placementBid: dto.placement_bid,
-        campaignPriority: dto.campaign_priority,
+        placementSlotWeight: dto.placement_slot_weight,
         startsAt: new Date(dto.start_date),
         endsAt: new Date(dto.end_date),
         isActive: true,
@@ -72,7 +72,7 @@ export class SponsoredContentService {
   }
 
   /**
-   * Returns active sponsored campaigns sorted by campaign priority
+   * Returns active sponsored campaigns sorted by placement slot weight
    */
   async getSponsoredFeed(limit: number = 5, offset: number = 0): Promise<ServiceResponse> {
     try {
@@ -84,7 +84,7 @@ export class SponsoredContentService {
           endsAt: MoreThanOrEqual(now),
         },
         relations: ["trend", "trend.contents", "trend.score", "brand"],
-        order: { campaignPriority: "DESC" },
+        order: { placementSlotWeight: "DESC" },
         take: limit,
         skip: offset,
       });
@@ -100,11 +100,11 @@ export class SponsoredContentService {
   }
 
   /**
-   * Updates an existing campaign
+   * Updates an existing campaign by its ID
    */
-  async update(trendId: string, dto: UpdateSponsoredContentDto): Promise<ServiceResponse> {
+  async update(id: string, dto: UpdateSponsoredContentDto): Promise<ServiceResponse> {
     try {
-      const sponsored = await this.sponsoredRepository.findOne({ where: { trendId } });
+      const sponsored = await this.sponsoredRepository.findOne({ where: { id } });
       if (!sponsored) {
         throw new NotFoundException("Sponsored content not found");
       }
@@ -118,7 +118,7 @@ export class SponsoredContentService {
       if (dto.campaign_name) sponsored.campaignName = dto.campaign_name;
       if (dto.budget !== undefined) sponsored.budget = dto.budget;
       if (dto.placement_bid !== undefined) sponsored.placementBid = dto.placement_bid;
-      if (dto.campaign_priority !== undefined) sponsored.campaignPriority = dto.campaign_priority;
+      if (dto.placement_slot_weight !== undefined) sponsored.placementSlotWeight = dto.placement_slot_weight;
       if (dto.start_date) sponsored.startsAt = new Date(dto.start_date);
       if (dto.end_date) sponsored.endsAt = new Date(dto.end_date);
       if (dto.is_active !== undefined) sponsored.isActive = dto.is_active;
@@ -136,11 +136,11 @@ export class SponsoredContentService {
   }
 
   /**
-   * Deletes (Hard Delete) a campaign
+   * Deletes (Hard Delete) a campaign by its ID
    */
-  async remove(trendId: string): Promise<ServiceResponse> {
+  async remove(id: string): Promise<ServiceResponse> {
     try {
-      const result = await this.sponsoredRepository.delete({ trendId });
+      const result = await this.sponsoredRepository.delete({ id });
       if (result.affected === 0) {
         throw new NotFoundException("Sponsored content not found");
       }

@@ -69,13 +69,13 @@ export class SponsoredContentController {
 
   @ApiBearerAuth("JWT-auth")
   @Roles(UserRoleEnum.ADMIN)
-  @Patch(":trendId")
+  @Patch(":id")
   @ApiOperation({ summary: "Update a sponsored campaign (Admin only)" })
   @ApiOkResponse({ description: "Campaign updated successfully" })
   @ApiNotFoundResponse({ description: "Campaign not found" })
-  async update(@Param("trendId") trendId: string, @Body() dto: UpdateSponsoredContentDto, @Res() res: Response) {
+  async update(@Param("id") id: string, @Body() dto: UpdateSponsoredContentDto, @Res() res: Response) {
     try {
-      const result = await this.sponsoredService.update(trendId, dto);
+      const result = await this.sponsoredService.update(id, dto);
       if (result.success) {
         return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }
@@ -87,12 +87,12 @@ export class SponsoredContentController {
 
   @ApiBearerAuth("JWT-auth")
   @Roles(UserRoleEnum.ADMIN)
-  @Delete(":trendId")
+  @Delete(":id")
   @ApiOperation({ summary: "Delete a sponsored campaign (Admin only)" })
   @ApiOkResponse({ description: "Campaign deleted successfully" })
-  async remove(@Param("trendId") trendId: string, @Res() res: Response) {
+  async remove(@Param("id") id: string, @Res() res: Response) {
     try {
-      const result = await this.sponsoredService.remove(trendId);
+      const result = await this.sponsoredService.remove(id);
       if (result.success) {
         return this.responseHandler.successResponse(res, result.message);
       }

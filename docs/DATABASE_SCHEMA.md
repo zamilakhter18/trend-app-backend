@@ -153,14 +153,15 @@ Separate entity for advertisers and organizations.
 
 ### 13. SponsoredContent (`sponsored_content`)
 Advertising data for promoted trends. Isolated from organic scoring.
-- `trendId`: UUID, Primary Key, Foreign Key to `Trend`.
+- `id`: UUID, Primary Key.
+- `trendId`: UUID, Foreign Key to `Trend`.
 - `brandId`: UUID, Foreign Key to `Brand`.
 - `budget`: Decimal.
 - `placementBid`: Decimal.
 - `isActive`: Boolean.
 - `sponsorName`: String (Display override).
 - `campaignName`: String.
-- `campaignPriority`: Integer (Used for placement weight, NOT organic ranking).
+- `placementSlotWeight`: Integer. Weight for paid placement logic. *CRITICAL: This MUST NOT be used for organic trend ranking or feed sorting.*
 - `startsAt`: Timestamp.
 - `endsAt`: Timestamp.
 - `createdAt`: Timestamp.

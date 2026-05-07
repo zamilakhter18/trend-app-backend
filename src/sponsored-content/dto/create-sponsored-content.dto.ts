@@ -53,14 +53,14 @@ export class CreateSponsoredContentDto {
   placement_bid?: number;
 
   @ApiProperty({
-    description: "Campaign priority for feed injection (0-100)",
+    description: "Weight for paid placement logic (0-100). CRITICAL: Not for organic ranking.",
     example: 95,
   })
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
   @Max(100)
-  campaign_priority!: number;
+  placement_slot_weight!: number;
 
   @ApiProperty({
     description: "Start date of the campaign",
