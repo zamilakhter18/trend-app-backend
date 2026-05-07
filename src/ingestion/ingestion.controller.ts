@@ -1,5 +1,5 @@
-import { Controller, Post, Body, Headers, Res, UseGuards } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiOkResponse, ApiCreatedResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiHeader, ApiBearerAuth } from "@nestjs/swagger";
+import { Controller, Post, Body, Headers, Res } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiOkResponse, ApiCreatedResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiHeader, ApiBearerAuth } from "@nestjs/swagger";
 import { IngestionService } from "./ingestion.service";
 import { SocialImportDto } from "./dto/social-import.dto";
 import { IngestionRunDto } from "./dto/ingestion-run.dto";

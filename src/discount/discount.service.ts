@@ -12,30 +12,9 @@ export class DiscountService {
     private readonly discountRepository: Repository<DiscountCode>,
   ) {}
 
-  async findAllAvailable(userScore: number = 0): Promise<ServiceResponse> {
+  async findAllAvailable(): Promise<ServiceResponse> {
     try {
       const now = new Date();
-      const discounts = await this.discountRepository.find({
-        where: [
-          {
-            minScoreRequired: MoreThan(userScore), // User can see what they could unlock
-            expiresAt: MoreThan(now),
-          },
-          {
-            minScoreRequired: MoreThan(userScore),
-            expiresAt: IsNull(),
-          },
-          {
-            minScoreRequired: userScore, // Exact match
-            expiresAt: MoreThan(now),
-          },
-          {
-            minScoreRequired: userScore,
-            expiresAt: IsNull(),
-          },
-        ],
-        relations: ["brand"],
-      });
 
       // Actually, user probably wants to see discounts they ALREADY qualified for or ALL of them.
       // Let's just return all active ones and let frontend filter.

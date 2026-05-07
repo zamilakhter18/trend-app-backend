@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository, MoreThan } from "typeorm";
-import { Cron, CronExpression } from "@nestjs/schedule";
+import { Cron } from "@nestjs/schedule";
 import { Trend } from "../db/entities/Trend.entity";
 import { TrendScore } from "../db/entities/TrendScore.entity";
 import { Interaction } from "../db/entities/Interaction.entity";

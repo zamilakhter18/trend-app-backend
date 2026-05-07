@@ -1,5 +1,5 @@
 import { Controller, Post, Get, Body, Param, Res } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse, ApiBearerAuth, ApiOkResponse } from "@nestjs/swagger";
+import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiBearerAuth, ApiOkResponse } from "@nestjs/swagger";
 import { UploadService } from "./upload.service";
 import { GenerateUploadUrlDto } from "./dto/generate-upload-url.dto";
 import { ResponseHandler } from "../common/helpers/response-handler";
@@ -61,7 +61,7 @@ export class UploadController {
       },
     },
   })
-  async getPublicUrl(@Param("bucket") bucket: string, @Param("path") path: string, @Res() res: Response) {
+  getPublicUrl(@Param("bucket") bucket: string, @Param("path") path: string, @Res() res: Response) {
     const result = this.uploadService.getPublicUrl(bucket, path);
     return this.responseHandler.successResponseWithData(res, result.message, result.data);
   }

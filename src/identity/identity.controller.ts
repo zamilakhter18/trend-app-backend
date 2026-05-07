@@ -34,7 +34,7 @@ export class IdentityController {
   @ApiNotFoundResponse({ description: "User profile not found" })
   async getMyProfile(@Request() req: any, @Res() res: Response) {
     try {
-      const result = await this.identityService.getProfile(req.user.userId);
+      const result = await this.identityService.getProfile(req["user"].userId);
       if (result.success) {
         return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }
@@ -59,7 +59,7 @@ export class IdentityController {
   @ApiBadRequestResponse({ description: "Invalid update data" })
   async updateMyProfile(@Request() req: any, @Body() updateProfileDto: UpdateProfileDto, @Res() res: Response) {
     try {
-      const result = await this.identityService.updateProfile(req.user.userId, updateProfileDto);
+      const result = await this.identityService.updateProfile(req["user"].userId, updateProfileDto);
       if (result.success) {
         return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }
@@ -164,7 +164,7 @@ export class IdentityController {
   @Roles(UserRoleEnum.ADMIN)
   @Get("admin-stats")
   @ApiOperation({ summary: "Admin only statistics" })
-  async getAdminStats(@Res() res: Response) {
+  getAdminStats(@Res() res: Response) {
     return this.responseHandler.successResponseWithData(res, "Admin stats fetched", { users: 100, trends: 50 });
   }
 }

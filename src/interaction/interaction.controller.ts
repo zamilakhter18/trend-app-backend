@@ -52,7 +52,7 @@ export class InteractionController {
   })
   async interact(@Request() req: any, @Body() interactDto: InteractDto, @Res() res: Response) {
     try {
-      const userId = req.user?.userId || null;
+      const userId = req["user"]?.userId || null;
       const result = await this.interactionService.interact(userId, interactDto);
       if (result.success) {
         return this.responseHandler.successResponseWithData(res, result.message, result.data);
@@ -96,7 +96,7 @@ export class InteractionController {
   })
   async save(@Request() req: any, @Body() saveDto: SaveDto, @Res() res: Response) {
     try {
-      const userId = req.user?.userId;
+      const userId = req["user"]?.userId;
       const result = await this.interactionService.save(userId, saveDto);
       if (result.success) {
         return this.responseHandler.successResponseWithData(res, result.message, result.data);
@@ -139,7 +139,7 @@ export class InteractionController {
   })
   async unsave(@Request() req: any, @Query("trend_id") trendId: string, @Query("product_id") productId: string, @Res() res: Response) {
     try {
-      const userId = req.user?.userId;
+      const userId = req["user"]?.userId;
       const target: { trendId?: string; productId?: string } = {};
       if (trendId) target.trendId = trendId;
       if (productId) target.productId = productId;
@@ -188,10 +188,10 @@ export class InteractionController {
   })
   async trackClick(@Request() req: any, @Body() clickDto: ClickDto, @Res() res: Response) {
     try {
-      const ip = (req.ip as string) || (req.connection?.remoteAddress as string);
+      const ip = (req["ip"] as string) || (req["connection"]?.remoteAddress as string);
       const ipHash = ip ? crypto.createHash("sha256").update(ip).digest("hex") : undefined;
 
-      const userId = req.user?.userId || null;
+      const userId = req["user"]?.userId || null;
       const result = await this.interactionService.trackClick(userId, clickDto, ipHash);
       if (result.success) {
         return this.responseHandler.successResponseWithData(res, result.message, result.data);

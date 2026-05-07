@@ -1,5 +1,5 @@
-import { Controller, Post, Body, Res, HttpStatus } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiOkResponse, ApiCreatedResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiBearerAuth } from "@nestjs/swagger";
+import { Controller, Post, Body, Res } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiOkResponse, ApiCreatedResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiBearerAuth } from "@nestjs/swagger";
 import { AiService } from "./ai.service";
 import { AnalyzeTrendDto } from "./dto/analyze-trend.dto";
 import { ClassifyImageDto } from "./dto/classify-image.dto";

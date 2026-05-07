@@ -35,7 +35,7 @@ export class SavesController {
   @ApiInternalServerErrorResponse({ description: "Internal Server Error" })
   async getSaves(@Request() req: any, @Res() res: Response) {
     try {
-      const userId = req.user.userId;
+      const userId = req["user"].userId;
       const result = await this.interactionService.getSaves(userId);
       if (result.success) {
         return this.responseHandler.successResponseWithData(res, result.message, result.data);
@@ -59,7 +59,7 @@ export class SavesController {
   @ApiUnauthorizedResponse({ description: "Unauthorized" })
   async deleteSave(@Request() req: any, @Param("id") id: string, @Res() res: Response) {
     try {
-      const userId = req.user.userId;
+      const userId = req["user"].userId;
       const result = await this.interactionService.deleteSaveById(userId, id);
       if (result.success) {
         return this.responseHandler.successResponse(res, result.message);

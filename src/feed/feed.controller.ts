@@ -1,5 +1,5 @@
 import { Controller, Get, Query, UseInterceptors, Res } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiOkResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiBearerAuth, ApiQuery } from "@nestjs/swagger";
+import { ApiTags, ApiOperation, ApiOkResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiQuery } from "@nestjs/swagger";
 import { CacheInterceptor } from "@nestjs/cache-manager";
 import { FeedService } from "./feed.service";
 import { ResponseHandler } from "../common/helpers/response-handler";
