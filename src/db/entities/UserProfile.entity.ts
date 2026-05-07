@@ -6,6 +6,8 @@ import { Clickout } from "./Clickout.entity";
 import { Brand } from "./Brand.entity";
 import { UserBadge } from "./UserBadge.entity";
 import { CreatorProfile } from "./CreatorProfile.entity";
+import { ScoreEvent } from "./ScoreEvent.entity";
+import { EarlyDiscoveryReward } from "./EarlyDiscoveryReward.entity";
 import { UserRoleEnum } from "../../common/helpers/enum";
 
 @Entity("user_profile")
@@ -83,4 +85,10 @@ export class UserProfile {
 
   @OneToOne(() => CreatorProfile, (creator) => creator.user)
   creatorProfile!: CreatorProfile;
+
+  @OneToMany(() => ScoreEvent, (event) => event.user)
+  scoreEvents!: ScoreEvent[];
+
+  @OneToMany(() => EarlyDiscoveryReward, (reward) => reward.user)
+  discoveryRewards!: EarlyDiscoveryReward[];
 }

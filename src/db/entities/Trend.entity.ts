@@ -8,6 +8,9 @@ import { Product } from "./Product.entity";
 import { AiAnalysis } from "./AiAnalysis.entity";
 import { TrendScore } from "./TrendScore.entity";
 import { SponsoredContent } from "./SponsoredContent.entity";
+import { TrendPhaseHistory } from "./TrendPhaseHistory.entity";
+import { TrendSignal } from "./TrendSignal.entity";
+import { TrendPhaseEnum } from "../../common/helpers/enum";
 
 @Entity("trends")
 export class Trend {
@@ -36,10 +39,11 @@ export class Trend {
   description!: string;
 
   @Column({
-    type: "text",
-    default: "emerging",
+    type: "enum",
+    enum: TrendPhaseEnum,
+    default: TrendPhaseEnum.EMERGING,
   })
-  phase!: "emerging" | "rising" | "peak" | "fading";
+  phase!: TrendPhaseEnum;
 
   @Column({ name: "phase_updated_at", type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
   phaseUpdatedAt!: Date;
@@ -79,4 +83,10 @@ export class Trend {
 
   @OneToOne(() => SponsoredContent, (sponsored) => sponsored.trend)
   sponsoredContent!: SponsoredContent;
+
+  @OneToMany(() => TrendPhaseHistory, (history) => history.trend)
+  phaseHistory!: TrendPhaseHistory[];
+
+  @OneToMany(() => TrendSignal, (signal) => signal.trend)
+  signals!: TrendSignal[];
 }

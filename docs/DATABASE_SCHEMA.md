@@ -198,3 +198,45 @@ Tracks collaborations between Brands and Creators.
 - `budget`: Decimal.
 - `createdAt`: Timestamp.
 - `updatedAt`: Timestamp.
+
+## Auditing & Lifecycle Entities
+
+### 17. TrendPhaseHistory (`trend_phase_history`)
+Tracks every lifecycle transition of a trend.
+- `id`: UUID, Primary Key.
+- `trendId`: UUID, Foreign Key to `Trend`.
+- `oldPhase`: Enum (`emerging`, `rising`, `peak`, `fading`), Nullable.
+- `newPhase`: Enum (`emerging`, `rising`, `peak`, `fading`).
+- `changedAt`: Timestamp.
+- `metadata`: JSONB.
+
+### 18. ScoreEvent (`score_events`)
+Append-only audit history for user score changes.
+- `id`: UUID, Primary Key.
+- `userId`: UUID, Foreign Key to `UserProfile`.
+- `pointsDelta`: Decimal.
+- `reason`: Enum (`EARLY_DISCOVERY`, `SAVE_BONUS`, `SHARE_BONUS`, `TREND_SPOTTED`, `ADMIN_ADJUSTMENT`).
+- `sourceType`: Enum (`TREND`, `PRODUCT`, `SYSTEM`).
+- `sourceId`: UUID, Nullable.
+- `createdAt`: Timestamp.
+
+### 19. TrendSignal (`trend_signals`)
+Raw ingestion and AI scoring signals.
+- `id`: UUID, Primary Key.
+- `trendId`: UUID, Foreign Key to `Trend`.
+- `source`: Enum (`instagram`, `tiktok`, `x`, `pinterest`, `other`).
+- `signalType`: Enum (`velocity`, `saves`, `growth`, `momentum`).
+- `signalValue`: Decimal.
+- `metadata`: JSONB.
+- `createdAt`: Timestamp.
+
+### 20. EarlyDiscoveryReward (`early_discovery_rewards`)
+Tracking for early discovery rewards.
+- `id`: UUID, Primary Key.
+- `userId`: UUID, Foreign Key to `UserProfile`.
+- `trendId`: UUID, Foreign Key to `Trend`.
+- `phaseAtDiscovery`: Enum (`emerging`, `rising`, `peak`, `fading`).
+- `bonusPoints`: Decimal.
+- `rewardType`: Enum (`POINTS`, `BADGE`, `PERK`).
+- `claimed`: Boolean.
+- `createdAt`: Timestamp.

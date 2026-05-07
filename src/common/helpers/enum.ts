@@ -6,6 +6,7 @@ export enum UserRoleEnum {
   USER = "user",
   ADMIN = "admin",
   CREATOR = "creator",
+  BRAND = "brand",
 }
 
 export enum BadgeTypeEnum {
@@ -13,6 +14,40 @@ export enum BadgeTypeEnum {
   STREETWEAR_EXPERT = "STREETWEAR_EXPERT",
   LUXURY_CURATOR = "LUXURY_CURATOR",
   TREND_HUNTER = "TREND_HUNTER",
+}
+
+export enum TrendPhaseEnum {
+  EMERGING = "emerging",
+  RISING = "rising",
+  PEAK = "peak",
+  FADING = "fading",
+}
+
+export enum ScoreReasonEnum {
+  EARLY_DISCOVERY = "EARLY_DISCOVERY",
+  SAVE_BONUS = "SAVE_BONUS",
+  SHARE_BONUS = "SHARE_BONUS",
+  TREND_SPOTTED = "TREND_SPOTTED",
+  ADMIN_ADJUSTMENT = "ADMIN_ADJUSTMENT",
+}
+
+export enum ScoreSourceTypeEnum {
+  TREND = "TREND",
+  PRODUCT = "PRODUCT",
+  SYSTEM = "SYSTEM",
+}
+
+export enum SignalTypeEnum {
+  VELOCITY = "velocity",
+  SAVES = "saves",
+  GROWTH = "growth",
+  MOMENTUM = "momentum",
+}
+
+export enum RewardTypeEnum {
+  POINTS = "POINTS",
+  BADGE = "BADGE",
+  PERK = "PERK",
 }
 
 export enum PlatformEnum {

@@ -69,6 +69,55 @@ Views are explicitly tracked to support:
 
 ---
 
+## 📈 Trend Lifecycle & Phase History
+
+The system tracks every lifecycle transition of a trend to power discovery detection and momentum analysis.
+
+- **Trend Phase History**: Every time a trend's `phase` changes, a new row is created in `trend_phase_history`.
+- **Fields**: `id`, `trend_id`, `old_phase`, `new_phase`, `changed_at`, `metadata`.
+- **Purpose**:
+  - **Early Discovery Detection**: Identifying exactly when a trend was spotted in its earliest stages.
+  - **Lifecycle Analytics**: Measuring the duration of each phase (e.g., how long it takes to move from 'emerging' to 'peak').
+  - **Trend Momentum**: Analyzing the velocity of phase transitions.
+
+---
+
+## 📑 Score Auditability & Events
+
+User score changes are tracked in an append-only audit log to ensure transparency and debuggability.
+
+- **Score Events**: The `score_events` table maintains a record of every point change.
+- **Fields**: `id`, `user_id`, `points_delta`, `reason`, `source_type`, `source_id`, `created_at`.
+- **Audit Reasons**:
+  - `EARLY_DISCOVERY`: Rewards for being among the first to spot a trend.
+  - `SAVE_BONUS`: Points earned when others save a trend you discovered.
+  - `TREND_SPOTTED`: Base points for initial discovery.
+  - `ADMIN_ADJUSTMENT`: Manual corrections or system bonuses.
+- **Transparency**: Users can view their score history, and admins can replay events to debug score discrepancies.
+
+---
+
+## 📡 Ingestion Explainability & Signals
+
+The scoring engine uses traceable signals to avoid "black box" behavior.
+
+- **Trend Signals**: Raw ingestion and AI scoring signals are stored in `trend_signals`.
+- **Fields**: `id`, `trend_id`, `source`, `signal_type`, `signal_value`, `metadata`, `created_at`.
+- **Signal Types**: `velocity`, `saves`, `growth`, `momentum`.
+- **Traceability**: Every score calculation can be traced back to the specific signals that triggered it (e.g., TikTok velocity spike, Instagram save momentum).
+
+---
+
+## 🎁 Reward Traceability & Discovery
+
+The system provides specialized tracking for early discovery rewards.
+
+- **Early Discovery Rewards**: Tracks specific bonuses awarded to early spotters.
+- **Fields**: `id`, `user_id`, `trend_id`, `phase_at_discovery`, `bonus_points`, `reward_type`, `claimed`, `created_at`.
+- **Lightweight Logic**: Supports basic reward claiming and tracking without overengineering the full gamification engine for MVP.
+
+---
+
 ## 🛡️ Trust-Preserving Content Architecture
 
 To maintain high platform trust, the system implements a strict "Trust Firewall" between organic discovery and paid placement.

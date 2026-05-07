@@ -3,6 +3,7 @@ import { Trend } from "./Trend.entity";
 import { Clickout } from "./Clickout.entity";
 import { Interaction } from "./Interaction.entity";
 import { Save } from "./Save.entity";
+import { CreatorProfile } from "./CreatorProfile.entity";
 
 @Entity("products")
 export class Product {
@@ -15,6 +16,13 @@ export class Product {
   @ManyToOne(() => Trend, (trend) => trend.products, { onDelete: "CASCADE" })
   @JoinColumn({ name: "trend_id" })
   trend!: Trend;
+
+  @Column({ name: "creator_id", nullable: true })
+  creatorId!: string;
+
+  @ManyToOne(() => CreatorProfile, { onDelete: "SET NULL" })
+  @JoinColumn({ name: "creator_id" })
+  creator!: CreatorProfile;
 
   @Column()
   name!: string;
