@@ -36,4 +36,31 @@ export class IdentityService {
 
     return { success: true, message: messages.FETCH_SUCCESS, data };
   }
+
+  async getProfile(userId: string): Promise<ServiceResponse> {
+    const profile = await this.profileRepository.findOne({
+      where: { userId },
+    });
+
+    if (!profile) {
+      return { success: false, message: messages.NOT_FOUND };
+    }
+
+    return { success: true, message: messages.FETCH_SUCCESS, data: profile };
+  }
+
+  async updateProfile(userId: string, updateData: any): Promise<ServiceResponse> {
+    const profile = await this.profileRepository.findOne({
+      where: { userId },
+    });
+
+    if (!profile) {
+      return { success: false, message: messages.NOT_FOUND };
+    }
+
+    Object.assign(profile, updateData);
+    const updatedProfile = await this.profileRepository.save(profile);
+
+    return { success: true, message: messages.UPDATE_SUCCESS, data: updatedProfile };
+  }
 }

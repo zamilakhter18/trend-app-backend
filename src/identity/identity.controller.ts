@@ -1,6 +1,7 @@
-import { Controller, Get, Query, Res } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse } from "@nestjs/swagger";
+import { Controller, Get, Patch, Body, Query, Res, Request } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse, ApiNotFoundResponse } from "@nestjs/swagger";
 import { IdentityService } from "./identity.service";
+import { UpdateProfileDto } from "./dto/update-profile.dto";
 import { ResponseHandler } from "../common/helpers/response-handler";
 import { messages } from "../common/helpers/message";
 import type { Response } from "express";
@@ -17,6 +18,56 @@ export class IdentityController {
     private identityService: IdentityService,
     private responseHandler: ResponseHandler,
   ) {}
+
+  @ApiBearerAuth("JWT-auth")
+  @Get("profile")
+  @ApiOperation({ summary: "Get the profile of the current user" })
+  @ApiOkResponse({
+    description: "Profile fetched successfully",
+    example: {
+      statusCode: 200,
+      message: "Data fetched successfully",
+      data: { userId: "uuid", username: "trendsetter", fullName: "John Doe" },
+    },
+  })
+  @ApiUnauthorizedResponse({ description: "Unauthorized" })
+  @ApiNotFoundResponse({ description: "User profile not found" })
+  async getMyProfile(@Request() req: any, @Res() res: Response) {
+    try {
+      const result = await this.identityService.getProfile(req.user.userId);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(res, result.message, result.data);
+      }
+      return this.responseHandler.errorResponse(res, result.message);
+    } catch (error) {
+      return this.responseHandler.catchErrorResponse(res, (error as Error).message || messages.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @ApiBearerAuth("JWT-auth")
+  @Patch("profile")
+  @ApiOperation({ summary: "Update the profile of the current user" })
+  @ApiOkResponse({
+    description: "Profile updated successfully",
+    example: {
+      statusCode: 200,
+      message: "Resource updated successfully",
+      data: { userId: "uuid", username: "trendsetter_new" },
+    },
+  })
+  @ApiUnauthorizedResponse({ description: "Unauthorized" })
+  @ApiBadRequestResponse({ description: "Invalid update data" })
+  async updateMyProfile(@Request() req: any, @Body() updateProfileDto: UpdateProfileDto, @Res() res: Response) {
+    try {
+      const result = await this.identityService.updateProfile(req.user.userId, updateProfileDto);
+      if (result.success) {
+        return this.responseHandler.successResponseWithData(res, result.message, result.data);
+      }
+      return this.responseHandler.errorResponse(res, result.message);
+    } catch (error) {
+      return this.responseHandler.catchErrorResponse(res, (error as Error).message || messages.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   @ApiBearerAuth("JWT-auth")
   @Get("performance")

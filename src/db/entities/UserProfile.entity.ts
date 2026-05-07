@@ -33,32 +33,31 @@ export class UserProfile {
     default: UserRoleEnum.USER,
   })
   role!: UserRoleEnum;
-@Column("decimal", {
-  name: "trend_score",
-  precision: 10,
-  scale: 2,
-  default: 0,
-  transformer: {
-    to: (value: number) => value,
-    from: (value: string) => parseFloat(value),
-  },
-})
-trendScore!: number;
+  @Column("decimal", {
+    name: "trend_score",
+    precision: 10,
+    scale: 2,
+    default: 0,
+    transformer: {
+      to: (value: number) => value,
+      from: (value: string) => parseFloat(value),
+    },
+  })
+  trendScore!: number;
 
-/**
- * Computed level based on trendScore.
- * Logic: level = floor(trend_score / 100) + 1 (starting at level 1)
- * This is a virtual field NOT stored in the database.
- */
-level!: number;
+  /**
+   * Computed level based on trendScore.
+   * Logic: level = floor(trend_score / 100) + 1 (starting at level 1)
+   * This is a virtual field NOT stored in the database.
+   */
+  level!: number;
 
-@AfterLoad()
-@AfterInsert()
-@AfterUpdate()
-computeLevel() {
-  this.level = Math.floor(this.trendScore / 100) + 1;
-}
-
+  @AfterLoad()
+  @AfterInsert()
+  @AfterUpdate()
+  computeLevel() {
+    this.level = Math.floor(this.trendScore / 100) + 1;
+  }
 
   @CreateDateColumn({ name: "created_at", type: "timestamptz" })
   createdAt!: Date;

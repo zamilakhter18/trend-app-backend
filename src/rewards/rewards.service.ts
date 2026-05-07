@@ -25,4 +25,12 @@ export class RewardsService {
 
     return { success: true, message: "Reward claimed successfully" };
   }
+
+  async getUserRewards(userId: string): Promise<ServiceResponse> {
+    const rewards = await this.rewardRepository.find({
+      where: { userId },
+    });
+
+    return { success: true, message: "Rewards fetched successfully", data: rewards };
+  }
 }

@@ -31,4 +31,31 @@ export class TrendService {
       data,
     };
   }
+
+  async createTrend(creatorId: string, trendData: any): Promise<ServiceResponse> {
+    try {
+      const trend = this.trendRepository.create({
+        ...trendData,
+        creatorId,
+      });
+      const savedTrend = await this.trendRepository.save(trend);
+      return { success: true, message: messages.CREATE_SUCCESS, data: savedTrend };
+    } catch (error) {
+      return { success: false, message: (error as Error).message };
+    }
+  }
+
+  async updateTrend(id: string, updateData: any): Promise<ServiceResponse> {
+    try {
+      const trend = await this.trendRepository.findOne({ where: { id } });
+      if (!trend) {
+        return { success: false, message: messages.NOT_FOUND };
+      }
+      Object.assign(trend, updateData);
+      const updatedTrend = await this.trendRepository.save(trend);
+      return { success: true, message: messages.UPDATE_SUCCESS, data: updatedTrend };
+    } catch (error) {
+      return { success: false, message: (error as Error).message };
+    }
+  }
 }

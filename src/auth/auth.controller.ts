@@ -115,7 +115,7 @@ export class AuthController {
   }
 
   @Public()
-  @Post("refresh-token")
+  @Post("refresh")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Refresh access token using a valid refresh token" })
   @ApiOkResponse({

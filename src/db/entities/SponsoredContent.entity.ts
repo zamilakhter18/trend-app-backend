@@ -41,7 +41,7 @@ export class SponsoredContent {
   campaignName!: string;
 
   /**
-   * Used for paid placement slot weighting. 
+   * Used for paid placement slot weighting.
    * CRITICAL: This MUST NOT be used for organic trend ranking or feed sorting.
    */
   @Column({ name: "placement_slot_weight", default: 0, comment: "Weight for paid placement logic, NOT organic ranking" })

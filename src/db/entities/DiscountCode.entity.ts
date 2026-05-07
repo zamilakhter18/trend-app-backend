@@ -19,40 +19,40 @@ export class DiscountCode {
   @Column({
     type: "character varying",
     name: "discount_type",
-    default: "PERCENTAGE"
+    default: "PERCENTAGE",
   })
   discountType!: "PERCENTAGE" | "FIXED_AMOUNT";
 
   @Column("decimal", {
     name: "discount_value",
     precision: 10,
-    scale: 2
+    scale: 2,
   })
   discountValue!: number;
 
   @Column({
     name: "min_score_required",
-    default: 0
+    default: 0,
   })
   minScoreRequired!: number;
 
   @Column({
     type: "integer",
     name: "max_uses",
-    nullable: true
+    nullable: true,
   })
   maxUses!: number | null;
 
   @Column({
     name: "use_count",
-    default: 0
+    default: 0,
   })
   useCount!: number;
 
   @Column({
     name: "expires_at",
     type: "timestamptz",
-    nullable: true
+    nullable: true,
   })
   expiresAt!: Date | null;
 

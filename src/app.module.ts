@@ -22,6 +22,8 @@ import { CommonModule } from "./common/common.module";
 import { DbModule } from "./db/db.module";
 import { SearchModule } from "./search/search.module";
 import { RewardsModule } from "./rewards/rewards.module";
+import { AdminModule } from "./admin/admin.module";
+import { DiscountModule } from "./discount/discount.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { APP_GUARD } from "@nestjs/core";
 import { AuthGuard } from "./common/guards/auth.guard";
@@ -67,6 +69,8 @@ import { UserProfile } from "./db/entities/UserProfile.entity";
     UploadModule,
     SearchModule,
     RewardsModule,
+    AdminModule,
+    DiscountModule,
   ],
   controllers: [AppController],
   providers: [

@@ -18,14 +18,14 @@ export class TrendPhaseHistory {
     type: "enum",
     enum: TrendPhaseEnum,
     name: "old_phase",
-    nullable: true
+    nullable: true,
   })
   oldPhase!: TrendPhaseEnum | null;
 
   @Column({
     type: "enum",
     enum: TrendPhaseEnum,
-    name: "new_phase"
+    name: "new_phase",
   })
   newPhase!: TrendPhaseEnum;
 

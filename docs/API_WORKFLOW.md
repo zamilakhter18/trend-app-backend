@@ -57,6 +57,27 @@ The system provides score-gated incentives and brand-linked partnerships.
 
 ## 🚀 API Endpoint Specifications
 
+### General Response Shape
+All responses follow a standard envelope:
+```json
+{
+  "statusCode": 200,
+  "message": "Optional success/error message",
+  "data": { ... }
+}
+```
+
+### ❗ Error Handling
+| Code | Meaning | Example Scenario |
+|------|---------|------------------|
+| 400 | Bad Request | Validation failure (missing fields). |
+| 401 | Unauthorized | Token expired or invalid. |
+| 403 | Forbidden | User lacks 'admin' role for restricted paths. |
+| 404 | Not Found | Trend ID does not exist. |
+| 422 | Unprocessable Entity | Logic failure (e.g., claiming a reward already claimed). |
+
+---
+
 ### 1. Authentication (`/auth`)
 
 #### `POST /auth/signup`
@@ -74,8 +95,9 @@ The system provides score-gated incentives and brand-linked partnerships.
 ```json
 {
   "statusCode": 201,
+  "message": "User registered successfully",
   "data": {
-    "user": { "userId": "uuid", "email": "..." },
+    "user": { "userId": "uuid", "email": "...", "username": "trendsetter99", "role": "user" },
     "access_token": "jwt_string",
     "refresh_token": "refresh_string"
   }
@@ -84,20 +106,31 @@ The system provides score-gated incentives and brand-linked partnerships.
 
 #### `POST /auth/login`
 - **Auth**: Public
-- **Request Body**:
+- **Request Body**: `{ "email": "...", "password": "..." }`
+- **Response (200)**:
 ```json
 {
-  "email": "user@example.com",
-  "password": "strongpassword"
+  "statusCode": 200,
+  "message": "Login successful",
+  "data": {
+    "user": { "userId": "uuid", "username": "...", "role": "user" },
+    "access_token": "jwt_string",
+    "refresh_token": "refresh_string"
+  }
 }
 ```
 
+#### `POST /auth/refresh`
+- **Auth**: Public
+- **Request Body**: `{ "refresh_token": "..." }`
+- **Response (200)**: `{ "statusCode": 200, "data": { "access_token": "...", "refresh_token": "..." } }`
+
 ---
 
-### 2. Personalized Feed (`/feed`)
+### 2. Trends & Feed (`/feed`, `/trend`)
 
 #### `GET /feed`
-- **Auth**: Optional (Public access provides generic feed; Authenticated provides personalized)
+- **Auth**: Optional
 - **Parameters**: `limit` (default 10), `cursor` (pagination)
 - **Response (200)**:
 ```json
@@ -118,36 +151,57 @@ The system provides score-gated incentives and brand-linked partnerships.
 }
 ```
 
----
-
-### 3. Interaction Log (`/interaction`)
-
-#### `POST /interaction/interact`
-- **Auth**: Optional (Tracked via IP for guests)
-- **Request Body**:
+#### `GET /trend/:id`
+- **Auth**: Public
+- **Response (200)**:
 ```json
 {
-  "trend_id": "uuid",
-  "interaction_type": "VIEW",
-  "source_type": "ORGANIC_FEED"
+  "statusCode": 200,
+  "data": {
+    "id": "uuid",
+    "title": "Trend Title",
+    "description": "...",
+    "phase": "emerging",
+    "products": [ { "id": "uuid", "name": "..." } ],
+    "contents": [ { "contentUrl": "..." } ]
+  }
 }
 ```
+
+---
+
+### 3. Interactions & Bookmarks (`/interaction`, `/saves`)
+
+#### `POST /interaction/interact`
+- **Auth**: Optional
+- **Request Body**: `{ "trend_id": "uuid", "interaction_type": "VIEW" }`
+- **Response (200)**: `{ "statusCode": 200, "data": { "status": "interacted" } }`
 
 #### `POST /interaction/save`
 - **Auth**: Required
 - **Request Body**: `{ "trend_id": "uuid" }` or `{ "product_id": "uuid" }`
+- **Response (201)**: `{ "statusCode": 201, "data": { "status": "saved" } }`
 
 #### `POST /interaction/click`
 - **Auth**: Optional
-- **Request Body**:
+- **Request Body**: `{ "product_id": "uuid", "trend_id": "uuid" }`
+- **Response (201)**: `{ "statusCode": 201, "data": { "status": "tracked" } }`
+
+#### `GET /saves`
+- **Auth**: Required
+- **Response (200)**:
 ```json
 {
-  "product_id": "uuid",
-  "trend_id": "uuid",
-  "source_type": "SPONSORED_FEED",
-  "session_id": "client_session_id"
+  "statusCode": 200,
+  "data": [
+    { "id": "save-uuid", "trend": { "id": "...", "title": "..." }, "product": null }
+  ]
 }
 ```
+
+#### `DELETE /saves/:id`
+- **Auth**: Required
+- **Purpose**: Remove a bookmark by its save entry ID.
 
 ---
 
@@ -155,30 +209,20 @@ The system provides score-gated incentives and brand-linked partnerships.
 
 #### `GET /search`
 - **Auth**: Public
-- **Parameters**: `q` (query string)
-- **Response (200)**:
-```json
-{
-  "statusCode": 200,
-  "data": {
-    "trends": [ { "id": "uuid", "title": "..." } ],
-    "products": [ { "id": "uuid", "name": "..." } ]
-  }
-}
-```
+- **Parameters**: `q` (query)
+- **Response (200)**: `{ "statusCode": 200, "data": { "trends": [], "products": [] } }`
 
 ---
 
-### 5. Rewards (`/rewards`)
+### 5. Identity & Profile (`/identity`)
 
-#### `POST /rewards/claim/:rewardId`
+#### `GET /identity/profile`
 - **Auth**: Required
-- **Purpose**: Marks an earned early discovery reward as claimed.
-- **Response (200)**: `{ "statusCode": 200, "message": "Reward claimed successfully" }`
+- **Response (200)**: `{ "statusCode": 200, "data": { "userId": "...", "username": "...", "fullName": "..." } }`
 
----
-
-### 6. Identity & Rewards (`/identity`)
+#### `PATCH /identity/profile`
+- **Auth**: Required
+- **Request Body**: `{ "username": "...", "fullName": "...", "avatarUrl": "..." }`
 
 #### `GET /identity/performance`
 - **Auth**: Required
@@ -187,20 +231,67 @@ The system provides score-gated incentives and brand-linked partnerships.
 {
   "statusCode": 200,
   "data": {
-    "userId": "uuid",
     "trendScore": 1250,
     "level": 13,
-    "userBadges": [{ "badgeType": "EARLY_SPOTTER" }],
-    "scoreEvents": [{ "pointsDelta": 10, "reason": "EARLY_DISCOVERY" }]
+    "userBadges": [],
+    "scoreEvents": []
   }
 }
 ```
 
 ---
 
-### 7. Admin & Curation (`/admin`)
+### 6. Rewards (`/rewards`)
+
+#### `GET /rewards`
+- **Auth**: Required
+- **Purpose**: List all earned and pending discovery rewards.
+- **Response (200)**: `{ "statusCode": 200, "data": [ { "id": "...", "rewardType": "...", "claimed": false } ] }`
+
+#### `POST /rewards/claim/:rewardId`
+- **Auth**: Required
+- **Response (200)**: `{ "statusCode": 200, "message": "Reward claimed successfully" }`
+
+---
+
+### 7. Discounts & Perks (`/discounts`)
+
+#### `GET /discounts`
+- **Auth**: Public (Generic list)
+- **Purpose**: List available discount codes and brand perks.
+
+---
+
+### 8. Admin Controls (`/admin`)
+
+#### `POST /admin/trends`
+- **Auth**: Admin
+- **Request Body**: Same as CreateTrendDto.
+
+#### `PATCH /admin/trends/:id`
+- **Auth**: Admin
 
 #### `POST /admin/ingestion/run`
-- **Auth**: Admin Required
-- **Request Body**: `{ "platforms": ["tiktok", "instagram"] }`
-- **Purpose**: Manually triggers the Python ingestion pipeline.
+- **Auth**: Admin
+- **Request Body**: `{ "platforms": ["tiktok"] }`
+
+#### `GET /admin/score-events`
+- **Auth**: Admin
+- **Parameters**: `limit`, `offset`
+- **Purpose**: Audit log of all score changes across the system.
+
+---
+
+## 🔢 Pagination Patterns
+
+The system uses two primary pagination strategies:
+
+1. **Cursor-Based (Feed)**:
+   - Used for the main `GET /feed`.
+   - Uses a `nextCursor` (opaque string) to fetch the next page.
+   - Ideal for frequently changing content to avoid duplicates.
+
+2. **Offset-Based (Search, Admin Logs)**:
+   - Used for `GET /search` and `/admin/score-events`.
+   - Uses `limit` and `offset` parameters.
+   - Ideal for structured logs and search results where deep paging is required.

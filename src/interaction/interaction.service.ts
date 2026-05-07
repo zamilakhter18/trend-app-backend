@@ -64,6 +64,30 @@ export class InteractionService {
     }
   }
 
+  async getSaves(userId: string): Promise<ServiceResponse> {
+    try {
+      const saves = await this.saveRepository.find({
+        where: { userId },
+        relations: ["trend", "product"],
+      });
+      return { success: true, message: messages.FETCH_SUCCESS, data: saves };
+    } catch (error) {
+      return { success: false, message: (error as Error).message };
+    }
+  }
+
+  async deleteSaveById(userId: string, saveId: string): Promise<ServiceResponse> {
+    try {
+      const result = await this.saveRepository.delete({ id: saveId, userId });
+      if (result.affected === 0) {
+        return { success: false, message: messages.NOT_FOUND };
+      }
+      return { success: true, message: messages.DELETE_SUCCESS };
+    } catch (error) {
+      return { success: false, message: (error as Error).message };
+    }
+  }
+
   async unsave(userId: string, target: { trendId?: string; productId?: string }): Promise<ServiceResponse> {
     try {
       await this.saveRepository.delete({ userId, ...target });
