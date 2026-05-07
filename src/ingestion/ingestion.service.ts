@@ -10,6 +10,7 @@ import { SocialImportDto } from "./dto/social-import.dto";
 import { IngestionRunDto } from "./dto/ingestion-run.dto";
 import { ServiceResponse } from "../common/interfaces/service-response.interface";
 import { messages } from "../common/helpers/message";
+import { TrendPhaseEnum } from "../common/helpers/enum";
 
 @Injectable()
 export class IngestionService {
@@ -61,7 +62,7 @@ export class IngestionService {
         description: dto.description,
         source: dto.source,
         externalId: dto.external_id,
-        phase: "emerging",
+        phase: TrendPhaseEnum.EMERGING,
       });
       const savedTrend = await queryRunner.manager.save(trend);
 
