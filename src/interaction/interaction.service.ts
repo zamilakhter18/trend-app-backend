@@ -9,6 +9,7 @@ import { SaveDto } from "./dto/save.dto";
 import { ClickDto } from "./dto/click.dto";
 import { ServiceResponse } from "../common/interfaces/service-response.interface";
 import { messages } from "../common/helpers/message";
+import { InteractionSourceTypeEnum, InteractionTypeEnum } from "../common/helpers/enum";
 
 @Injectable()
 export class InteractionService {
@@ -24,7 +25,7 @@ export class InteractionService {
   async interact(userId: string | null, interactDto: InteractDto): Promise<ServiceResponse> {
     try {
       // Inflation Protection: prevent duplicate VIEW/SHARE from same user/IP within short window (1 hour)
-      if (interactDto.interaction_type === "VIEW" || interactDto.interaction_type === "SHARE") {
+      if (interactDto.interaction_type === InteractionTypeEnum.VIEW || interactDto.interaction_type === InteractionTypeEnum.SHARE) {
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
         const existing = await this.interactionRepository.findOne({
           where: {
@@ -84,8 +85,8 @@ export class InteractionService {
       await this.interact(userId, {
         trend_id: saveDto.trend_id,
         product_id: saveDto.product_id,
-        interaction_type: "SAVE",
-        source_type: "APP",
+        interaction_type: InteractionTypeEnum.SAVE,
+        source_type: InteractionSourceTypeEnum.SYSTEM,
       });
 
       return { success: true, message: messages.CREATE_SUCCESS, data };
@@ -171,8 +172,8 @@ export class InteractionService {
       await this.interact(userId, {
         trend_id: clickDto.trend_id,
         product_id: clickDto.product_id,
-        interaction_type: "CLICK",
-        source_type: clickDto.source_type,
+        interaction_type: InteractionTypeEnum.CLICK,
+        source_type: clickDto.source_type as unknown as InteractionSourceTypeEnum,
       });
 
       return { success: true, message: messages.CREATE_SUCCESS, data };

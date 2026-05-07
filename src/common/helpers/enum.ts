@@ -71,3 +71,48 @@ export enum ClickSourceType {
   SEARCH = "SEARCH",
   RECOMMENDED = "RECOMMENDED",
 }
+
+export enum InteractionTypeEnum {
+  VIEW = "VIEW",
+  SAVE = "SAVE",
+  CLICK = "CLICK",
+  SHARE = "SHARE",
+}
+
+export enum InteractionSourceTypeEnum {
+  FEED = "FEED",
+  ORGANIC_FEED = "ORGANIC_FEED",
+  SPONSORED_FEED = "SPONSORED_FEED",
+  SEARCH = "SEARCH",
+  DISCOVERY = "DISCOVERY",
+  PROFILE = "PROFILE",
+  CREATOR_PROFILE = "CREATOR_PROFILE",
+  TREND_DETAIL = "TREND_DETAIL",
+  RECOMMENDED = "RECOMMENDED",
+  SYSTEM = "SYSTEM",
+}
+
+export enum TrendStatusEnum {
+  DRAFT = "DRAFT",
+  PUBLISHED = "PUBLISHED",
+  ARCHIVED = "ARCHIVED",
+  FLAGGED = "FLAGGED",
+}
+
+export enum TrendContentTypeEnum {
+  ORGANIC = "ORGANIC",
+  SPONSORED = "SPONSORED",
+}
+
+export enum TrendContentMediaTypeEnum {
+  VIDEO = "video",
+  IMAGE = "image",
+  LINK = "link",
+}
+
+export enum CreatorCampaignStatusEnum {
+  PENDING = "pending",
+  ACTIVE = "active",
+  COMPLETED = "completed",
+  CANCELLED = "cancelled",
+}

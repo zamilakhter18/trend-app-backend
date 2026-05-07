@@ -3,6 +3,8 @@ import { UserProfile } from "./UserProfile.entity";
 import { Trend } from "./Trend.entity";
 import { Product } from "./Product.entity";
 
+import { InteractionSourceTypeEnum, InteractionTypeEnum } from "../../common/helpers/enum";
+
 @Entity("interactions")
 export class Interaction {
   @PrimaryGeneratedColumn("uuid")
@@ -38,11 +40,20 @@ export class Interaction {
   @JoinColumn({ name: "product_id" })
   product!: Product | null;
 
-  @Column({ type: "varchar", name: "interaction_type" })
-  interactionType!: string; // 'VIEW', 'SAVE', 'CLICK', 'SHARE'
+  @Column({
+    type: "enum",
+    enum: InteractionTypeEnum,
+    name: "interaction_type",
+  })
+  interactionType!: InteractionTypeEnum;
 
-  @Column({ type: "varchar", name: "source_type", nullable: true })
-  sourceType!: string | null;
+  @Column({
+    type: "enum",
+    enum: InteractionSourceTypeEnum,
+    name: "source_type",
+    nullable: true,
+  })
+  sourceType!: InteractionSourceTypeEnum | null;
 
   @Column({ type: "text", nullable: true })
   content!: string | null;

@@ -10,7 +10,7 @@ import { SocialImportDto } from "./dto/social-import.dto";
 import { IngestionRunDto } from "./dto/ingestion-run.dto";
 import { ServiceResponse } from "../common/interfaces/service-response.interface";
 import { messages } from "../common/helpers/message";
-import { TrendPhaseEnum } from "../common/helpers/enum";
+import { TrendPhaseEnum, TrendContentMediaTypeEnum } from "../common/helpers/enum";
 
 @Injectable()
 export class IngestionService {
@@ -70,7 +70,7 @@ export class IngestionService {
       const content = queryRunner.manager.create(TrendContent, {
         trendId: savedTrend.id,
         contentUrl: dto.media_url,
-        contentType: dto.media_url.endsWith(".mp4") ? "video" : "image",
+        contentType: dto.media_url.endsWith(".mp4") ? TrendContentMediaTypeEnum.VIDEO : TrendContentMediaTypeEnum.IMAGE,
         isPrimary: true,
       });
       await queryRunner.manager.save(content);

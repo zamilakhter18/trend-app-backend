@@ -5,6 +5,7 @@ import { Trend } from "../db/entities/Trend.entity";
 import { ServiceResponse } from "../common/interfaces/service-response.interface";
 import { messages } from "../common/helpers/message";
 import { SponsoredContentService } from "../sponsored-content/sponsored-content.service";
+import { TrendStatusEnum, TrendContentTypeEnum } from "../common/helpers/enum";
 
 @Injectable()
 export class FeedService {
@@ -17,6 +18,7 @@ export class FeedService {
   /**
    * Fetches the trend feed ordered by the advanced ranking algorithm
    * and merges sponsored content at specific intervals.
+   *
    * @param limit Number of items to fetch
    * @param cursor Pagination cursor (base64 encoded)
    */
@@ -28,8 +30,8 @@ export class FeedService {
         .leftJoinAndSelect("trend.contents", "contents")
         .leftJoinAndSelect("trend.creator", "creator")
         .leftJoinAndSelect("trend.sponsoredContent", "sponsored") // Check if it's sponsored
-        .where("trend.status = :status", { status: "PUBLISHED" })
-        .andWhere("trend.contentType = :contentType", { contentType: "ORGANIC" })
+        .where("trend.status = :status", { status: TrendStatusEnum.PUBLISHED })
+        .andWhere("trend.contentType = :contentType", { contentType: TrendContentTypeEnum.ORGANIC })
         .take(limit)
         .orderBy("score.finalScore", "DESC") // Main ranking metric
         .addOrderBy("trend.createdAt", "DESC");
@@ -90,7 +92,8 @@ export class FeedService {
         },
       };
     } catch (error) {
-      return { success: false, message: error.message };
+      const err = error as Error;
+      return { success: false, message: err.message };
     }
   }
 }

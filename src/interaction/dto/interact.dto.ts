@@ -1,5 +1,6 @@
-import { IsString, IsOptional, IsUUID } from "class-validator";
+import { IsString, IsOptional, IsUUID, IsEnum } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { InteractionSourceTypeEnum, InteractionTypeEnum } from "../../common/helpers/enum";
 
 export class InteractDto {
   @ApiProperty({ example: "uuid", description: "ID of the trend", required: false })
@@ -12,14 +13,14 @@ export class InteractDto {
   @IsOptional()
   product_id?: string;
 
-  @ApiProperty({ example: "VIEW", description: "Type of interaction (VIEW, SAVE, CLICK, SHARE)" })
-  @IsString()
-  interaction_type!: string;
+  @ApiProperty({ enum: InteractionTypeEnum, description: "Type of interaction (VIEW, SAVE, CLICK, SHARE)" })
+  @IsEnum(InteractionTypeEnum)
+  interaction_type!: InteractionTypeEnum;
 
-  @ApiProperty({ example: "FEED", description: "Source of the interaction", required: false })
-  @IsString()
+  @ApiProperty({ enum: InteractionSourceTypeEnum, description: "Source of the interaction", required: false })
+  @IsEnum(InteractionSourceTypeEnum)
   @IsOptional()
-  source_type?: string;
+  source_type?: InteractionSourceTypeEnum;
 
   @ApiProperty({ example: "This is great!", description: "Optional content/comment", required: false })
   @IsString()

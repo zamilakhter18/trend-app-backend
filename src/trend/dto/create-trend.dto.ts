@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsString, IsNotEmpty, IsOptional, IsEnum } from "class-validator";
-import { TrendPhaseEnum } from "../../common/helpers/enum";
+import { TrendPhaseEnum, TrendStatusEnum, TrendContentTypeEnum } from "../../common/helpers/enum";
 
 export class CreateTrendDto {
   @ApiProperty({ example: "Minimalist Streetwear", description: "The title of the trend" })
@@ -28,13 +28,13 @@ export class CreateTrendDto {
   @IsOptional()
   phase?: TrendPhaseEnum;
 
-  @ApiPropertyOptional({ example: "ORGANIC", default: "ORGANIC" })
-  @IsString()
+  @ApiPropertyOptional({ enum: TrendContentTypeEnum, default: TrendContentTypeEnum.ORGANIC })
+  @IsEnum(TrendContentTypeEnum)
   @IsOptional()
-  contentType?: string;
+  contentType?: TrendContentTypeEnum;
 
-  @ApiPropertyOptional({ example: "PUBLISHED", default: "PUBLISHED" })
-  @IsString()
+  @ApiPropertyOptional({ enum: TrendStatusEnum, default: TrendStatusEnum.PUBLISHED })
+  @IsEnum(TrendStatusEnum)
   @IsOptional()
-  status?: string;
+  status?: TrendStatusEnum;
 }

@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { CreatorProfile } from "./CreatorProfile.entity";
 import { Brand } from "./Brand.entity";
+import { CreatorCampaignStatusEnum } from "../../common/helpers/enum";
 
 @Entity("creator_campaigns")
 export class CreatorCampaign {
@@ -26,10 +27,10 @@ export class CreatorCampaign {
 
   @Column({
     type: "enum",
-    enum: ["pending", "active", "completed", "cancelled"],
-    default: "pending",
+    enum: CreatorCampaignStatusEnum,
+    default: CreatorCampaignStatusEnum.PENDING,
   })
-  status!: "pending" | "active" | "completed" | "cancelled";
+  status!: CreatorCampaignStatusEnum;
 
   @Column("decimal", { precision: 10, scale: 2, nullable: true })
   budget!: number;

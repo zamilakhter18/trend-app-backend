@@ -7,6 +7,7 @@ import { TrendScore } from "../db/entities/TrendScore.entity";
 import { Interaction } from "../db/entities/Interaction.entity";
 import { Save } from "../db/entities/Save.entity";
 import { Clickout } from "../db/entities/Clickout.entity";
+import { TrendStatusEnum } from "../common/helpers/enum";
 
 @Injectable()
 export class ScoringService {
@@ -33,7 +34,7 @@ export class ScoringService {
   async handlePeriodicScoringUpdate() {
     this.logger.log("Starting periodic trend scoring update...");
     const trends = await this.trendRepository.find({
-      where: { status: "PUBLISHED" },
+      where: { status: TrendStatusEnum.PUBLISHED },
       select: ["id"],
     });
 

@@ -10,7 +10,7 @@ import { TrendScore } from "./TrendScore.entity";
 import { SponsoredContent } from "./SponsoredContent.entity";
 import { TrendPhaseHistory } from "./TrendPhaseHistory.entity";
 import { TrendSignal } from "./TrendSignal.entity";
-import { TrendPhaseEnum } from "../../common/helpers/enum";
+import { TrendPhaseEnum, TrendStatusEnum, TrendContentTypeEnum } from "../../common/helpers/enum";
 
 @Entity("trends")
 export class Trend {
@@ -48,11 +48,20 @@ export class Trend {
   @Column({ name: "phase_updated_at", type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
   phaseUpdatedAt!: Date;
 
-  @Column({ name: "content_type", default: "ORGANIC" })
-  contentType!: string; // 'ORGANIC', 'SPONSORED'
+  @Column({
+    type: "enum",
+    enum: TrendContentTypeEnum,
+    name: "content_type",
+    default: TrendContentTypeEnum.ORGANIC,
+  })
+  contentType!: TrendContentTypeEnum;
 
-  @Column({ default: "PUBLISHED" })
-  status!: string; // 'DRAFT', 'PUBLISHED', 'ARCHIVED', 'FLAGGED'
+  @Column({
+    type: "enum",
+    enum: TrendStatusEnum,
+    default: TrendStatusEnum.PUBLISHED,
+  })
+  status!: TrendStatusEnum;
 
   @CreateDateColumn({ name: "created_at", type: "timestamptz" })
   createdAt!: Date;

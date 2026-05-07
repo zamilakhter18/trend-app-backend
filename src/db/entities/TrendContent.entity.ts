@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { Trend } from "./Trend.entity";
+import { TrendContentMediaTypeEnum } from "../../common/helpers/enum";
 
 @Entity("trend_content")
 export class TrendContent {
@@ -16,8 +17,12 @@ export class TrendContent {
   @Column({ name: "content_url" })
   contentUrl!: string;
 
-  @Column({ name: "content_type" })
-  contentType!: string; // 'video', 'image', 'link'
+  @Column({
+    type: "enum",
+    enum: TrendContentMediaTypeEnum,
+    name: "content_type",
+  })
+  contentType!: TrendContentMediaTypeEnum;
 
   @Column({ name: "is_primary", default: false })
   isPrimary!: boolean;
