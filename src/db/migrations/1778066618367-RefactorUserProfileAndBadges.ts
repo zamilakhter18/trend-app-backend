@@ -1,13 +1,11 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class RefactorUserProfileAndBadges1778066618367 implements MigrationInterface {
-  name = 'RefactorUserProfileAndBadges1778066618367';
+  name = "RefactorUserProfileAndBadges1778066618367";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Create Badge Type Enum
-    await queryRunner.query(
-      `CREATE TYPE "user_badge_type_enum" AS ENUM('EARLY_SPOTTER', 'STREETWEAR_EXPERT', 'LUXURY_CURATOR', 'TREND_HUNTER')`,
-    );
+    await queryRunner.query(`CREATE TYPE "user_badge_type_enum" AS ENUM('EARLY_SPOTTER', 'STREETWEAR_EXPERT', 'LUXURY_CURATOR', 'TREND_HUNTER')`);
 
     // Create user_badges table
     await queryRunner.query(
@@ -24,12 +22,8 @@ export class RefactorUserProfileAndBadges1778066618367 implements MigrationInter
     );
 
     // Add Foreign Key Constraints
-    await queryRunner.query(
-      `ALTER TABLE "user_badges" ADD CONSTRAINT "FK_user_badges_user_id" FOREIGN KEY ("user_id") REFERENCES "user_profile"("user_id") ON DELETE CASCADE ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "user_badges" ADD CONSTRAINT "FK_user_badges_source_trend_id" FOREIGN KEY ("source_trend_id") REFERENCES "trends"("id") ON DELETE SET NULL ON UPDATE NO ACTION`,
-    );
+    await queryRunner.query(`ALTER TABLE "user_badges" ADD CONSTRAINT "FK_user_badges_user_id" FOREIGN KEY ("user_id") REFERENCES "user_profile"("user_id") ON DELETE CASCADE ON UPDATE NO ACTION`);
+    await queryRunner.query(`ALTER TABLE "user_badges" ADD CONSTRAINT "FK_user_badges_source_trend_id" FOREIGN KEY ("source_trend_id") REFERENCES "trends"("id") ON DELETE SET NULL ON UPDATE NO ACTION`);
 
     // Migrate existing badges data
     // badges is text[] in user_profile

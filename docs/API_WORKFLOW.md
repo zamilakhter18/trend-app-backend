@@ -41,309 +41,93 @@ Badges are stored in the `user_badges` table instead of a simple array. This pro
 
 ---
 
-### 📖 Swagger API Documentation
+## 🛰️ Interaction & Event-Driven Architecture
 
-The project includes interactive API documentation powered by Swagger (OpenAPI).
+The platform uses a unified **Interaction/Event Log** system rather than traditional social media "comments/likes" logic. This architecture supports trend intelligence, trust preservation, and scalable analytics.
 
-- **URL:** `http://localhost:3000/api`
-- **Authentication in Swagger:** 
-  1. Click the **"Authorize"** button at the top of the Swagger UI.
-  2. Enter your JWT token (e.g., `abc...xyz`).
-  3. All protected endpoints (indicated by a lock icon) will now automatically include the token in their requests.
-- **Security Scheme:** The API uses a named security scheme `JWT-auth` which corresponds to the `bearer` HTTP authentication scheme.
-- **Schemas:** To keep the UI clean, the "Schemas" section at the bottom of the page is hidden by default.
+### 🔄 Unified Interaction System
 
-### 🚀 Signup Flow Architecture
+All user actions are logged in the `interactions` table:
+- **Interaction Types**: `VIEW`, `SAVE`, `CLICK`, `SHARE`.
+- **Targets**: Interactions can target both `trends` and `products`.
+- **Source Tracking**: Captures where the interaction originated (e.g., `FEED`, `SEARCH`, `PROFILE`).
+- **Intelligence Fuel**: These events power the scoring engine, recommendation engine, and commerce analytics.
 
-The signup process follows a multi-step sequence to ensure auth and profile synchronization:
+### 🔖 Dual-Target Saves
 
-1. **User Signup Request**: User submits email, password, username, etc.
-2. **Supabase Auth**: Backend calls Supabase to create the user in the `auth.users` schema.
-3. **Profile Creation**: Upon successful Supabase signup, the backend creates a corresponding entry in the `public.user_profile` table (sharing the same UUID).
-4. **Token Generation**: Custom JWT Access and Refresh tokens are generated.
-5. **Response**: Final payload includes user profile details and both tokens.
+Users can bookmark both trends and products.
+- **Save Architecture**: The `saves` table supports `trend_id` or `product_id`.
+- **Validation**: Database-level constraints ensure exactly one target is set per save.
+- **Analytics**: Saving a product contributes to its commerce intelligence, while saving a trend contributes to its discovery score.
 
----
+### 👁️ View Tracking & Early Discovery
 
-## ☁️ 9. Media Upload Architecture
-
-The system uses Supabase Storage for direct client-side uploads to avoid server bandwidth costs and improve performance.
-
-### ⬆️ Upload Flow
-
-1. **Request URL**: Client app sends a `POST` request to `/upload/generate-url` with the desired bucket and file info.
-2. **Generate URL**: NestJS validates the request and asks Supabase to generate a secure, temporary **signed upload URL**.
-3. **Direct Upload**: The client app receives the signed URL and uploads the file directly to Supabase Storage.
-4. **Send Public URL**: After a successful upload, the client sends the `public_url` (received in step 2) to the relevant API endpoint (e.g., `POST /trends` or `PATCH /profile/me`).
-5. **Store URL**: NestJS stores the `public_url` string in the appropriate database table (`trends`, `user_profile`, etc.).
-
-```text
-Client App                   NestJS Backend               Supabase Storage
-     │                            │                              │
-     ├─ 1. POST /generate-url ───► │                              │
-     │                            ├─ 2. Generate Signed URL ─────►
-     │  ◄── 3. Return Signed URL ─┤                              │
-     │                            │                              │
-     ├─ 4. Upload File Directly ─────────────────────────────────►
-     │                            │                              │
-     ├─ 5. POST /trends (with URL)►│                              │
-     │                            ├─ 6. Save URL to DB           │
-     │                            │                              │
-```
-
-### 🔗 Upload APIs
-
-- **Generate Upload URL:** `POST /upload/generate-url` (JWT Required)
-- **Get Public URL:** `GET /upload/public-url/:bucket/:path` (Public)
+Views are explicitly tracked to support:
+- **Early Discovery Rewards**: Identifying "early spotters" based on view timing relative to trend lifecycle.
+- **Exposure Tracking**: Measuring how many users have seen a trend vs. interacted with it.
+- **Momentum Tracking**: Real-time calculation of trend velocity.
 
 ---
 
-## 👤 1. Guest / Unauthenticated User
+## 🛡️ Trust-Preserving Content Architecture
 
-Guests can browse the platform and view basic content without a token.
+To maintain high platform trust, the system implements a strict "Trust Firewall" between organic discovery and paid placement.
 
-### 🔗 Public APIs
+### 🧱 Content Classification
 
-- **Register Account:** `POST /auth/signup`
-- **Login Account:** `POST /auth/login`
-- **Get Trend Feed:** `GET /feed`
-- **Get Trend Details:** `GET /trend/:id`
-- **List Trend Products:** `GET /product?trend_id=uuid`
+Trends and products are explicitly flagged:
+- **Content Type**: `ORGANIC` vs `SPONSORED`.
+- **Authenticity**: Products include an `is_authentic` flag for verified/trusted items.
+- **Sponsorship**: Products include an `is_sponsored` flag for paid placements.
 
----
+*Note: Sponsorship and Authenticity are separate concepts; a product can be sponsored but not yet verified, or verified but organic.*
 
----
+### 🔄 Lifecycle & Moderation
 
-## 🛍️ Commerce Attribution & Conversion Intelligence
-
-The system implements a sophisticated clickout tracking architecture to attribute product discovery and prepare for future commerce monetization.
-
-### 🔗 Click Attribution Model
-
-Every clickout is captured with rich context to ensure high-fidelity analytics:
-- **Trend Attribution**: Which specific trend generated the interest.
-- **Source Attribution**: Whether the click came from an `ORGANIC_FEED`, `SPONSORED_FEED`, or `SEARCH`.
-- **Campaign Attribution**: Linking clicks to specific Brand/Creator campaigns.
-- **Creator Attribution**: Crediting the specific creator who drove the traffic.
-- **Deduplication Protection**: A 5-minute window deduplication strategy (based on `user_id`/`ip_hash` and `product_id`) prevents inflated analytics and protects trend scoring integrity.
-
-### 📈 Conversion Roadmap
-
-The architecture avoids simplistic "converted" flags in favor of a scalable event-driven system:
-
-1.  **Clickout Events**: The foundation of attribution, capturing intent and context.
-2.  **Purchase Events**: Future entities that store actual transaction data from commerce partners.
-3.  **Affiliate Callbacks**: A system for processing webhooks from affiliate networks (Impact, ShareASale, etc.).
-4.  **Reconciliation Engine**: A backend process that matches `AffiliateCallbacks` to original `ClickoutEvents` to close the loop and attribute revenue.
-
-### 🚫 Analytics Integrity
-
-To ensure trustworthy data for brands and internal scoring:
-- **Spam Filtering**: Rapid repeated clicks from the same source are logged but marked or ignored in scoring.
-- **Bot Detection**: `ip_hash` and `session_id` analysis helps identify and filter non-human traffic.
-- **Integrity Guards**: Clicks that fail deduplication do not contribute to a trend's `velocity` or `ctrScore`.
+- **Trend Phases**: `emerging`, `rising`, `peak`, `fading`.
+- **Lifecycle Tracking**: `phase_updated_at` tracks when a trend transitions between phases, critical for reward calculations.
+- **Status Workflow**: Trends move through `DRAFT` → `PUBLISHED` → `ARCHIVED` (or `FLAGGED` for moderation).
 
 ---
 
-## 🎨 Future-Ready Creator Architecture
+## 🛍️ Commerce Attribution & Affiliate Intelligence
 
-While the MVP focuses on consumer engagement, the architecture is designed to scale into a full creator economy.
+The architecture is designed for deep commerce integration and multi-touch attribution.
 
-- **Creator Profiles**: Separate from consumer profiles, allowing for bios, portfolios, and verification.
-- **Creator Analytics**: Dedicated tracking for reach, engagement rates, and audience demographics.
-- **Creator Campaigns**: Infrastructure for brand-creator collaborations and sponsored trend campaigns.
+### 📈 Product Metadata
 
----
+Products support rich commerce fields:
+- **Merchant Name**: The retailer selling the product (e.g., "Amazon", "Farfetch").
+- **Affiliate Network**: The platform managing the commission (e.g., "Impact", "Rakuten").
+- **Commerce Metadata**: JSONB blob for storing affiliate tracking parameters, sub-IDs, and attribution data.
 
-## 🛡️ Trust-Preserving Sponsored Content Architecture
+### 🔗 Clickout Attribution
 
-The system maintains a strict separation between organic trend ranking and paid promotional placement to ensure platform integrity and user trust.
-
-### ⚖️ Organic vs. Sponsored Isolation
-
-1.  **Organic Ranking**: Based exclusively on engagement metrics (velocity, CTR, save rate, momentum). Paid metadata NEVER influences the organic `finalScore`.
-2.  **Sponsored Placement**: Managed through an isolated injection layer. Sponsored items are fetched separately and merged into the feed at specific intervals (e.g., every 5th item).
-3.  **Terminology**: We use "Campaign Priority" or "Placement Weight" instead of "Ranking Scores" for sponsored content to avoid logical cross-contamination.
-
-### 🏢 Brand & Advertiser Entities
-
-Advertisers are managed as separate **Brand** entities, distinct from regular consumer profiles.
-- Brands support billing, verification, and campaign management.
-- A regular user can own or manage one or more Brand entities.
+Every clickout is captured with rich context:
+- **Deduplication**: A 5-minute window deduplication strategy prevents inflated analytics.
+- **Attribution Loop**: Clicks are linked to trends, products, campaigns, and creators.
+- **Monetization Readiness**: This data prepares the system for reconciling affiliate callbacks and calculating revenue.
 
 ---
 
 ## 🏗️ System Architecture Flow
 
-Here is a high-level overview of the Trend App's system architecture, from the client application to the backend services.
-
-### Core Architecture Diagram
-
 ```
 Flutter App
     ↓
-NestJS APIs
+NestJS APIs (Interaction Logging)
     ↓
-Supabase PostgreSQL
+Supabase PostgreSQL (Interactions, Saves, Trends, Products)
     ↓
-AI / Vision Services
-    ↓
-Scoring Engine
+Scoring Engine (Uses Interaction Velocity)
     ↓
 Ranked Feed Response
 ```
 
-### Explanation of Each Layer
-
-#### A. Flutter App
-
-- **Description**: The mobile client for iOS and Android, built with Flutter.
-- **Handles**:
-  - Authentication (signup, login, token management)
-  - Media uploads to Supabase Storage
-  - Rendering of the ranked trend feed
-  - User engagement actions (likes, saves, clicks)
-
-#### B. NestJS APIs
-
-- **Description**: The central backend layer, built with NestJS (Node.js).
-- **Handles**:
-  - Secure authentication and Role-Based Access Control (RBAC)
-  - Core business logic for all application features
-  - Serving feed APIs to the Flutter app
-  - Orchestration of the scoring engine and AI services
-  - Data ingestion APIs for the Python scraper
-
-#### C. Supabase PostgreSQL
-
-- **Description**: The persistent relational database, powered by Supabase.
-- **Stores**:
-  - User profiles and authentication IDs (`user_profile`)
-  - Trend data, including titles, descriptions, and media URLs (`trends`)
-  - Products associated with trends (`products`)
-  - User engagement metrics (likes, saves, views) (`engagements`)
-  - AI-generated analysis and tags (`ai_analysis`)
-  - Calculated trend scores (`trend_scores`)
-
-#### D. AI / Vision Services
-
-- **Description**: A suite of external and internal AI services for content enrichment.
-- **APIs Used**:
-  - External LLM APIs (e.g., OpenAI, Google AI) for text analysis
-  - Vision classification APIs (e.g., Google Vision) for image analysis
-- **Used For**:
-  - Generating concise trend summaries
-  - Performing sentiment analysis on trend content
-  - Classifying images for safety and content moderation
-  - Assigning visual categories and aesthetics (e.g., "minimalist", "vintage")
-
-#### E. Scoring Engine
-
-- **Description**: A cron-based ranking system that runs periodically to score and rank trends.
-- **Calculates**:
-  - **Engagement Velocity**: How quickly a trend is gaining likes and views.
-  - **Save Rate**: The ratio of saves to impressions.
-  - **Click-Through Rate (CTR)**: The effectiveness of associated product links.
-  - **Time Decay**: Reduces the score of older trends to prioritize newness.
-  - **Final Feed Score**: A weighted combination of the above metrics to produce a final ranking score.
-
 ---
 
-### Data and Media Flows
+## 📖 Swagger API Documentation
 
-#### Data Ingestion Flow
-
-The system uses a Python scraper to import trends from external social platforms.
-
-```
-Python Scraper
-      ↓
-Ingestion APIs (POST /ingestion/social-import)
-      ↓
-NestJS Backend
-      ↓
-Supabase Database
-```
-
-#### Media Upload Flow
-
-Media is uploaded directly from the client to Supabase Storage to optimize performance.
-
-```
-Flutter App
-      ↓
-Generate Signed Upload URL (POST /upload/generate-url)
-      ↓
-Supabase Storage
-      ↓
-Public Media URL is returned
-      ↓
-NestJS stores the public URL in the database
-```
-
-#### Authentication Flow
-
-User authentication is managed by Supabase Auth, with JWTs used to protect API endpoints.
-
-```
-User Signup/Login
-      ↓
-Supabase Auth
-      ↓
-JWT + Refresh Token are returned to the client
-      ↓
-Client uses JWT to access protected APIs
-```
-
----
-
-## 🚦 Rate Limiting & API Protection
-
-To protect the backend from abuse, spam, and excessive API usage, the system employs a rate limiting strategy. Throttling is applied to specific endpoints that are either resource-intensive or high-risk.
-
-Rate limiting is especially applied on:
-
-- Authentication APIs
-- Ingestion APIs
-- AI/Vision APIs
-- Upload URL generation APIs
-
-### Example Protected APIs
-
-- `POST /auth/signup`
-- `POST /auth/login`
-- `POST /ingestion/social-import`
-- `POST /ai/analyze-trend`
-- `POST /upload/generate-url`
-
-### Purpose of Rate Limiting
-
-- **Prevent Brute-Force Attacks**: Limits login and signup attempts to block password guessing.
-- **Avoid AI API Abuse**: Controls access to expensive AI and Vision services.
-- **Reduce Spam Ingestion**: Prevents bad actors from flooding the database with spam trends.
-- **Improve System Stability**: Ensures the backend remains responsive and available for all users.
-- **Protect Backend Resources**: Conserves server CPU, memory, and bandwidth.
-
----
-
-## ☁️ Why Supabase?
-
-Supabase was chosen as the primary backend infrastructure layer because it offers a comprehensive suite of tools that accelerate development while providing a scalable and secure foundation.
-
-### Core Supabase Features Used
-
-- **PostgreSQL Database**: A powerful, open-source relational database for storing all application data.
-- **Built-in Authentication**: Secure user management and authentication, including social logins and password resets.
-- **Supabase Storage**: Scalable object storage for user-generated media like images and videos.
-- **Scalable Cloud Infrastructure**: Managed infrastructure that grows with the application's needs.
-- **Row Level Security (RLS)**: Fine-grained access control policies at the database level.
-- **Realtime Capabilities**: The ability to listen for database changes in real-time.
-- **Developer-Friendly APIs**: Auto-generated APIs and client libraries for easy integration.
-
-### Architecture Benefits
-
-- **Rapid Backend Development**: Supabase's built-in features significantly reduce the time required to build and deploy a secure backend.
-- **Reduced Infrastructure Complexity**: By providing an integrated solution, Supabase eliminates the need to manage separate services for database, auth, and storage.
-- **Secure Authentication System**: Leverages Supabase's robust and battle-tested authentication service.
-- **Scalable Media Storage**: Supabase Storage provides a simple and scalable solution for handling large media files.
-- **Simplified PostgreSQL Management**: Automatic backups, scaling, and maintenance of the PostgreSQL database.
+- **URL:** `http://localhost:3000/api`
+- **Authentication:** Use the **"Authorize"** button with your JWT.
+- **Interaction APIs**: `POST /interaction/interact`, `POST /interaction/save`, `POST /interaction/click`.

@@ -1,10 +1,10 @@
-import { IsOptional, IsString, IsArray } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString, IsArray } from "class-validator";
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
 export class IngestionRunDto {
   @ApiPropertyOptional({
-    description: 'Specific platforms to run ingestion for',
-    example: ['instagram', 'tiktok'],
+    description: "Specific platforms to run ingestion for",
+    example: ["instagram", "tiktok"],
   })
   @IsOptional()
   @IsArray()
@@ -12,8 +12,8 @@ export class IngestionRunDto {
   platforms?: string[];
 
   @ApiPropertyOptional({
-    description: 'Additional configuration or parameters for the pipeline',
-    example: 'full-scan',
+    description: "Additional configuration or parameters for the pipeline",
+    example: "full-scan",
   })
   @IsOptional()
   @IsString()

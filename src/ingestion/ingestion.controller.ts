@@ -1,26 +1,15 @@
-import { Controller, Post, Body, Headers, Res, UseGuards } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiOkResponse,
-  ApiCreatedResponse,
-  ApiBadRequestResponse,
-  ApiUnauthorizedResponse,
-  ApiForbiddenResponse,
-  ApiInternalServerErrorResponse,
-  ApiHeader,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
-import { IngestionService } from './ingestion.service';
-import { SocialImportDto } from './dto/social-import.dto';
-import { IngestionRunDto } from './dto/ingestion-run.dto';
-import { ResponseHandler } from '../common/helpers/response-handler';
-import { Roles } from '../common/decorators/role.decorator';
-import { UserRoleEnum } from '../common/helpers/enum';
-import { Public } from '../common/decorators/public.decorator';
-import type { Response } from 'express';
+import { Controller, Post, Body, Headers, Res, UseGuards } from "@nestjs/common";
+import { ApiTags, ApiOperation, ApiOkResponse, ApiCreatedResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiHeader, ApiBearerAuth } from "@nestjs/swagger";
+import { IngestionService } from "./ingestion.service";
+import { SocialImportDto } from "./dto/social-import.dto";
+import { IngestionRunDto } from "./dto/ingestion-run.dto";
+import { ResponseHandler } from "../common/helpers/response-handler";
+import { Roles } from "../common/decorators/role.decorator";
+import { UserRoleEnum } from "../common/helpers/enum";
+import { Public } from "../common/decorators/public.decorator";
+import type { Response } from "express";
 
-@ApiTags('Data Ingestion')
+@ApiTags("Data Ingestion")
 @Controller()
 export class IngestionController {
   constructor(
@@ -29,28 +18,24 @@ export class IngestionController {
   ) {}
 
   @Public()
-  @Post('ingestion/social-import')
-  @ApiOperation({ summary: 'Receive trend data from Python ingestion pipeline' })
+  @Post("ingestion/social-import")
+  @ApiOperation({ summary: "Receive trend data from Python ingestion pipeline" })
   @ApiHeader({
-    name: 'x-ingestion-token',
-    description: 'Internal service authentication token',
+    name: "x-ingestion-token",
+    description: "Internal service authentication token",
     required: true,
   })
   @ApiCreatedResponse({
-    description: 'Trend imported successfully',
+    description: "Trend imported successfully",
     example: {
       statusCode: 201,
-      message: 'Resource created successfully',
-      data: { id: 'uuid', title: 'Minimal Fashion' }
-    }
+      message: "Resource created successfully",
+      data: { id: "uuid", title: "Minimal Fashion" },
+    },
   })
-  @ApiUnauthorizedResponse({ description: 'Invalid or missing ingestion token' })
-  @ApiBadRequestResponse({ description: 'Trend already exists or malformed payload' })
-  async socialImport(
-    @Body() dto: SocialImportDto,
-    @Headers('x-ingestion-token') token: string,
-    @Res() res: Response,
-  ) {
+  @ApiUnauthorizedResponse({ description: "Invalid or missing ingestion token" })
+  @ApiBadRequestResponse({ description: "Trend already exists or malformed payload" })
+  async socialImport(@Body() dto: SocialImportDto, @Headers("x-ingestion-token") token: string, @Res() res: Response) {
     try {
       this.ingestionService.validateToken(token);
       const result = await this.ingestionService.importSocialTrend(dto);
@@ -63,18 +48,18 @@ export class IngestionController {
     }
   }
 
-  @ApiBearerAuth('JWT-auth')
+  @ApiBearerAuth("JWT-auth")
   @Roles(UserRoleEnum.ADMIN)
-  @Post('admin/ingestion/run')
-  @ApiOperation({ summary: 'Manually trigger the ingestion pipeline (Admin only)' })
+  @Post("admin/ingestion/run")
+  @ApiOperation({ summary: "Manually trigger the ingestion pipeline (Admin only)" })
   @ApiOkResponse({
-    description: 'Pipeline triggered',
+    description: "Pipeline triggered",
     example: {
       statusCode: 200,
-      message: 'Ingestion pipeline triggered successfully'
-    }
+      message: "Ingestion pipeline triggered successfully",
+    },
   })
-  @ApiForbiddenResponse({ description: 'Insufficient permissions' })
+  @ApiForbiddenResponse({ description: "Insufficient permissions" })
   async triggerRun(@Body() dto: IngestionRunDto, @Res() res: Response) {
     try {
       const result = await this.ingestionService.triggerPipeline(dto);

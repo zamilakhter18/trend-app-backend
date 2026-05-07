@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Trend } from '../db/entities/Trend.entity';
-import { ServiceResponse } from '../common/interfaces/service-response.interface';
-import { messages } from '../common/helpers/message';
-import { SponsoredContentService } from '../sponsored-content/sponsored-content.service';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Trend } from "../db/entities/Trend.entity";
+import { ServiceResponse } from "../common/interfaces/service-response.interface";
+import { messages } from "../common/helpers/message";
+import { SponsoredContentService } from "../sponsored-content/sponsored-content.service";
 
 @Injectable()
 export class FeedService {
@@ -20,33 +20,27 @@ export class FeedService {
    * @param limit Number of items to fetch
    * @param cursor Pagination cursor (base64 encoded)
    */
-  async getFeed(
-    limit: number = 10,
-    cursor?: string,
-  ): Promise<ServiceResponse<any>> {
+  async getFeed(limit: number = 10, cursor?: string): Promise<ServiceResponse<any>> {
     try {
       const query = this.trendRepository
-        .createQueryBuilder('trend')
-        .innerJoinAndSelect('trend.score', 'score') // Advanced scores
-        .leftJoinAndSelect('trend.contents', 'contents')
-        .leftJoinAndSelect('trend.creator', 'creator')
-        .leftJoinAndSelect('trend.sponsoredContent', 'sponsored') // Check if it's sponsored
+        .createQueryBuilder("trend")
+        .innerJoinAndSelect("trend.score", "score") // Advanced scores
+        .leftJoinAndSelect("trend.contents", "contents")
+        .leftJoinAndSelect("trend.creator", "creator")
+        .leftJoinAndSelect("trend.sponsoredContent", "sponsored") // Check if it's sponsored
+        .where("trend.status = :status", { status: "PUBLISHED" })
+        .andWhere("trend.contentType = :contentType", { contentType: "ORGANIC" })
         .take(limit)
-        .orderBy('score.finalScore', 'DESC') // Main ranking metric
-        .addOrderBy('trend.createdAt', 'DESC');
+        .orderBy("score.finalScore", "DESC") // Main ranking metric
+        .addOrderBy("trend.createdAt", "DESC");
 
       // Pagination logic using cursor
       if (cursor) {
-        const [scoreStr, createdAtStr] = Buffer.from(cursor, 'base64')
-          .toString()
-          .split('|');
+        const [scoreStr, createdAtStr] = Buffer.from(cursor, "base64").toString().split("|");
         const score = parseFloat(scoreStr);
         const createdAt = createdAtStr;
 
-        query.where(
-          '(score.finalScore < :score OR (score.finalScore = :score AND trend.createdAt < :createdAt))',
-          { score, createdAt },
-        );
+        query.andWhere("(score.finalScore < :score OR (score.finalScore = :score AND trend.createdAt < :createdAt))", { score, createdAt });
       }
 
       const rawTrends = await query.getMany();
@@ -66,12 +60,12 @@ export class FeedService {
 
       rawTrends.forEach((trend, index) => {
         finalFeed.push(trend);
-        
+
         // Inject every 5 items if we have sponsored content left
         if ((index + 1) % 5 === 0 && sponsoredIndex < sponsoredTrends.length) {
           // Avoid duplicate if the trend is already in the main feed
           const sponsored = sponsoredTrends[sponsoredIndex];
-          if (!finalFeed.find(f => f.id === sponsored.id)) {
+          if (!finalFeed.find((f) => f.id === sponsored.id)) {
             finalFeed.push(sponsored);
             sponsoredIndex++;
           }
@@ -84,7 +78,7 @@ export class FeedService {
         const lastItem = rawTrends[rawTrends.length - 1];
         const lastScore = lastItem.score?.finalScore || 0;
         const lastCreatedAt = lastItem.createdAt?.toISOString();
-        nextCursor = Buffer.from(`${lastScore}|${lastCreatedAt}`).toString('base64');
+        nextCursor = Buffer.from(`${lastScore}|${lastCreatedAt}`).toString("base64");
       }
 
       return {

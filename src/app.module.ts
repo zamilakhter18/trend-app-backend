@@ -10,7 +10,7 @@ import { ProfileModule } from "./profile/profile.module";
 import { FeedModule } from "./feed/feed.module";
 import { TrendModule } from "./trend/trend.module";
 import { AiModule } from "./ai/ai.module";
-import { EngagementModule } from "./engagement/engagement.module";
+import { InteractionModule } from "./interaction/interaction.module";
 import { ProductModule } from "./product/product.module";
 import { ScoringModule } from "./scoring/scoring.module";
 import { IdentityModule } from "./identity/identity.module";
@@ -55,7 +55,7 @@ import { UserProfile } from "./db/entities/UserProfile.entity";
     FeedModule,
     TrendModule,
     AiModule,
-    EngagementModule,
+    InteractionModule,
     ProductModule,
     ScoringModule,
     IdentityModule,

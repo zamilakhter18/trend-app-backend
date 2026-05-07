@@ -1,18 +1,14 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ScoringService } from './scoring.service';
-import { SupabaseModule } from '../supabase/supabase.module';
-import { Trend } from '../db/entities/Trend.entity';
-import { TrendScore } from '../db/entities/TrendScore.entity';
-import { Engagement } from '../db/entities/Engagement.entity';
-import { Save } from '../db/entities/Save.entity';
-import { Clickout } from '../db/entities/Clickout.entity';
+import { Module } from "@nestjs/common";
+import { ScoringService } from "./scoring.service";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Trend } from "../db/entities/Trend.entity";
+import { TrendScore } from "../db/entities/TrendScore.entity";
+import { Interaction } from "../db/entities/Interaction.entity";
+import { Save } from "../db/entities/Save.entity";
+import { Clickout } from "../db/entities/Clickout.entity";
 
 @Module({
-  imports: [
-    SupabaseModule,
-    TypeOrmModule.forFeature([Trend, TrendScore, Engagement, Save, Clickout]),
-  ],
+  imports: [TypeOrmModule.forFeature([Trend, TrendScore, Interaction, Save, Clickout])],
   providers: [ScoringService],
   exports: [ScoringService],
 })

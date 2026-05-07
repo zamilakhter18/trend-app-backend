@@ -31,15 +31,18 @@ Relational badge system for reward traceability.
 The central entity representing a trend.
 - `id`: UUID, Primary Key.
 - `creatorId`: UUID, Foreign Key to `UserProfile`.
-- `source`: Enum (`TIKTOK`, `INSTAGRAM`, `OTHER`).
+- `source`: String (Flexible: TikTok, Instagram, Pinterest, Ecommerce, etc.).
 - `externalId`: String, ID from the source platform.
 - `title`: String.
 - `description`: Text.
 - `phase`: Enum (`emerging`, `rising`, `peak`, `fading`).
+- `phaseUpdatedAt`: Timestamp, tracked for reward and momentum calculations.
+- `contentType`: String (`ORGANIC`, `SPONSORED`). Trust-preserving firewall.
+- `status`: String (`DRAFT`, `PUBLISHED`, `ARCHIVED`, `FLAGGED`). Moderation status.
 - `createdAt`: Timestamp.
 - `updatedAt`: Timestamp.
 
-### 3. TrendContent (`trend_content`)
+### 4. TrendContent (`trend_content`)
 Media and assets associated with a trend.
 - `id`: UUID, Primary Key.
 - `trendId`: UUID, Foreign Key to `Trend`.
@@ -48,7 +51,7 @@ Media and assets associated with a trend.
 - `isPrimary`: Boolean.
 - `createdAt`: Timestamp.
 
-### 4. TrendMetadata (`trend_metadata`)
+### 5. TrendMetadata (`trend_metadata`)
 Enriched data for a trend.
 - `trendId`: UUID, Primary Key, Foreign Key to `Trend`.
 - `tags`: Array of Strings.
@@ -57,7 +60,7 @@ Enriched data for a trend.
 - `aiSummary`: Text.
 - `updatedAt`: Timestamp.
 
-### 5. AiAnalysis (`ai_analysis`)
+### 6. AiAnalysis (`ai_analysis`)
 Deep analysis results from AI services.
 - `trendId`: UUID, Primary Key, Foreign Key to `Trend`.
 - `rawAnalysis`: JSONB, raw output from AI.
@@ -67,7 +70,7 @@ Deep analysis results from AI services.
 - `createdAt`: Timestamp.
 - `updatedAt`: Timestamp.
 
-### 6. TrendScore (`trend_scores`)
+### 7. TrendScore (`trend_scores`)
 Performance metrics used for ranking and feed generation.
 - `trendId`: UUID, Primary Key, Foreign Key to `Trend`.
 - `score`: Decimal, base score.
@@ -75,11 +78,11 @@ Performance metrics used for ranking and feed generation.
 - `velocity`: Decimal, rate of growth.
 - `ctrScore`: Decimal, click-through rate score.
 - `saveRateScore`: Decimal.
-- `engagementCount`: Integer.
+- `engagementCount`: Integer (Total interactions).
 - `lastUpdated`: Timestamp.
 - `calculatedAt`: Timestamp.
 
-### 7. Product (`products`)
+### 8. Product (`products`)
 Products identified or linked within a trend.
 - `id`: UUID, Primary Key.
 - `trendId`: UUID, Foreign Key to `Trend`.
@@ -89,27 +92,37 @@ Products identified or linked within a trend.
 - `currency`: String (default `USD`).
 - `affiliateUrl`: String.
 - `imageUrl`: String.
+- `isSponsored`: Boolean.
+- `isAuthentic`: Boolean (Authenticity verification).
+- `merchantName`: String.
+- `affiliateNetwork`: String.
+- `commerceMetadata`: JSONB (Affiliate tracking parameters).
 - `createdAt`: Timestamp.
 - `updatedAt`: Timestamp.
 
 ## Interaction Entities
 
-### 8. Engagement (`engagements`)
-Tracks user interactions with trends.
+### 9. Interaction (`interactions`)
+Unified event log for all user actions.
+- `id`: UUID, Primary Key.
+- `userId`: UUID, Nullable, Foreign Key to `UserProfile`.
+- `trendId`: UUID, Nullable, Foreign Key to `Trend`.
+- `productId`: UUID, Nullable, Foreign Key to `Product`.
+- `interactionType`: String (`VIEW`, `SAVE`, `CLICK`, `SHARE`).
+- `sourceType`: String (e.g., `FEED`, `SEARCH`).
+- `content`: Text (Optional context).
+- `createdAt`: Timestamp.
+
+### 10. Save (`saves`)
+User bookmarks for both trends and products.
 - `id`: UUID, Primary Key.
 - `userId`: UUID, Foreign Key to `UserProfile`.
-- `trendId`: UUID, Foreign Key to `Trend`.
-- `type`: String (`like`, `comment`, `share`).
-- `content`: Text (e.g., for comments).
+- `trendId`: UUID, Nullable, Foreign Key to `Trend`.
+- `productId`: UUID, Nullable, Foreign Key to `Product`.
 - `createdAt`: Timestamp.
+*Constraint: Exactly one of trendId or productId must be set.*
 
-### 9. Save (`saves`)
-User bookmarks for trends.
-- `userId`: UUID, Composite Primary Key, Foreign Key to `UserProfile`.
-- `trendId`: UUID, Composite Primary Key, Foreign Key to `Trend`.
-- `createdAt`: Timestamp.
-
-### 10. Clickout (`clickouts`)
+### 11. Clickout (`clickouts`)
 Tracks and attributes product discovery and commerce intent.
 - `id`: UUID, Primary Key.
 - `userId`: UUID, Nullable, Foreign Key to `UserProfile`.
@@ -126,23 +139,7 @@ Tracks and attributes product discovery and commerce intent.
 
 The architecture is designed to support a multi-touch attribution model and scalable conversion tracking.
 
-### 16. PurchaseEvent (`purchase_events`) (Planned)
-- `id`: UUID, Primary Key.
-- `userId`: UUID, Foreign Key to `UserProfile`.
-- `productId`: UUID, Foreign Key to `Product`.
-- `clickoutId`: UUID, Foreign Key to `Clickout` for direct attribution.
-- `amount`: Decimal.
-- `currency`: String.
-- `status`: Enum (`pending`, `confirmed`, `refunded`).
-- `metadata`: JSONB.
-
-### 17. AffiliateCallback (`affiliate_callbacks`) (Planned)
-- `id`: UUID, Primary Key.
-- `provider`: String (e.g., "Impact", "Rakuten").
-- `rawPayload`: JSONB.
-- `processed`: Boolean.
-
-### 11. Brand (`brands`)
+### 12. Brand (`brands`)
 Separate entity for advertisers and organizations.
 - `id`: UUID, Primary Key.
 - `name`: String, Unique.
@@ -154,7 +151,7 @@ Separate entity for advertisers and organizations.
 - `createdAt`: Timestamp.
 - `updatedAt`: Timestamp.
 
-### 12. SponsoredContent (`sponsored_content`)
+### 13. SponsoredContent (`sponsored_content`)
 Advertising data for promoted trends. Isolated from organic scoring.
 - `trendId`: UUID, Primary Key, Foreign Key to `Trend`.
 - `brandId`: UUID, Foreign Key to `Brand`.
@@ -170,7 +167,7 @@ Advertising data for promoted trends. Isolated from organic scoring.
 
 ## Creator Economy Entities (Future-Ready)
 
-### 13. CreatorProfile (`creator_profiles`)
+### 14. CreatorProfile (`creator_profiles`)
 Future-ready expansion for creator-specific metadata.
 - `id`: UUID, Primary Key.
 - `userId`: UUID, Foreign Key to `UserProfile`.
@@ -181,7 +178,7 @@ Future-ready expansion for creator-specific metadata.
 - `createdAt`: Timestamp.
 - `updatedAt`: Timestamp.
 
-### 14. CreatorAnalytics (`creator_analytics`)
+### 15. CreatorAnalytics (`creator_analytics`)
 Performance metrics for creators.
 - `id`: UUID, Primary Key.
 - `creatorProfileId`: UUID, Foreign Key to `CreatorProfile`.
@@ -191,7 +188,7 @@ Performance metrics for creators.
 - `audienceDemographics`: JSONB.
 - `lastUpdated`: Timestamp.
 
-### 15. CreatorCampaign (`creator_campaigns`)
+### 16. CreatorCampaign (`creator_campaigns`)
 Tracks collaborations between Brands and Creators.
 - `id`: UUID, Primary Key.
 - `creatorProfileId`: UUID, Foreign Key to `CreatorProfile`.

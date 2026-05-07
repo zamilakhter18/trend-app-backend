@@ -16,7 +16,7 @@ export class ProductController {
     private responseHandler: ResponseHandler,
   ) {}
 
-  @ApiBearerAuth('JWT-auth')
+  @ApiBearerAuth("JWT-auth")
   @Post()
   @ApiOperation({ summary: "Add a new product integration" })
   @ApiCreatedResponse({
@@ -155,7 +155,7 @@ export class ProductController {
     }
   }
 
-  @ApiBearerAuth('JWT-auth')
+  @ApiBearerAuth("JWT-auth")
   @Patch(":id")
   @ApiOperation({ summary: "Update product information" })
   @ApiOkResponse({
@@ -199,7 +199,7 @@ export class ProductController {
     }
   }
 
-  @ApiBearerAuth('JWT-auth')
+  @ApiBearerAuth("JWT-auth")
   @Delete(":id")
   @ApiOperation({ summary: "Remove a product integration" })
   @ApiOkResponse({

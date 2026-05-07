@@ -1,15 +1,15 @@
-import { Injectable, Logger, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
-import { Trend } from '../db/entities/Trend.entity';
-import { TrendMetadata } from '../db/entities/TrendMetadata.entity';
-import { TrendScore } from '../db/entities/TrendScore.entity';
-import { TrendContent } from '../db/entities/TrendContent.entity';
-import { SocialImportDto } from './dto/social-import.dto';
-import { IngestionRunDto } from './dto/ingestion-run.dto';
-import { ServiceResponse } from '../common/interfaces/service-response.interface';
-import { messages } from '../common/helpers/message';
+import { Injectable, Logger, UnauthorizedException, BadRequestException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository, DataSource } from "typeorm";
+import { Trend } from "../db/entities/Trend.entity";
+import { TrendMetadata } from "../db/entities/TrendMetadata.entity";
+import { TrendScore } from "../db/entities/TrendScore.entity";
+import { TrendContent } from "../db/entities/TrendContent.entity";
+import { SocialImportDto } from "./dto/social-import.dto";
+import { IngestionRunDto } from "./dto/ingestion-run.dto";
+import { ServiceResponse } from "../common/interfaces/service-response.interface";
+import { messages } from "../common/helpers/message";
 
 @Injectable()
 export class IngestionService {
@@ -30,9 +30,9 @@ export class IngestionService {
    * Validates the internal ingestion API token
    */
   validateToken(token: string): boolean {
-    const internalToken = this.configService.get<string>('INGESTION_API_TOKEN');
+    const internalToken = this.configService.get<string>("INGESTION_API_TOKEN");
     if (!internalToken || token !== internalToken) {
-      throw new UnauthorizedException('Invalid ingestion token');
+      throw new UnauthorizedException("Invalid ingestion token");
     }
     return true;
   }
@@ -52,7 +52,7 @@ export class IngestionService {
       });
 
       if (existing) {
-        throw new BadRequestException('Trend already exists');
+        throw new BadRequestException("Trend already exists");
       }
 
       // 2. Create Trend
@@ -61,7 +61,7 @@ export class IngestionService {
         description: dto.description,
         source: dto.source,
         externalId: dto.external_id,
-        phase: 'emerging',
+        phase: "emerging",
       });
       const savedTrend = await queryRunner.manager.save(trend);
 
@@ -69,7 +69,7 @@ export class IngestionService {
       const content = queryRunner.manager.create(TrendContent, {
         trendId: savedTrend.id,
         contentUrl: dto.media_url,
-        contentType: dto.media_url.endsWith('.mp4') ? 'video' : 'image',
+        contentType: dto.media_url.endsWith(".mp4") ? "video" : "image",
         isPrimary: true,
       });
       await queryRunner.manager.save(content);
@@ -102,7 +102,7 @@ export class IngestionService {
       this.logger.error(`Import failed: ${error.message}`);
       return {
         success: false,
-        message: error.message || 'Failed to import trend',
+        message: error.message || "Failed to import trend",
       };
     } finally {
       await queryRunner.release();
@@ -113,14 +113,14 @@ export class IngestionService {
    * Triggers the external ingestion pipeline (Placeholder)
    */
   async triggerPipeline(dto: IngestionRunDto): Promise<ServiceResponse> {
-    this.logger.log(`Triggering ingestion pipeline for: ${dto.platforms?.join(', ') || 'all'}`);
-    
+    this.logger.log(`Triggering ingestion pipeline for: ${dto.platforms?.join(", ") || "all"}`);
+
     // In a real scenario, this would call a Webhook on the Python side
     // or push a message to a Task Queue (SQS/Redis)
-    
+
     return {
       success: true,
-      message: 'Ingestion pipeline triggered successfully',
+      message: "Ingestion pipeline triggered successfully",
     };
   }
 }

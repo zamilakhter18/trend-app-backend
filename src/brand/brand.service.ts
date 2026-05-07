@@ -1,11 +1,11 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Brand } from '../db/entities/Brand.entity';
-import { CreateBrandDto } from './dto/create-brand.dto';
-import { UpdateBrandDto } from './dto/update-brand.dto';
-import { ServiceResponse } from '../common/interfaces/service-response.interface';
-import { messages } from '../common/helpers/message';
+import { Injectable, NotFoundException, ConflictException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Brand } from "../db/entities/Brand.entity";
+import { CreateBrandDto } from "./dto/create-brand.dto";
+import { UpdateBrandDto } from "./dto/update-brand.dto";
+import { ServiceResponse } from "../common/interfaces/service-response.interface";
+import { messages } from "../common/helpers/message";
 
 @Injectable()
 export class BrandService {
@@ -18,7 +18,7 @@ export class BrandService {
     try {
       const existing = await this.brandRepository.findOne({ where: { name: dto.name } });
       if (existing) {
-        throw new ConflictException('Brand with this name already exists');
+        throw new ConflictException("Brand with this name already exists");
       }
 
       const brand = this.brandRepository.create({
@@ -43,7 +43,7 @@ export class BrandService {
 
   async findAll(): Promise<ServiceResponse> {
     try {
-      const brands = await this.brandRepository.find({ relations: ['owner'] });
+      const brands = await this.brandRepository.find({ relations: ["owner"] });
       return {
         success: true,
         message: messages.FETCH_SUCCESS,
@@ -58,10 +58,10 @@ export class BrandService {
     try {
       const brand = await this.brandRepository.findOne({
         where: { id },
-        relations: ['owner', 'sponsoredContents'],
+        relations: ["owner", "sponsoredContents"],
       });
       if (!brand) {
-        throw new NotFoundException('Brand not found');
+        throw new NotFoundException("Brand not found");
       }
       return {
         success: true,
@@ -77,7 +77,7 @@ export class BrandService {
     try {
       const brand = await this.brandRepository.findOne({ where: { id } });
       if (!brand) {
-        throw new NotFoundException('Brand not found');
+        throw new NotFoundException("Brand not found");
       }
 
       if (dto.name) brand.name = dto.name;
@@ -103,7 +103,7 @@ export class BrandService {
     try {
       const result = await this.brandRepository.delete(id);
       if (result.affected === 0) {
-        throw new NotFoundException('Brand not found');
+        throw new NotFoundException("Brand not found");
       }
       return {
         success: true,

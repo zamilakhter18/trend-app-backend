@@ -1,62 +1,59 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
-} from 'typeorm';
-import { UserProfile } from './UserProfile.entity';
-import { TrendContent } from './TrendContent.entity';
-import { TrendMetadata } from './TrendMetadata.entity';
-import { Engagement } from './Engagement.entity';
-import { Save } from './Save.entity';
-import { Product } from './Product.entity';
-import { AiAnalysis } from './AiAnalysis.entity';
-import { TrendScore } from './TrendScore.entity';
-import { SponsoredContent } from './SponsoredContent.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany, OneToOne } from "typeorm";
+import { UserProfile } from "./UserProfile.entity";
+import { TrendContent } from "./TrendContent.entity";
+import { TrendMetadata } from "./TrendMetadata.entity";
+import { Interaction } from "./Interaction.entity";
+import { Save } from "./Save.entity";
+import { Product } from "./Product.entity";
+import { AiAnalysis } from "./AiAnalysis.entity";
+import { TrendScore } from "./TrendScore.entity";
+import { SponsoredContent } from "./SponsoredContent.entity";
 
-import { PlatformEnum } from '../../common/helpers/enum';
-
-@Entity('trends')
+@Entity("trends")
 export class Trend {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({ name: 'creator_id', nullable: true })
+  @Column({ name: "creator_id", nullable: true })
   creatorId!: string;
 
-  @Column({ type: 'enum', enum: PlatformEnum, default: PlatformEnum.OTHER })
-  source!: PlatformEnum;
+  @Column({ type: "character varying", default: "other" })
+  source!: string;
 
-  @Column({ name: 'external_id', nullable: true })
+  @Column({ name: "external_id", nullable: true })
   externalId!: string;
 
   @ManyToOne(() => UserProfile, (profile) => profile.trends, {
-    onDelete: 'SET NULL',
+    onDelete: "SET NULL",
   })
-  @JoinColumn({ name: 'creator_id' })
+  @JoinColumn({ name: "creator_id" })
   creator!: UserProfile;
 
   @Column()
   title!: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: "text", nullable: true })
   description!: string;
 
   @Column({
-    type: 'text',
-    default: 'emerging',
+    type: "text",
+    default: "emerging",
   })
-  phase!: 'emerging' | 'rising' | 'peak' | 'fading';
+  phase!: "emerging" | "rising" | "peak" | "fading";
 
-  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  @Column({ name: "phase_updated_at", type: "timestamptz", default: () => "CURRENT_TIMESTAMP" })
+  phaseUpdatedAt!: Date;
+
+  @Column({ name: "content_type", default: "ORGANIC" })
+  contentType!: string; // 'ORGANIC', 'SPONSORED'
+
+  @Column({ default: "PUBLISHED" })
+  status!: string; // 'DRAFT', 'PUBLISHED', 'ARCHIVED', 'FLAGGED'
+
+  @CreateDateColumn({ name: "created_at", type: "timestamptz" })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
+  @UpdateDateColumn({ name: "updated_at", type: "timestamptz" })
   updatedAt!: Date;
 
   @OneToMany(() => TrendContent, (content) => content.trend)
@@ -65,8 +62,8 @@ export class Trend {
   @OneToOne(() => TrendMetadata, (metadata) => metadata.trend)
   metadata!: TrendMetadata;
 
-  @OneToMany(() => Engagement, (engagement) => engagement.trend)
-  engagements!: Engagement[];
+  @OneToMany(() => Interaction, (interaction) => interaction.trend)
+  interactions!: Interaction[];
 
   @OneToMany(() => Save, (save) => save.trend)
   saves!: Save[];

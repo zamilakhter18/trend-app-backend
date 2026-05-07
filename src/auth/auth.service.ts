@@ -92,7 +92,7 @@ export class AuthService {
       // For now, return error
       return {
         success: false,
-        message: (error as any).code === "23505" ? "Email or username already exists" : "Profile creation failed",
+        message: error.code === "23505" ? "Email or username already exists" : "Profile creation failed",
       };
     }
   }

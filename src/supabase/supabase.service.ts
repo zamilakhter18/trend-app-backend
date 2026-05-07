@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
 @Injectable()
 export class SupabaseService {
@@ -14,12 +14,12 @@ export class SupabaseService {
       return this.supabaseClient;
     }
 
-    const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
-    const supabaseKey = this.configService.get<string>('SUPABASE_SERVICE_ROLE_KEY');
+    const supabaseUrl = this.configService.get<string>("SUPABASE_URL");
+    const supabaseKey = this.configService.get<string>("SUPABASE_SERVICE_ROLE_KEY");
 
     if (!supabaseUrl || !supabaseKey) {
-      this.logger.error('Supabase URL or Key is missing from configuration');
-      throw new Error('Supabase configuration missing');
+      this.logger.error("Supabase URL or Key is missing from configuration");
+      throw new Error("Supabase configuration missing");
     }
 
     this.supabaseClient = createClient(supabaseUrl, supabaseKey);

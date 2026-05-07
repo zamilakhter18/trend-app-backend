@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserProfile } from '../db/entities/UserProfile.entity';
-import { ServiceResponse } from '../common/interfaces/service-response.interface';
-import { messages } from '../common/helpers/message';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { UserProfile } from "../db/entities/UserProfile.entity";
+import { ServiceResponse } from "../common/interfaces/service-response.interface";
+import { messages } from "../common/helpers/message";
 
 @Injectable()
 export class IdentityService {
@@ -15,7 +15,7 @@ export class IdentityService {
   async getUserPerformance(userId: string): Promise<ServiceResponse> {
     const data = await this.profileRepository.findOne({
       where: { userId },
-      relations: ['userBadges'],
+      relations: ["userBadges"],
     });
 
     if (!data) {
@@ -30,7 +30,7 @@ export class IdentityService {
 
   async getLeaderboard(limit: number = 10): Promise<ServiceResponse> {
     const data = await this.profileRepository.find({
-      order: { trendScore: 'DESC' },
+      order: { trendScore: "DESC" },
       take: limit,
     });
 

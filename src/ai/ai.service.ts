@@ -1,13 +1,13 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { SupabaseService } from '../supabase/supabase.service';
-import { ServiceResponse } from '../common/interfaces/service-response.interface';
-import { messages } from '../common/helpers/message';
-import { AiAnalysis } from '../db/entities/AiAnalysis.entity';
-import { AnalyzeTrendDto } from './dto/analyze-trend.dto';
-import { ClassifyImageDto } from './dto/classify-image.dto';
+import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { SupabaseService } from "../supabase/supabase.service";
+import { ServiceResponse } from "../common/interfaces/service-response.interface";
+import { messages } from "../common/helpers/message";
+import { AiAnalysis } from "../db/entities/AiAnalysis.entity";
+import { AnalyzeTrendDto } from "./dto/analyze-trend.dto";
+import { ClassifyImageDto } from "./dto/classify-image.dto";
 
 @Injectable()
 export class AiService {
@@ -54,17 +54,17 @@ export class AiService {
    */
   async analyzeTrend(dto: AnalyzeTrendDto): Promise<ServiceResponse> {
     const { trend_id, content } = dto;
-    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
+    const apiKey = this.configService.get<string>("OPENAI_API_KEY");
 
     this.logger.log(`Analyzing trend ${trend_id} with LLM...`);
 
     // Placeholder for LLM API call
     const llmResult = {
-      summary: 'This trend highlights the growing intersection of AI and sustainable fashion.',
-      tags: ['AI', 'Sustainability', 'Fashion Tech'],
-      sentiment: 'positive',
-      category: 'Tech/Lifestyle',
-      provider: 'openai-gpt-4',
+      summary: "This trend highlights the growing intersection of AI and sustainable fashion.",
+      tags: ["AI", "Sustainability", "Fashion Tech"],
+      sentiment: "positive",
+      category: "Tech/Lifestyle",
+      provider: "openai-gpt-4",
     };
 
     try {
@@ -101,22 +101,22 @@ export class AiService {
    */
   async classifyImage(dto: ClassifyImageDto): Promise<ServiceResponse> {
     const { image_url } = dto;
-    const visionKey = this.configService.get<string>('VISION_API_KEY');
+    const visionKey = this.configService.get<string>("VISION_API_KEY");
 
     this.logger.log(`Classifying image at ${image_url}...`);
 
     // Placeholder for Vision API call result
     const visionResult = {
-      labels: ['apparel', 'sneakers', 'urban', 'blue'],
-      category: 'fashion',
-      aesthetic: 'minimalist',
+      labels: ["apparel", "sneakers", "urban", "blue"],
+      category: "fashion",
+      aesthetic: "minimalist",
       isSafe: true,
-      provider: 'google-vision-ai',
+      provider: "google-vision-ai",
     };
 
     return {
       success: true,
-      message: 'Image classification complete',
+      message: "Image classification complete",
       data: visionResult,
     };
   }
