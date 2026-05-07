@@ -19,7 +19,10 @@ export class DiscountService {
       // Actually, user probably wants to see discounts they ALREADY qualified for or ALL of them.
       // Let's just return all active ones and let frontend filter.
       const allActive = await this.discountRepository.find({
-        where: [{ expiresAt: MoreThan(now) }, { expiresAt: IsNull() }],
+        where: [
+          { isActive: true, expiresAt: MoreThan(now) },
+          { isActive: true, expiresAt: IsNull() },
+        ],
         relations: ["brand"],
       });
 

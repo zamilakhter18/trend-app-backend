@@ -134,7 +134,7 @@ Tracks and attributes product discovery and commerce intent.
 - `sessionId`: String, Nullable.
 - `ipHash`: String, Nullable.
 - `converted`: Boolean. Tracks if the click led to a purchase.
-- `convertedAt`: Timestamp, Nullable.
+- `convertedAt`: Timestamp, Nullable. *Note: Explicitly marked as Nullable as most clicks will never convert; this column will be null on the majority of rows.*
 - `createdAt`: Timestamp.
 
 ## Commerce & Conversion Intelligence (Future-Ready)

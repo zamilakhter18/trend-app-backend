@@ -51,6 +51,7 @@ The system provides score-gated incentives and brand-linked partnerships.
 - **Score-Gated Access**: Brands can issue `discount_codes` with a `min_score_required`. Users whose `trendScore` meets the threshold can unlock these perks.
 - **Reward Links**: Early adopters who earn `early_discovery_rewards` may receive exclusive fixed-amount or percentage-based codes as part of their reward package.
 - **Usage Tracking**: Each code tracks `max_uses` and `use_count` to ensure campaign budget integrity.
+- **Administrative Control**: Codes include an `isActive` flag, allowing admins to instantly deactivate a code if a campaign ends early or a code leaks.
 - **Affiliate Integration**: These codes are often linked to specific affiliate products, allowing for tracked conversion loops.
 
 ---
@@ -186,6 +187,7 @@ All responses follow a standard envelope:
 - **Auth**: Optional
 - **Request Body**: `{ "product_id": "uuid", "trend_id": "uuid" }`
 - **Response (201)**: `{ "statusCode": 201, "data": { "status": "tracked" } }`
+- **Note**: Clickouts also track if and when a purchase was completed (`converted` and `convertedAt`), though this is typically updated via backend postback/webhook.
 
 #### `GET /saves`
 - **Auth**: Required
@@ -258,7 +260,7 @@ All responses follow a standard envelope:
 
 #### `GET /discounts`
 - **Auth**: Public (Generic list)
-- **Purpose**: List available discount codes and brand perks.
+- **Purpose**: List all active (`isActive: true`) discount codes and brand perks that have not expired.
 
 ---
 
