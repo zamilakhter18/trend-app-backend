@@ -86,7 +86,7 @@ All responses follow a standard envelope:
 - **Request Body**:
 ```json
 {
-  "email": "user@example.com",
+  "email": "user@yopmail.com",
   "password": "strongpassword",
   "username": "trendsetter99",
   "fullName": "John Doe",

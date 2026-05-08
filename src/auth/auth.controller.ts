@@ -28,7 +28,7 @@ export class AuthController {
       data: {
         user: {
           userId: "uuid",
-          email: "user@example.com",
+          email: "user@yopmail.com",
           username: "trendsetter99",
           fullName: "John Doe",
           avatarUrl: "https://example.com/avatar.png",

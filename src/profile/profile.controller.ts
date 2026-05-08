@@ -22,7 +22,7 @@ export class ProfileController {
     example: {
       statusCode: 200,
       message: "Data fetched successfully",
-      data: { id: "uuid", email: "user@example.com", profile_data: {} },
+      data: { id: "uuid", email: "user@yopmail.com", profile_data: {} },
     },
   })
   @ApiBadRequestResponse({

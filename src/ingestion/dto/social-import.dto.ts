@@ -20,7 +20,7 @@ export class SocialImportDto {
 
   @ApiProperty({
     description: "Title of the trend",
-    example: "Minimal Fashion Trend",
+    example: "Minimalist Streetwear",
   })
   @IsNotEmpty()
   @IsString()
@@ -28,7 +28,7 @@ export class SocialImportDto {
 
   @ApiPropertyOptional({
     description: "Detailed description of the trend",
-    example: "Trending fashion reels highlighting minimalist aesthetics.",
+    example: "A trend focused on simple, clean lines...",
   })
   @IsOptional()
   @IsString()

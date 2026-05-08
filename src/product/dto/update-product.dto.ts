@@ -4,7 +4,7 @@ import { ApiPropertyOptional } from "@nestjs/swagger";
 export class UpdateProductDto {
   @ApiPropertyOptional({
     description: "Updated name of the product",
-    example: "Premium Bamboo Toothbrush",
+    example: "Nike",
   })
   @IsOptional()
   @IsString()
@@ -12,7 +12,7 @@ export class UpdateProductDto {
 
   @ApiPropertyOptional({
     description: "Updated description of the product",
-    example: "An even better toothbrush made from sustainable bamboo.",
+    example: "A trend focused on simple, clean lines...",
   })
   @IsOptional()
   @IsString()
@@ -28,7 +28,7 @@ export class UpdateProductDto {
 
   @ApiPropertyOptional({
     description: "Updated currency code",
-    example: "EUR",
+    example: "USD",
   })
   @IsOptional()
   @IsString()
@@ -36,7 +36,7 @@ export class UpdateProductDto {
 
   @ApiPropertyOptional({
     description: "Updated affiliate link",
-    example: "https://new-store.com/example-product",
+    example: "https://amazon.com/example-product",
   })
   @IsOptional()
   @IsUrl()
@@ -44,7 +44,7 @@ export class UpdateProductDto {
 
   @ApiPropertyOptional({
     description: "Updated product image URL",
-    example: "https://example.com/new-image.jpg",
+    example: "https://example.com/outfit-of-the-day.jpg",
   })
   @IsOptional()
   @IsUrl()

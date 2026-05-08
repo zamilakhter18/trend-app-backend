@@ -12,7 +12,7 @@ export class CreateProductDto {
 
   @ApiProperty({
     description: "Name of the product",
-    example: "Sustainable Bamboo Toothbrush",
+    example: "Nike",
   })
   @IsNotEmpty()
   @IsString()
@@ -20,7 +20,7 @@ export class CreateProductDto {
 
   @ApiPropertyOptional({
     description: "Detailed description of the product",
-    example: "A high-quality toothbrush made from 100% biodegradable bamboo.",
+    example: "A trend focused on simple, clean lines...",
   })
   @IsOptional()
   @IsString()
@@ -53,7 +53,7 @@ export class CreateProductDto {
 
   @ApiPropertyOptional({
     description: "URL to the product image",
-    example: "https://example.com/product-image.jpg",
+    example: "https://example.com/outfit-of-the-day.jpg",
   })
   @IsOptional()
   @IsUrl()

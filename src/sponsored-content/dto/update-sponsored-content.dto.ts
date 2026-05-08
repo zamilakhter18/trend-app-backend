@@ -56,7 +56,7 @@ export class UpdateSponsoredContentDto {
 
   @ApiPropertyOptional({
     description: "Start date of the campaign",
-    example: "2026-06-05",
+    example: "2026-06-01",
   })
   @IsOptional()
   @IsDateString()
@@ -64,7 +64,7 @@ export class UpdateSponsoredContentDto {
 
   @ApiPropertyOptional({
     description: "End date of the campaign",
-    example: "2026-07-15",
+    example: "2026-06-30",
   })
   @IsOptional()
   @IsDateString()
