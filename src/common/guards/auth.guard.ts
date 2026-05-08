@@ -5,6 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UserProfile } from "../../db/entities/UserProfile.entity";
 import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
+import { messages } from "../helpers/message";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -43,7 +44,7 @@ export class AuthGuard implements CanActivate {
     }
 
     if (!token) {
-      throw new UnauthorizedException("Token missing");
+      throw new UnauthorizedException(messages.TOKEN_MISSING);
     }
 
     try {
@@ -51,7 +52,7 @@ export class AuthGuard implements CanActivate {
       const { data, error } = await client.auth.getUser(token);
 
       if (error || !data.user) {
-        throw new ForbiddenException("Invalid token");
+        throw new ForbiddenException(messages.INVALID_TOKEN);
       }
 
       const user = await this.userRepository.findOne({
@@ -65,7 +66,7 @@ export class AuthGuard implements CanActivate {
       request.user = user;
     } catch (err) {
       if (err instanceof ForbiddenException) throw err;
-      throw new ForbiddenException("Invalid token");
+      throw new ForbiddenException(messages.INVALID_TOKEN);
     }
 
     return true;
@@ -76,12 +77,3 @@ export class AuthGuard implements CanActivate {
     return type === "Bearer" ? token : undefined;
   }
 }
-
-: undefined;
-  }
-}
-
-rer" ? token : undefined;
-  }
-}
-

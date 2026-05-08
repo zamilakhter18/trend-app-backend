@@ -26,7 +26,7 @@ export class IdentityController {
     description: "Profile fetched successfully",
     example: {
       statusCode: 200,
-      message: "Data fetched successfully",
+      message: messages.FETCH_SUCCESS,
       data: { userId: "uuid", username: "trendsetter", fullName: "John Doe" },
     },
   })
@@ -51,7 +51,7 @@ export class IdentityController {
     description: "Profile updated successfully",
     example: {
       statusCode: 200,
-      message: "Resource updated successfully",
+      message: messages.UPDATE_SUCCESS,
       data: { userId: "uuid", username: "trendsetter_new" },
     },
   })
@@ -76,7 +76,7 @@ export class IdentityController {
     description: "Performance metrics fetched successfully",
     example: {
       statusCode: 200,
-      message: "Data fetched successfully",
+      message: messages.FETCH_SUCCESS,
       data: { trust_score: 85, accuracy: 0.9 },
     },
   })
@@ -91,14 +91,14 @@ export class IdentityController {
     description: "Unauthorized",
     example: {
       statusCode: 401,
-      message: "Unauthorized access",
+      message: messages.UNAUTHORIZED,
     },
   })
   @ApiInternalServerErrorResponse({
     description: "Internal Server Error",
     example: {
       statusCode: 500,
-      message: "Something went wrong",
+      message: messages.INTERNAL_SERVER_ERROR,
     },
   })
   async getMyPerformance(@GetFullUser() user: UserProfile, @Res() res: Response) {
@@ -122,7 +122,7 @@ export class IdentityController {
     description: "Leaderboard fetched successfully",
     example: {
       statusCode: 200,
-      message: "Data fetched successfully",
+      message: messages.FETCH_SUCCESS,
       data: [{ id: "uuid", name: "User Name", trust_score: 100 }],
     },
   })
@@ -137,14 +137,14 @@ export class IdentityController {
     description: "Unauthorized access",
     example: {
       statusCode: 401,
-      message: "Unauthorized access",
+      message: messages.UNAUTHORIZED,
     },
   })
   @ApiInternalServerErrorResponse({
     description: "Internal Server Error",
     example: {
       statusCode: 500,
-      message: "Something went wrong",
+      message: messages.INTERNAL_SERVER_ERROR,
     },
   })
   async getLeaderboard(@Res() res: Response, @Query("limit") limit?: string) {
@@ -167,5 +167,4 @@ export class IdentityController {
   getAdminStats(@Res() res: Response) {
     return this.responseHandler.successResponseWithData(res, "Admin stats fetched", { users: 100, trends: 50 });
   }
-}
 }

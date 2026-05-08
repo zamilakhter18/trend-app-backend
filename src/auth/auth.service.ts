@@ -24,7 +24,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      return { success: false, message: "Username already taken" };
+      return { success: false, message: messages.USERNAME_TAKEN };
     }
 
     // 2. Signup via Supabase Auth
@@ -39,7 +39,7 @@ export class AuthService {
     }
 
     if (!authData.user) {
-      return { success: false, message: "Auth failed" };
+      return { success: false, message: messages.AUTH_FAILED };
     }
 
     try {
@@ -90,7 +90,7 @@ export class AuthService {
     });
 
     if (!user) {
-      return { success: false, message: "User profile not found" };
+      return { success: false, message: messages.USER_NOT_FOUND };
     }
 
     return {
@@ -111,13 +111,13 @@ export class AuthService {
     if (error) {
       return {
         success: false,
-        message: "Invalid or expired refresh token",
+        message: messages.INVALID_REFRESH_TOKEN,
       };
     }
 
     return {
       success: true,
-      message: "Token refreshed successfully",
+      message: messages.TOKEN_REFRESH_SUCCESS,
       data: {
         access_token: data.session?.access_token,
         refresh_token: data.session?.refresh_token,
@@ -136,9 +136,3 @@ export class AuthService {
     return { success: true, message: messages.LOGOUT_SUCCESS };
   }
 }
-
-
-
-  }
-}
-

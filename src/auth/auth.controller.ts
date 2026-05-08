@@ -24,7 +24,7 @@ export class AuthController {
     description: "User successfully created with profile and tokens",
     example: {
       statusCode: 201,
-      message: "User registered successfully",
+      message: messages.SIGNUP_SUCCESS,
       data: {
         user: {
           userId: "uuid",
@@ -43,21 +43,21 @@ export class AuthController {
     description: "Conflict",
     example: {
       statusCode: 400,
-      message: "Username already taken",
+      message: messages.USERNAME_TAKEN,
     },
   })
   @ApiBadRequestResponse({
     description: "Bad Request",
     example: {
       statusCode: 400,
-      message: "Bad request",
+      message: messages.BAD_REQUEST,
     },
   })
   @ApiInternalServerErrorResponse({
     description: "Internal Server Error",
     example: {
       statusCode: 500,
-      message: "Something went wrong",
+      message: messages.INTERNAL_SERVER_ERROR,
     },
   })
   async signup(@Body() signupDto: SignupDto, @Res() res: Response) {
@@ -80,7 +80,7 @@ export class AuthController {
     description: "Login successful",
     example: {
       statusCode: 200,
-      message: "Login successful",
+      message: messages.LOGIN_SUCCESS,
       data: {
         user: { userId: "uuid", username: "user1" },
         access_token: "abc...",
@@ -92,14 +92,14 @@ export class AuthController {
     description: "Unauthorized",
     example: {
       statusCode: 401,
-      message: "Unauthorized access",
+      message: messages.UNAUTHORIZED,
     },
   })
   @ApiInternalServerErrorResponse({
     description: "Internal Server Error",
     example: {
       statusCode: 500,
-      message: "Something went wrong",
+      message: messages.INTERNAL_SERVER_ERROR,
     },
   })
   async login(@Body() loginDto: LoginDto, @Res() res: Response) {
@@ -122,7 +122,7 @@ export class AuthController {
     description: "Token refreshed successfully",
     example: {
       statusCode: 200,
-      message: "Token refreshed successfully",
+      message: messages.TOKEN_REFRESH_SUCCESS,
       data: {
         access_token: "new-abc...",
         refresh_token: "new-xyz...",
@@ -133,14 +133,14 @@ export class AuthController {
     description: "Invalid or expired refresh token",
     example: {
       statusCode: 403,
-      message: "Invalid or expired refresh token",
+      message: messages.INVALID_REFRESH_TOKEN,
     },
   })
   @ApiInternalServerErrorResponse({
     description: "Internal Server Error",
     example: {
       statusCode: 500,
-      message: "Something went wrong",
+      message: messages.INTERNAL_SERVER_ERROR,
     },
   })
   async refreshToken(@Body() refreshTokenDto: RefreshTokenDto, @Res() res: Response) {
@@ -149,7 +149,7 @@ export class AuthController {
       if (result.success) {
         return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }
-      return this.responseHandler.forbiddenErrorResponse(res, result.message);
+      return this.forbiddenErrorResponse(res, result.message);
     } catch (error) {
       return this.responseHandler.catchErrorResponse(res, (error as Error).message || messages.INTERNAL_SERVER_ERROR);
     }
@@ -170,7 +170,7 @@ export class AuthController {
     description: "Internal Server Error",
     example: {
       statusCode: 500,
-      message: "Something went wrong",
+      message: messages.INTERNAL_SERVER_ERROR,
     },
   })
   async logout(@Res() res: Response) {
@@ -184,7 +184,8 @@ export class AuthController {
       return this.responseHandler.catchErrorResponse(res, (error as Error).message || messages.INTERNAL_SERVER_ERROR);
     }
   }
-}
-}
-}
+
+  private forbiddenErrorResponse(res: Response, message: string) {
+    return this.responseHandler.forbiddenErrorResponse(res, message);
+  }
 }
