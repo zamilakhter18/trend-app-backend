@@ -89,7 +89,8 @@ All responses follow a standard envelope:
   "email": "user@example.com",
   "password": "strongpassword",
   "username": "trendsetter99",
-  "fullName": "John Doe"
+  "fullName": "John Doe",
+  "avatarUrl": "Optional: string"
 }
 ```
 - **Response (201)**:
@@ -99,8 +100,8 @@ All responses follow a standard envelope:
   "message": "User registered successfully",
   "data": {
     "user": { "userId": "uuid", "email": "...", "username": "trendsetter99", "role": "user" },
-    "access_token": "jwt_string",
-    "refresh_token": "refresh_string"
+    "access_token": "supabase_jwt_string",
+    "refresh_token": "supabase_refresh_string"
   }
 }
 ```
@@ -363,6 +364,12 @@ The system uses two primary pagination strategies:
    - Used for the main `GET /feed`.
    - Uses a `nextCursor` (opaque string) to fetch the next page.
    - Ideal for frequently changing content to avoid duplicates.
+
+2. **Offset-Based (Search, Admin Logs)**:
+   - Used for `GET /search` and `/admin/score-events`.
+   - Uses `limit` and `offset` parameters.
+   - Ideal for structured logs and search results where deep paging is required.
+l for frequently changing content to avoid duplicates.
 
 2. **Offset-Based (Search, Admin Logs)**:
    - Used for `GET /search` and `/admin/score-events`.
