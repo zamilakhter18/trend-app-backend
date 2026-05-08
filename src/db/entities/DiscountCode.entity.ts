@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from "typeorm";
 import { Brand } from "./Brand.entity";
+import { DiscountTypeEnum } from "../../common/helpers/enum";
 
 @Entity("discount_codes")
 export class DiscountCode {
@@ -17,11 +18,12 @@ export class DiscountCode {
   brand!: Brand;
 
   @Column({
-    type: "character varying",
+    type: "enum",
+    enum: DiscountTypeEnum,
     name: "discount_type",
-    default: "PERCENTAGE",
+    default: DiscountTypeEnum.PERCENTAGE,
   })
-  discountType!: "PERCENTAGE" | "FIXED_AMOUNT";
+  discountType!: DiscountTypeEnum;
 
   @Column("decimal", {
     name: "discount_value",

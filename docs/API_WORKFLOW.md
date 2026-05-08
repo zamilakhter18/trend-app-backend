@@ -369,9 +369,3 @@ The system uses two primary pagination strategies:
    - Used for `GET /search` and `/admin/score-events`.
    - Uses `limit` and `offset` parameters.
    - Ideal for structured logs and search results where deep paging is required.
-l for frequently changing content to avoid duplicates.
-
-2. **Offset-Based (Search, Admin Logs)**:
-   - Used for `GET /search` and `/admin/score-events`.
-   - Uses `limit` and `offset` parameters.
-   - Ideal for structured logs and search results where deep paging is required.

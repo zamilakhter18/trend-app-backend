@@ -37,8 +37,8 @@ The central entity representing a trend.
 - `description`: Text.
 - `phase`: Enum (`emerging`, `rising`, `peak`, `fading`).
 - `phaseUpdatedAt`: Timestamp, tracked for reward and momentum calculations.
-- `contentType`: String (`ORGANIC`, `SPONSORED`). Trust-preserving firewall.
-- `status`: String (`DRAFT`, `PUBLISHED`, `ARCHIVED`, `FLAGGED`). Moderation status.
+- `contentType`: Enum (`ORGANIC`, `SPONSORED`). Trust-preserving firewall.
+- `status`: Enum (`DRAFT`, `PUBLISHED`, `ARCHIVED`, `FLAGGED`). Moderation status.
 - `createdAt`: Timestamp.
 - `updatedAt`: Timestamp.
 
@@ -47,7 +47,7 @@ Media and assets associated with a trend.
 - `id`: UUID, Primary Key.
 - `trendId`: UUID, Foreign Key to `Trend`.
 - `contentUrl`: String.
-- `contentType`: String (`video`, `image`, `link`).
+- `contentType`: Enum (`video`, `image`, `link`).
 - `isPrimary`: Boolean.
 - `createdAt`: Timestamp.
 
@@ -108,8 +108,8 @@ Unified event log for all user actions.
 - `userId`: UUID, Nullable, Foreign Key to `UserProfile`.
 - `trendId`: UUID, Nullable, Foreign Key to `Trend`.
 - `productId`: UUID, Nullable, Foreign Key to `Product`.
-- `interactionType`: String (`VIEW`, `SAVE`, `CLICK`, `SHARE`).
-- `sourceType`: String (e.g., `FEED`, `SEARCH`).
+- `interactionType`: Enum (`VIEW`, `SAVE`, `CLICK`, `SHARE`).
+- `sourceType`: Enum (e.g., `FEED`, `SEARCH`).
 - `content`: Text (Optional context).
 - `createdAt`: Timestamp.
 
@@ -173,7 +173,7 @@ Marketing and reward-linked perks.
 - `id`: UUID, Primary Key.
 - `code`: String, Unique.
 - `brandId`: UUID, Foreign Key to `Brand`.
-- `discountType`: String (`PERCENTAGE`, `FIXED_AMOUNT`).
+- `discountType`: Enum (`PERCENTAGE`, `FIXED_AMOUNT`).
 - `discountValue`: Decimal.
 - `minScoreRequired`: Integer. Minimum user trend score to use.
 - `maxUses`: Integer, Nullable.
