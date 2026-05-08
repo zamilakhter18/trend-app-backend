@@ -44,7 +44,7 @@ export class AppController {
     description: "Internal Server Error",
     example: {
       statusCode: 500,
-      message: "Something went wrong",
+      message: messages.INTERNAL_SERVER_ERROR,
     },
   })
   async getHello(@Res() res: Response) {

@@ -84,7 +84,7 @@ export class IdentityController {
     description: "Bad Request",
     example: {
       statusCode: 400,
-      message: "Bad request",
+      message: messages.BAD_REQUEST,
     },
   })
   @ApiUnauthorizedResponse({
@@ -130,7 +130,7 @@ export class IdentityController {
     description: "Bad Request",
     example: {
       statusCode: 400,
-      message: "Bad request",
+      message: messages.BAD_REQUEST,
     },
   })
   @ApiUnauthorizedResponse({
@@ -167,4 +167,5 @@ export class IdentityController {
   getAdminStats(@Res() res: Response) {
     return this.responseHandler.successResponseWithData(res, "Admin stats fetched", { users: 100, trends: 50 });
   }
+}
 }

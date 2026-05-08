@@ -163,7 +163,7 @@ export class AuthController {
     description: "Logout successful",
     example: {
       statusCode: 200,
-      message: "Logged out successfully",
+      message: messages.LOGOUT_SUCCESS,
     },
   })
   @ApiInternalServerErrorResponse({
@@ -184,4 +184,7 @@ export class AuthController {
       return this.responseHandler.catchErrorResponse(res, (error as Error).message || messages.INTERNAL_SERVER_ERROR);
     }
   }
+}
+}
+}
 }

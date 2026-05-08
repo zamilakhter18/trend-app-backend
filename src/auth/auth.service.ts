@@ -133,7 +133,12 @@ export class AuthService {
       return { success: false, message: error.message };
     }
 
-    return { success: true, message: "Logged out successfully" };
+    return { success: true, message: messages.LOGOUT_SUCCESS };
+  }
+}
+
+
+
   }
 }
 

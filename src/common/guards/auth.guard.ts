@@ -59,7 +59,7 @@ export class AuthGuard implements CanActivate {
       });
 
       if (!user) {
-        throw new ForbiddenException("User not found or deleted");
+        throw new ForbiddenException(messages.USER_DELETED);
       }
 
       request.user = user;
@@ -74,6 +74,14 @@ export class AuthGuard implements CanActivate {
   private extractTokenFromHeader(request: any): string | undefined {
     const [type, token] = request.headers.authorization?.split(" ") ?? [];
     return type === "Bearer" ? token : undefined;
+  }
+}
+
+: undefined;
+  }
+}
+
+rer" ? token : undefined;
   }
 }
 
