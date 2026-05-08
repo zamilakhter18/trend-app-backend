@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, ForbiddenException } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { CustomJwtService } from "../helpers/jwt.service";
+import { SupabaseService } from "../../supabase/supabase.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { UserProfile } from "../../db/entities/UserProfile.entity";
@@ -10,7 +10,7 @@ import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
 export class AuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private jwtService: CustomJwtService,
+    private supabaseService: SupabaseService,
     @InjectRepository(UserProfile)
     private userRepository: Repository<UserProfile>,
   ) {}
@@ -24,12 +24,16 @@ export class AuthGuard implements CanActivate {
     if (isPublic) {
       if (token) {
         try {
-          const payload = await this.jwtService.verify(token);
-          const user = await this.userRepository.findOne({
-            where: { userId: payload.sub || payload.userId },
-          });
-          if (user) {
-            request.user = user;
+          const client = this.supabaseService.getClient();
+          const { data, error } = await client.auth.getUser(token);
+
+          if (!error && data.user) {
+            const user = await this.userRepository.findOne({
+              where: { userId: data.user.id },
+            });
+            if (user) {
+              request.user = user;
+            }
           }
         } catch (err) {
           // Silently fail for public routes if token is invalid
@@ -43,9 +47,15 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verify(token);
+      const client = this.supabaseService.getClient();
+      const { data, error } = await client.auth.getUser(token);
+
+      if (error || !data.user) {
+        throw new ForbiddenException("Invalid token");
+      }
+
       const user = await this.userRepository.findOne({
-        where: { userId: payload.sub || payload.userId },
+        where: { userId: data.user.id },
       });
 
       if (!user) {
@@ -54,6 +64,7 @@ export class AuthGuard implements CanActivate {
 
       request.user = user;
     } catch (err) {
+      if (err instanceof ForbiddenException) throw err;
       throw new ForbiddenException("Invalid token");
     }
 
@@ -65,3 +76,4 @@ export class AuthGuard implements CanActivate {
     return type === "Bearer" ? token : undefined;
   }
 }
+
