@@ -63,7 +63,7 @@ export class AuthService {
           refresh_token: authData.session?.refresh_token,
         },
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         message: error.code === "23505" ? "Email or username already exists" : "Profile creation failed",
