@@ -81,6 +81,8 @@ export class AuthService {
     });
 
     if (error) {
+      console.error("Supabase login error ----->>>> ", error);
+      console.error("Supabase login data ----->>>>> ", data);
       return { success: false, message: error.message };
     }
 

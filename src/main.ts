@@ -13,7 +13,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ExecutionTimeInterceptor());
 
   // Security: Helmet
-  app.use(helmet());
+  // app.use(helmet());
 
   // Security: CORS
   app.enableCors();
@@ -48,6 +48,17 @@ async function bootstrap() {
   SwaggerModule.setup("api", app, document, {
     swaggerOptions: {
       defaultModelsExpandDepth: -1, // Hides the Schemas section completely
+      tryItOutEnabled: true, // Enable Try it out by default
+      displayRequestDuration: true, // Show request duration in UI
+
+      // ADDED: Enable syntax highlighting + better editor experience
+      // (This uses Swagger UI's built-in Ace editor features)
+      // syntaxHighlight: {
+      //   activated: true,
+      //   theme: "agate", // You can choose: "agate", "monokai", "obsidian"
+      // },
+
+      // jsonEditor: true, // ENABLES JSON EDITOR IN REQUEST BODY
     },
   });
 
