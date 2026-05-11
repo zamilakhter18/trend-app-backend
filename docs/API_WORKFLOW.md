@@ -138,7 +138,7 @@ All responses follow a standard envelope:
 
 #### `GET /feed`
 - **Auth**: Optional
-- **Parameters**: `limit` (default 10), `cursor` (pagination)
+- **Parameters**: `limit` (default 10), `page` (default 1)
 - **Response (200)**:
 ```json
 {
@@ -153,7 +153,9 @@ All responses follow a standard envelope:
         "contents": [{ "contentUrl": "...", "contentType": "image" }]
       }
     ],
-    "nextCursor": "base64_encoded_string"
+    "totalItems": 100,
+    "totalPages": 10,
+    "currentPage": 1
   }
 }
 ```
@@ -323,7 +325,7 @@ All responses follow a standard envelope:
 
 #### `GET /admin/score-events`
 - **Auth**: Admin
-- **Parameters**: `limit`, `offset`
+- **Parameters**: `limit`, `page`
 - **Purpose**: Audit log of all score changes across the system.
 
 ---
@@ -358,14 +360,9 @@ Spam prevention is critical for maintaining the integrity of trend intelligence 
 
 ## 🔢 Pagination Patterns
 
-The system uses two primary pagination strategies:
+The system uses a standardized **Page-Based** pagination strategy across all endpoints:
 
-1. **Cursor-Based (Feed)**:
-   - Used for the main `GET /feed`.
-   - Uses a `nextCursor` (opaque string) to fetch the next page.
-   - Ideal for frequently changing content to avoid duplicates.
-
-2. **Offset-Based (Search, Admin Logs)**:
-   - Used for `GET /search` and `/admin/score-events`.
-   - Uses `limit` and `offset` parameters.
-   - Ideal for structured logs and search results where deep paging is required.
+1. **Page-Based Pagination**:
+   - Used for `GET /feed`, `GET /search`, `GET /admin/score-events`, and other list endpoints.
+   - Uses `limit` (items per page) and `page` (current page number) parameters.
+   - Responses include `totalItems`, `totalPages`, and `currentPage` for easier frontend integration.

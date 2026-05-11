@@ -70,7 +70,7 @@ export class AdminController {
   @Get("score-events")
   @ApiOperation({ summary: "Get all score audit events (Admin only)" })
   @ApiQuery({ name: "limit", required: false, example: 50 })
-  @ApiQuery({ name: "offset", required: false, example: 0 })
+  @ApiQuery({ name: "page", required: false, example: 1 })
   @ApiOkResponse({
     description: "Score events fetched successfully",
     example: {
@@ -78,15 +78,17 @@ export class AdminController {
       message: "Data fetched successfully",
       data: {
         events: [{ id: "uuid", pointsDelta: 10, reason: "EARLY_DISCOVERY" }],
-        total: 100,
+        totalItems: 100,
+        totalPages: 2,
+        currentPage: 1
       },
     },
   })
-  async getScoreEvents(@Query("limit") limit: string, @Query("offset") offset: string, @Res() res: Response) {
+  async getScoreEvents(@Query("limit") limit: string, @Query("page") page: string, @Res() res: Response) {
     try {
       const limitNum = limit ? parseInt(limit, 10) : 50;
-      const offsetNum = offset ? parseInt(offset, 10) : 0;
-      const result = await this.adminService.getAllScoreEvents(limitNum, offsetNum);
+      const pageNum = page ? parseInt(page, 10) : 1;
+      const result = await this.adminService.getAllScoreEvents(limitNum, pageNum);
       if (result.success) {
         return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }

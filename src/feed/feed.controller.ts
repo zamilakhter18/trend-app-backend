@@ -23,7 +23,7 @@ export class FeedController {
     description: "Returns a list of trends ranked by a combination of engagement velocity, save rate, and click-through rate, with a time-decay penalty for older content.",
   })
   @ApiQuery({ name: "limit", required: false, example: 10, description: "Number of trends to return" })
-  @ApiQuery({ name: "cursor", required: false, description: "Base64 encoded cursor for pagination" })
+  @ApiQuery({ name: "page", required: false, example: 1, description: "Page number for pagination" })
   @ApiOkResponse({
     description: "Feed fetched successfully",
     example: {
@@ -31,7 +31,9 @@ export class FeedController {
       message: "Data fetched successfully",
       data: {
         data: [{ id: "uuid", title: "Trend Title", score: { finalScore: 85.5 } }],
-        nextCursor: "base64-string",
+        currentPage: 1,
+        totalPages: 10,
+        totalItems: 100,
       },
     },
   })
@@ -56,10 +58,11 @@ export class FeedController {
       message: "Something went wrong",
     },
   })
-  async getFeed(@Res() res: Response, @Query("limit") limit?: string, @Query("cursor") cursor?: string) {
+  async getFeed(@Res() res: Response, @Query("limit") limit?: string, @Query("page") page?: string) {
     try {
       const limitNum = limit ? parseInt(limit, 10) : 10;
-      const result = await this.feedService.getFeed(limitNum, cursor);
+      const pageNum = page ? parseInt(page, 10) : 1;
+      const result = await this.feedService.getFeed(limitNum, pageNum);
       if (result.success) {
         return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }

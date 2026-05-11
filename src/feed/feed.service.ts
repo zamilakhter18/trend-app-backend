@@ -19,11 +19,13 @@ export class FeedService {
    * Fetches the trend feed ordered by the advanced ranking algorithm
    * and merges sponsored content at specific intervals.
    *
-   * @param limit Number of items to fetch
-   * @param cursor Pagination cursor (base64 encoded)
+   * @param limit Number of items to fetch per page
+   * @param page Page number
    */
-  async getFeed(limit: number = 10, cursor?: string): Promise<ServiceResponse<any>> {
+  async getFeed(limit: number = 10, page: number = 1): Promise<ServiceResponse<any>> {
     try {
+      const skip = (page - 1) * limit;
+
       const query = this.trendRepository
         .createQueryBuilder("trend")
         .innerJoinAndSelect("trend.score", "score") // Advanced scores
@@ -32,23 +34,16 @@ export class FeedService {
         .leftJoinAndSelect("trend.sponsoredCampaigns", "sponsored") // Check if it's sponsored
         .where("trend.status = :status", { status: TrendStatusEnum.PUBLISHED })
         .andWhere("trend.contentType = :contentType", { contentType: TrendContentTypeEnum.ORGANIC })
+        .skip(skip)
         .take(limit)
         .orderBy("score.finalScore", "DESC") // Main ranking metric
         .addOrderBy("trend.createdAt", "DESC");
 
-      // Pagination logic using cursor
-      if (cursor) {
-        const [scoreStr, createdAtStr] = Buffer.from(cursor, "base64").toString().split("|");
-        const score = parseFloat(scoreStr);
-        const createdAt = createdAtStr;
-
-        query.andWhere("(score.finalScore < :score OR (score.finalScore = :score AND trend.createdAt < :createdAt))", { score, createdAt });
-      }
-
-      const rawTrends = await query.getMany();
+      const [rawTrends, totalItems] = await query.getManyAndCount();
 
       // 1. Fetch top-priority sponsored content to inject
-      const sponsoredResult = await this.sponsoredService.getSponsoredFeed(2);
+      // We'll fetch sponsored content based on page to avoid repeating same ads
+      const sponsoredResult = await this.sponsoredService.getSponsoredFeed(2, page);
       const sponsoredTrends = (sponsoredResult.data?.data || []).map((s: any) => ({
         ...s.trend,
         isSponsored: true,
@@ -74,21 +69,14 @@ export class FeedService {
         }
       });
 
-      // Generate next cursor
-      let nextCursor = null;
-      if (rawTrends.length === limit) {
-        const lastItem = rawTrends[rawTrends.length - 1];
-        const lastScore = lastItem.score?.finalScore || 0;
-        const lastCreatedAt = lastItem.createdAt?.toISOString();
-        nextCursor = Buffer.from(`${lastScore}|${lastCreatedAt}`).toString("base64");
-      }
-
       return {
         success: true,
         message: messages.FETCH_SUCCESS,
         data: {
           data: finalFeed,
-          nextCursor,
+          totalItems,
+          totalPages: Math.ceil(totalItems / limit),
+          currentPage: page,
         },
       };
     } catch (error) {

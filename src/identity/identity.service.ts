@@ -28,13 +28,24 @@ export class IdentityService {
     return { success: true, message: messages.FETCH_SUCCESS, data };
   }
 
-  async getLeaderboard(limit: number = 10): Promise<ServiceResponse> {
-    const data = await this.profileRepository.find({
+  async getLeaderboard(limit: number = 10, page: number = 1): Promise<ServiceResponse> {
+    const skip = (page - 1) * limit;
+    const [data, totalItems] = await this.profileRepository.findAndCount({
       order: { trendScore: "DESC" },
       take: limit,
+      skip: skip,
     });
 
-    return { success: true, message: messages.FETCH_SUCCESS, data };
+    return {
+      success: true,
+      message: messages.FETCH_SUCCESS,
+      data: {
+        data,
+        totalItems,
+        totalPages: Math.ceil(totalItems / limit),
+        currentPage: page,
+      },
+    };
   }
 
   async getProfile(userId: string): Promise<ServiceResponse> {

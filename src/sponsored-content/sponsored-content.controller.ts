@@ -47,20 +47,25 @@ export class SponsoredContentController {
   @Get("feed")
   @ApiOperation({ summary: "Get active sponsored trends" })
   @ApiQuery({ name: "limit", required: false, example: 5 })
-  @ApiQuery({ name: "offset", required: false, example: 0 })
+  @ApiQuery({ name: "page", required: false, example: 1 })
   @ApiOkResponse({
     description: "Sponsored feed fetched successfully",
     example: {
       statusCode: 200,
       message: "Data fetched successfully",
-      data: { data: [], total: 0 },
+      data: { 
+        data: [], 
+        totalItems: 0,
+        totalPages: 0,
+        currentPage: 1
+      },
     },
   })
-  async getSponsoredFeed(@Res() res: Response, @Query("limit") limit?: string, @Query("offset") offset?: string) {
+  async getSponsoredFeed(@Res() res: Response, @Query("limit") limit?: string, @Query("page") page?: string) {
     try {
       const limitNum = limit ? parseInt(limit, 10) : 5;
-      const offsetNum = offset ? parseInt(offset, 10) : 0;
-      const result = await this.sponsoredService.getSponsoredFeed(limitNum, offsetNum);
+      const pageNum = page ? parseInt(page, 10) : 1;
+      const result = await this.sponsoredService.getSponsoredFeed(limitNum, pageNum);
       return this.responseHandler.successResponseWithData(res, result.message, result.data);
     } catch (error) {
       return this.responseHandler.catchErrorResponse(res, (error as Error).message);

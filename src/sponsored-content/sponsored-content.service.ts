@@ -74,10 +74,11 @@ export class SponsoredContentService {
   /**
    * Returns active sponsored campaigns sorted by placement slot weight
    */
-  async getSponsoredFeed(limit: number = 5, offset: number = 0): Promise<ServiceResponse> {
+  async getSponsoredFeed(limit: number = 5, page: number = 1): Promise<ServiceResponse> {
     try {
       const now = new Date();
-      const [data, total] = await this.sponsoredRepository.findAndCount({
+      const skip = (page - 1) * limit;
+      const [data, totalItems] = await this.sponsoredRepository.findAndCount({
         where: {
           isActive: true,
           startsAt: LessThanOrEqual(now),
@@ -86,13 +87,18 @@ export class SponsoredContentService {
         relations: ["trend", "trend.contents", "trend.score", "brand"],
         order: { placementSlotWeight: "DESC" },
         take: limit,
-        skip: offset,
+        skip: skip,
       });
 
       return {
         success: true,
         message: messages.FETCH_SUCCESS,
-        data: { data, total },
+        data: {
+          data,
+          totalItems,
+          totalPages: Math.ceil(totalItems / limit),
+          currentPage: page,
+        },
       };
     } catch (error) {
       return { success: false, message: error.message };

@@ -1,5 +1,5 @@
 import { Controller, Get, Patch, Body, Query, Res, Request } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse, ApiNotFoundResponse } from "@nestjs/swagger";
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiUnauthorizedResponse, ApiInternalServerErrorResponse, ApiBadRequestResponse, ApiNotFoundResponse, ApiQuery } from "@nestjs/swagger";
 import { IdentityService } from "./identity.service";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
 import { ResponseHandler } from "../common/helpers/response-handler";
@@ -118,12 +118,19 @@ export class IdentityController {
   @ApiOperation({
     summary: "Get the user leaderboard based on trust and performance",
   })
+  @ApiQuery({ name: "limit", required: false, example: 10 })
+  @ApiQuery({ name: "page", required: false, example: 1 })
   @ApiOkResponse({
     description: "Leaderboard fetched successfully",
     example: {
       statusCode: 200,
       message: messages.FETCH_SUCCESS,
-      data: [{ id: "uuid", name: "User Name", trust_score: 100 }],
+      data: {
+        data: [{ id: "uuid", name: "User Name", trendScore: 100 }],
+        totalItems: 100,
+        totalPages: 10,
+        currentPage: 1
+      },
     },
   })
   @ApiBadRequestResponse({
@@ -147,10 +154,11 @@ export class IdentityController {
       message: messages.INTERNAL_SERVER_ERROR,
     },
   })
-  async getLeaderboard(@Res() res: Response, @Query("limit") limit?: string) {
+  async getLeaderboard(@Res() res: Response, @Query("limit") limit?: string, @Query("page") page?: string) {
     try {
       const limitNum = limit ? parseInt(limit, 10) : 10;
-      const result = await this.identityService.getLeaderboard(limitNum);
+      const pageNum = page ? parseInt(page, 10) : 1;
+      const result = await this.identityService.getLeaderboard(limitNum, pageNum);
       if (result.success) {
         return this.responseHandler.successResponseWithData(res, result.message, result.data);
       }
