@@ -29,7 +29,7 @@ export class FeedService {
         .innerJoinAndSelect("trend.score", "score") // Advanced scores
         .leftJoinAndSelect("trend.contents", "contents")
         .leftJoinAndSelect("trend.creator", "creator")
-        .leftJoinAndSelect("trend.sponsoredContent", "sponsored") // Check if it's sponsored
+        .leftJoinAndSelect("trend.sponsoredCampaigns", "sponsored") // Check if it's sponsored
         .where("trend.status = :status", { status: TrendStatusEnum.PUBLISHED })
         .andWhere("trend.contentType = :contentType", { contentType: TrendContentTypeEnum.ORGANIC })
         .take(limit)
